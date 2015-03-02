@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Name=QSpectrumAnalyzer
+GenericName=Spectrum analyzer
+Comment=Spectrum analyzer for RTL-SDR (GUI for rtl_power based on PyQtGraph)
+Exec=qspectrumanalyzer
+Icon=qspectrumanalyzer
+StartupNotify=true
+Terminal=false
+Type=Application
+Categories=Qt;Science;DataVisualization;Electricity;HamRadio;
