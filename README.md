@@ -24,3 +24,18 @@ Usage
 -----
 
 Start QSpectrumAnalyzer by running `qspectrumanalyzer`.
+
+If you don't have `rtl_power` executable in system path, you can specify
+location of it manually in _File -> Settings_. You can also specify waterfall
+plot history size in there. Default is 100 lines, be aware that really large
+sweeps (with a lot of bins) would require a lot of system memory, so don't make
+this number too big.
+
+Controls should be intuitive, but if you want consistent results, you should
+turn of automatic gain control (set it to some fixed number) and also set
+crop to 20% or more. For finding out ppm correction factor for your rtl-sdr
+stick, use [kalibrate-rtl](https://github.com/steve-m/kalibrate-rtl).
+
+You can move and zoom plot with mouse, change plot settings or export plots
+from right-click menu. Waterfall plot black/white levels and color lookup
+table can be changed in mini-histogram widget.
