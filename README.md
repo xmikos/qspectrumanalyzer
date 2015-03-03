@@ -26,7 +26,7 @@ Usage
 Start QSpectrumAnalyzer by running `qspectrumanalyzer`.
 
 If you don't have `rtl_power` executable in system path, you can specify
-location of it manually in _File -> Settings_. You can also specify waterfall
+location of it manually in _File_ -> _Settings_. You can also specify waterfall
 plot history size in there. Default is 100 lines, be aware that really large
 sweeps (with a lot of bins) would require a lot of system memory, so don't make
 this number too big.
