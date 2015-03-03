@@ -6,7 +6,7 @@ pkgdesc="Spectrum analyzer for RTL-SDR (GUI for rtl_power based on PyQtGraph)"
 arch=('any')
 url="https://github.com/xmikos/qspectrumanalyzer"
 license=('GPL3')
-depends=('python-pyqt4')
+depends=('python-pyqt4' 'python-pyqtgraph' 'rtl-sdr')
 source=(https://github.com/xmikos/qspectrumanalyzer/archive/v$pkgver.tar.gz)
 
 build() {
