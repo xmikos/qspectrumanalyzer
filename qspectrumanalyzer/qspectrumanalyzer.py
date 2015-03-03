@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, csv, subprocess
+import sys, csv, subprocess, signal
 
 import numpy as np
 import pyqtgraph as pg
@@ -13,6 +13,10 @@ from qspectrumanalyzer.ui_qspectrumanalyzer import Ui_QSpectrumAnalyzerMainWindo
 
 # Basic settings
 pg.setConfigOptions(antialias=True)
+
+# Allow CTRL+C and/or SIGTERM to kill us (PyQt blocks it otherwise)
+signal.signal(signal.SIGINT, signal.SIG_DFL)
+signal.signal(signal.SIGTERM, signal.SIG_DFL)
 
 
 class QSpectrumAnalyzerSettings(QtGui.QDialog, Ui_QSpectrumAnalyzerSettings):
