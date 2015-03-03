@@ -32,7 +32,7 @@ sweeps (with a lot of bins) would require a lot of system memory, so don't make
 this number too big.
 
 Controls should be intuitive, but if you want consistent results, you should
-turn of automatic gain control (set it to some fixed number) and also set
+turn off automatic gain control (set it to some fixed number) and also set
 crop to 20% or more. For finding out ppm correction factor for your rtl-sdr
 stick, use [kalibrate-rtl](https://github.com/steve-m/kalibrate-rtl).
 
