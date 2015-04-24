@@ -1,4 +1,4 @@
 #!/usr/bin/env python
 
-from qspectrumanalyzer import qspectrumanalyzer
-qspectrumanalyzer.main()
+from qspectrumanalyzer import __main__
+__main__.main()

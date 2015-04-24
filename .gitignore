@@ -1,5 +1,6 @@
-# Backup files
-*~
-
-# Compiled Python files
+__pycache__/
 *.py[cod]
+
+build/
+dist/
+MANIFEST
