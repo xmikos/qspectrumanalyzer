@@ -1,6 +1,6 @@
 # Maintainer: Michal Krenek (Mikos) <m.krenek@gmail.com>
 pkgname=qspectrumanalyzer
-pkgver=1.0
+pkgver=1.1
 pkgrel=1
 pkgdesc="Spectrum analyzer for RTL-SDR (GUI for rtl_power based on PyQtGraph)"
 arch=('any')
