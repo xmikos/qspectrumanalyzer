@@ -7,6 +7,7 @@ arch=('any')
 url="https://github.com/xmikos/qspectrumanalyzer"
 license=('GPL3')
 depends=('python-pyqt4' 'python-pyqtgraph' 'rtl-sdr')
+makedepends=('python-setuptools')
 source=(https://github.com/xmikos/qspectrumanalyzer/archive/v$pkgver.tar.gz)
 
 build() {
