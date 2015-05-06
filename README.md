@@ -4,7 +4,7 @@ Spectrum analyzer for RTL-SDR (GUI for rtl_power based on PyQtGraph)
 
 ## Screenshot
 
-![Alt text](qspectrumanalyzer_screenshot.png?raw=true "Screenshot")
+![Alt text](http://xmikos.github.io/qspectrumanalyzer/qspectrumanalyzer_screenshot.png "Screenshot")
 
 ## Requirements
 
