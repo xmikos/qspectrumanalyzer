@@ -1,15 +1,12 @@
-QSpectrumAnalyzer
-=================
+# QSpectrumAnalyzer
 
 Spectrum analyzer for RTL-SDR (GUI for rtl_power based on PyQtGraph)
 
-Screenshot
-----------
+## Screenshot
 
 .. image:: https://xmikos.github.io/qspectrumanalyzer/qspectrumanalyzer_screenshot.png
 
-Requirements
-------------
+## Requirements
 
 - Python >= 3.3
 - PyQt >= 4.5
@@ -20,10 +17,35 @@ You should use Keenerds fork of rtl-sdr (latest Git revision),
 bacause ``rtl_power`` in original rtl-sdr (from osmocom.org) is broken
 (especially when used with cropping).
 
-Usage
------
+## Install for Ubuntu
+Misc
 
-Start QSpectrumAnalyzer by running ``qspectrumanalyzer``.
+    sudo apt-get install python3-setuptools
+
+PyQt
+
+    sudo apt-get install pyqt4-dev-tools python3-pyqt4
+
+Numpy
+
+    sudo apt-get install python3-numpy
+
+PyQtGraph
+
+    git clone https://github.com/pyqtgraph/pyqtgraph.git
+    cd pyqtgraph
+    sudo python3 setup.py install
+
+QSpectrumAnalyzer [this program]
+
+    git clone https://github.com/xmikos/qspectrumanalyzer.git
+    cd qspectrumanalyzer
+    python3 setup-qt.py
+    sudo python3 setup.py install
+
+## Usage
+
+Start QSpectrumAnalyzer by just running ``qspectrumanalyzer``.
 
 If you don't have ``rtl_power`` executable in system path, you can specify
 location of it manually in *File* -> *Settings*. You can also specify waterfall
