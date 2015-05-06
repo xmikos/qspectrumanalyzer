@@ -18,29 +18,33 @@ bacause ``rtl_power`` in original rtl-sdr (from osmocom.org) is broken
 (especially when used with cropping).
 
 ## Install for Ubuntu
+
 Misc
+
     sudo apt-get install python3-setuptools
 
 PyQt
+
     sudo apt-get install pyqt4-dev-tools python3-pyqt4
 
 Numpy
+
     sudo apt-get install python3-numpy
 
 PyQtGraph
+
     git clone https://github.com/pyqtgraph/pyqtgraph.git
     cd pyqtgraph
     sudo python3 setup.py install
 
-QSpectrumAnalyzer [this program]
+## Usage
+
     git clone https://github.com/xmikos/qspectrumanalyzer.git
     cd qspectrumanalyzer
     python3 setup-qt.py
     sudo python3 setup.py install
-
-## Usage
-
-Start QSpectrumAnalyzer by just running ``qspectrumanalyzer``.
+    
+After that start QSpectrumAnalyzer by just running ``qspectrumanalyzer``.
 
 If you don't have ``rtl_power`` executable in system path, you can specify
 location of it manually in *File* -> *Settings*. You can also specify waterfall
