@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, csv, subprocess, signal
+import sys, subprocess, signal, math, time, pprint
 
 import numpy as np
 import pyqtgraph as pg
@@ -28,21 +28,36 @@ class QSpectrumAnalyzerSettings(QtGui.QDialog, Ui_QSpectrumAnalyzerSettings):
 
         # Load settings
         settings = QtCore.QSettings()
-        self.rtlPowerExecutableEdit.setText(str(settings.value("rtl_power_executable") or "rtl_power"))
+        self.executableEdit.setText(str(settings.value("rtl_power_executable") or "rtl_power"))
         self.waterfallHistorySizeSpinBox.setValue(int(settings.value("waterfall_history_size") or 100))
+        self.sampleRateSpinBox.setValue(int(settings.value("sample_rate") or 2560000))
+
+        backend = str(settings.value("backend") or "rtl_power")
+        i = self.backendComboBox.findText(backend)
+        if i == -1:
+            self.backendComboBox.setCurrentIndex(0)
+        else:
+            self.backendComboBox.setCurrentIndex(i)
 
     @QtCore.pyqtSlot()
-    def on_rtlPowerExecutableButton_clicked(self):
+    def on_executableButton_clicked(self):
         """Open file dialog when button is clicked"""
-        filename = QtGui.QFileDialog.getOpenFileName(self, "QSpectrumAnalyzer - rtl_power executable")
+        filename = QtGui.QFileDialog.getOpenFileName(self, "QSpectrumAnalyzer - executable")
         if filename:
-            self.rtlPowerExecutableEdit.setText(filename)
+            self.executableEdit.setText(filename)
+
+    @QtCore.pyqtSlot(str)
+    def on_backendComboBox_currentIndexChanged(self, text):
+        """Change executable when backend is changed"""
+        self.executableEdit.setText(text)
 
     def accept(self):
         """Save settings when dialog is accepted"""
         settings = QtCore.QSettings()
-        settings.setValue("rtl_power_executable", self.rtlPowerExecutableEdit.text())
+        settings.setValue("rtl_power_executable", self.executableEdit.text())
         settings.setValue("waterfall_history_size", self.waterfallHistorySizeSpinBox.value())
+        settings.setValue("sample_rate", self.sampleRateSpinBox.value())
+        settings.setValue("backend", self.backendComboBox.currentText())
         QtGui.QDialog.accept(self)
 
 
@@ -56,16 +71,31 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
         # Setup rtl_power thread and connect signals
         self.waterfall_history_size = 100
         self.datacounter = 0
-        self.rtl_power_thread = RtlPowerThread()
-        self.rtl_power_thread.dataUpdated.connect(self.update_data)
-        self.rtl_power_thread.rtlPowerStarted.connect(self.update_buttons)
-        self.rtl_power_thread.rtlPowerStopped.connect(self.update_buttons)
+        self.datatimestamp = 0
+        self.rtl_power_thread = None
+        self.setup_rtl_power_thread()
 
         # Update UI
         self.create_plot()
         self.create_waterfall()
         self.update_buttons()
         self.load_settings()
+
+    def setup_rtl_power_thread(self):
+        """Create rtl_power_thread and connect signals to slots"""
+        if self.rtl_power_thread:
+            self.stop()
+
+        settings = QtCore.QSettings()
+        backend = str(settings.value("backend") or "rtl_power")
+        if backend == "rtl_power_fftw":
+            self.rtl_power_thread = RtlPowerFftwThread()
+        else:
+            self.rtl_power_thread = RtlPowerThread()
+
+        self.rtl_power_thread.dataUpdated.connect(self.update_data)
+        self.rtl_power_thread.rtlPowerStarted.connect(self.update_buttons)
+        self.rtl_power_thread.rtlPowerStopped.connect(self.update_buttons)
 
     def create_plot(self):
         """Create main spectrum plot"""
@@ -135,6 +165,10 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
         self.update_plot(data)
         self.update_waterfall(data)
 
+        timestamp = time.time()
+        self.show_status("Sweep time: {:.2f} s".format(timestamp - self.datatimestamp), timeout=0)
+        self.datatimestamp = timestamp
+
     def update_plot(self, data):
         """Update main spectrum plot"""
         self.curve.setData(data["x"], data["y"])
@@ -171,7 +205,7 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
         self.startFreqSpinBox.setValue(float(settings.value("start_freq") or 87.0))
         self.stopFreqSpinBox.setValue(float(settings.value("stop_freq") or 108.0))
         self.binSizeSpinBox.setValue(float(settings.value("bin_size") or 10.0))
-        self.intervalSpinBox.setValue(int(settings.value("interval") or 10))
+        self.intervalSpinBox.setValue(float(settings.value("interval") or 10.0))
         self.gainSpinBox.setValue(int(settings.value("gain") or 0))
         self.ppmSpinBox.setValue(int(settings.value("ppm") or 0))
         self.cropSpinBox.setValue(int(settings.value("crop") or 0))
@@ -189,7 +223,7 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
         settings.setValue("start_freq", float(self.startFreqSpinBox.value()))
         settings.setValue("stop_freq", float(self.stopFreqSpinBox.value()))
         settings.setValue("bin_size", float(self.binSizeSpinBox.value()))
-        settings.setValue("interval", int(self.intervalSpinBox.value()))
+        settings.setValue("interval", float(self.intervalSpinBox.value()))
         settings.setValue("gain", int(self.gainSpinBox.value()))
         settings.setValue("ppm", int(self.ppmSpinBox.value()))
         settings.setValue("crop", int(self.cropSpinBox.value()))
@@ -207,15 +241,17 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
         settings = QtCore.QSettings()
         self.waterfall_history_size = int(settings.value("waterfall_history_size") or 100)
         self.datacounter = 0
+        self.datatimestamp = time.time()
         if not self.rtl_power_thread.alive:
             self.rtl_power_thread.setup(float(self.startFreqSpinBox.value()),
                                         float(self.stopFreqSpinBox.value()),
                                         float(self.binSizeSpinBox.value()),
-                                        interval=int(self.intervalSpinBox.value()),
+                                        interval=float(self.intervalSpinBox.value()),
                                         gain=int(self.gainSpinBox.value()),
                                         ppm=int(self.ppmSpinBox.value()),
                                         crop=int(self.cropSpinBox.value()) / 100.0,
-                                        single_shot=single_shot)
+                                        single_shot=single_shot,
+                                        sample_rate=int(settings.value("sample_rate") or 2560000))
             self.rtl_power_thread.start()
 
     def stop(self):
@@ -238,7 +274,8 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
     @QtCore.pyqtSlot()
     def on_action_Settings_triggered(self):
         dialog = QSpectrumAnalyzerSettings(self)
-        dialog.exec_()
+        if dialog.exec_():
+            self.setup_rtl_power_thread()
 
     @QtCore.pyqtSlot()
     def on_action_About_triggered(self):
@@ -250,11 +287,11 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
 
     def closeEvent(self, event):
         """Save settings when main window is closed"""
-        self.rtl_power_thread.stop()
+        self.stop()
         self.save_settings()
 
 
-class RtlPowerThread(QtCore.QThread):
+class RtlPowerBaseThread(QtCore.QThread):
     """Thread which runs rtl_power process"""
     dataUpdated = QtCore.pyqtSignal(object)
     rtlPowerStarted = QtCore.pyqtSignal()
@@ -264,9 +301,6 @@ class RtlPowerThread(QtCore.QThread):
         super().__init__(parent)
         self.alive = False
         self.process = None
-        self.params = {}
-        self.databuffer = {}
-        self.last_timestamp = ""
 
     def stop(self):
         """Stop rtl_power thread"""
@@ -274,8 +308,49 @@ class RtlPowerThread(QtCore.QThread):
         self.alive = False
         self.wait()
 
-    def setup(self, start_freq, stop_freq, bin_size, interval=10,
-              gain=-1, ppm=0, crop=0, single_shot=False):
+    def setup(self, start_freq, stop_freq, bin_size, interval=10.0, gain=-1,
+              ppm=0, crop=0, single_shot=False, sample_rate=2560000):
+        """Setup rtl_power params"""
+        raise NotImplementedError
+
+    def process_start(self):
+        """Start rtl_power process"""
+        raise NotImplementedError
+
+    def process_stop(self):
+        """Terminate rtl_power process"""
+        if self.process:
+            try:
+                self.process.terminate()
+            except ProcessLookupError:
+                pass
+            self.process.wait()
+            self.process = None
+
+    def parse_output(self, line):
+        """Parse one line of output from rtl_power"""
+        raise NotImplementedError
+
+    def run(self):
+        """Rtl_power thread main loop"""
+        self.process_start()
+        self.alive = True
+        self.rtlPowerStarted.emit()
+
+        for line in self.process.stdout:
+            if not self.alive:
+                break
+            self.parse_output(line)
+
+        self.process_stop()
+        self.alive = False
+        self.rtlPowerStopped.emit()
+
+
+class RtlPowerThread(RtlPowerBaseThread):
+    """Thread which runs rtl_power process"""
+    def setup(self, start_freq, stop_freq, bin_size, interval=10.0, gain=-1,
+              ppm=0, crop=0, single_shot=False, sample_rate=2560000):
         """Setup rtl_power params"""
         self.params = {
             "start_freq": start_freq,
@@ -287,16 +362,12 @@ class RtlPowerThread(QtCore.QThread):
             "crop": crop,
             "single_shot": single_shot
         }
+        self.databuffer = {}
+        self.last_timestamp = ""
 
-    def process_stop(self):
-        """Terminate rtl_power process"""
-        if self.process:
-            try:
-                self.process.terminate()
-            except ProcessLookupError:
-                pass
-            self.process.wait()
-            self.process = None
+        print("rtl_power params:")
+        pprint.pprint(self.params)
+        print()
 
     def process_start(self):
         """Start rtl_power process"""
@@ -321,7 +392,8 @@ class RtlPowerThread(QtCore.QThread):
                                             universal_newlines=True)
 
     def parse_output(self, line):
-        """Parse one preprocessed line of output from rtl_power"""
+        """Parse one line of output from rtl_power"""
+        line = [col.strip() for col in line.split(",")]
         timestamp = " ".join(line[:2])
         start_freq = int(line[2])
         stop_freq = int(line[3])
@@ -352,24 +424,131 @@ class RtlPowerThread(QtCore.QThread):
         # if stop_freq == self.params["stop_freq"] * 1e6:
         if stop_freq > (self.params["stop_freq"] * 1e6) - step:
             self.dataUpdated.emit(self.databuffer)
-            return self.databuffer
 
-    def run(self):
-        """Rtl_power thread main loop"""
-        self.process_start()
-        self.alive = True
-        self.rtlPowerStarted.emit()
 
-        reader = csv.reader(self.process.stdout, skipinitialspace=True,
-                            delimiter=",", quoting=csv.QUOTE_NONE)
-        for line in reader:
-            if not self.alive:
-                break
-            self.parse_output(line)
+class RtlPowerFftwThread(RtlPowerBaseThread):
+    """Thread which runs rtl_power_fftw process"""
+    def setup(self, start_freq, stop_freq, bin_size, interval=10.0, gain=-1,
+              ppm=0, crop=0, single_shot=False, sample_rate=2560000):
+        """Setup rtl_power_fftw params"""
+        crop = crop * 100
+        overlap = crop * 2
+        freq_range = stop_freq * 1e6 - start_freq * 1e6
+        min_overhang = sample_rate * overlap * 0.01
+        hops = math.ceil((freq_range - min_overhang) / (sample_rate - min_overhang))
+        overhang = (hops * sample_rate - freq_range) / (hops - 1) if hops > 1 else 0
+        bins = math.ceil(sample_rate / (bin_size * 1e3))
+        crop_freq = sample_rate * crop * 0.01
 
-        self.process_stop()
-        self.alive = False
-        self.rtlPowerStopped.emit()
+        self.params = {
+            "start_freq": start_freq,
+            "stop_freq": stop_freq,
+            "freq_range": freq_range,
+            "sample_rate": sample_rate,
+            "bin_size": bin_size,
+            "bins": bins,
+            "interval": interval,
+            "hops": hops,
+            "time": interval / hops,
+            "gain": gain * 10,
+            "ppm": ppm,
+            "crop": crop,
+            "overlap": overlap,
+            "min_overhang": min_overhang,
+            "overhang": overhang,
+            "single_shot": single_shot
+        }
+        self.freqs = [self.get_hop_freq(hop) for hop in range(hops)]
+        self.freqs_crop = [(f[0] + crop_freq, f[1] - crop_freq) for f in self.freqs]
+        self.databuffer = {"timestamp": [], "x": [], "y": []}
+        self.databuffer_hop = {"timestamp": [], "x": [], "y": []}
+        self.hop = 0
+        self.prev_line = ""
+
+        print("rtl_power_fftw params:")
+        pprint.pprint(self.params)
+        print()
+
+    def get_hop_freq(self, hop):
+        """Get start and stop frequency for particular hop"""
+        start_freq = self.params["start_freq"] * 1e6 + (self.params["sample_rate"] - self.params["overhang"]) * hop
+        stop_freq = start_freq + self.params["sample_rate"] - (self.params["sample_rate"] / self.params["bins"])
+        return (start_freq, stop_freq)
+
+    def process_start(self):
+        """Start rtl_power_fftw process"""
+        if not self.process and self.params:
+            settings = QtCore.QSettings()
+            cmdline = [
+                str(settings.value("rtl_power_executable") or "rtl_power_fftw"),
+                "-f", "{}M:{}M".format(self.params["start_freq"],
+                                       self.params["stop_freq"]),
+                "-b", "{}".format(self.params["bins"]),
+                "-t", "{}".format(self.params["time"]),
+                "-r", "{}".format(self.params["sample_rate"]),
+                "-p", "{}".format(self.params["ppm"]),
+            ]
+
+            if self.params["gain"] >= 0:
+                cmdline.extend(["-g", "{}".format(self.params["gain"])])
+            if self.params["overlap"] > 0:
+                cmdline.extend(["-o", "{}".format(self.params["overlap"])])
+            if not self.params["single_shot"]:
+                cmdline.append("-c")
+
+            self.process = subprocess.Popen(cmdline, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                                            universal_newlines=True)
+
+    def parse_output(self, line):
+        """Parse one line of output from rtl_power_fftw"""
+        line = line.strip()
+
+        # One empty line => new hop
+        if not line and self.prev_line:
+            self.hop += 1
+            self.databuffer["x"].extend(self.databuffer_hop["x"])
+            self.databuffer["y"].extend(self.databuffer_hop["y"])
+            self.databuffer_hop = {"timestamp": [], "x": [], "y": []}
+
+        # Two empty lines => new set
+        elif not line and not self.prev_line:
+            self.hop = 0
+            self.dataUpdated.emit(self.databuffer)
+            self.databuffer = {"timestamp": [], "x": [], "y": []}
+
+        # Get timestamp for new hop and set
+        elif line.startswith("# Acquisition start:"):
+            timestamp = line.split(":", 1)[1].strip()
+            if not self.databuffer_hop["timestamp"]:
+                self.databuffer_hop["timestamp"] = timestamp
+            if not self.databuffer["timestamp"]:
+                self.databuffer["timestamp"] = timestamp
+
+        # Skip other comments
+        elif line.startswith("#"):
+            pass
+
+        # Parse frequency and power
+        elif line[0].isdigit():
+            freq, power = line.split()
+            freq, power = float(freq), float(power)
+            start_freq, stop_freq = self.freqs_crop[self.hop]
+
+            # Apply cropping
+            if freq >= start_freq and freq <= stop_freq:
+                # Skip overlapping frequencies
+                if not self.databuffer["x"] or freq > self.databuffer["x"][-1]:
+                    #print("  {:.3f} MHz".format(freq / 1e6))
+                    self.databuffer_hop["x"].append(freq)
+                    self.databuffer_hop["y"].append(power)
+                else:
+                    #print("  Overlapping {:.3f} MHz".format(freq / 1e6))
+                    pass
+            else:
+                #print("  Cropping {:.3f} MHz".format(freq / 1e6))
+                pass
+
+        self.prev_line = line
 
 
 def main():

@@ -1,6 +1,6 @@
 [Desktop Entry]
 Encoding=UTF-8
-Version=1.1.1
+Version=1.2.0
 Name=QSpectrumAnalyzer
 GenericName=Spectrum analyzer
 Comment=Spectrum analyzer for RTL-SDR (GUI for rtl_power based on PyQtGraph)

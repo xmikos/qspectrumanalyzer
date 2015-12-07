@@ -2,8 +2,7 @@
 
 # Form implementation generated from reading ui file 'qspectrumanalyzer/qspectrumanalyzer.ui'
 #
-# Created: Mon Mar  2 23:12:42 2015
-#      by: PyQt4 UI code generator 4.11.3
+# Created by: PyQt4 UI code generator 4.11.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -26,7 +25,7 @@ except AttributeError:
 class Ui_QSpectrumAnalyzerMainWindow(object):
     def setupUi(self, QSpectrumAnalyzerMainWindow):
         QSpectrumAnalyzerMainWindow.setObjectName(_fromUtf8("QSpectrumAnalyzerMainWindow"))
-        QSpectrumAnalyzerMainWindow.resize(1100, 680)
+        QSpectrumAnalyzerMainWindow.resize(1100, 731)
         self.centralwidget = QtGui.QWidget(QSpectrumAnalyzerMainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.horizontalLayout = QtGui.QHBoxLayout(self.centralwidget)
@@ -56,7 +55,7 @@ class Ui_QSpectrumAnalyzerMainWindow(object):
         self.horizontalLayout.addWidget(self.plotSplitter)
         QSpectrumAnalyzerMainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(QSpectrumAnalyzerMainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1100, 27))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1100, 30))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menu_File = QtGui.QMenu(self.menubar)
         self.menu_File.setObjectName(_fromUtf8("menu_File"))
@@ -134,13 +133,6 @@ class Ui_QSpectrumAnalyzerMainWindow(object):
         self.label_6 = QtGui.QLabel(self.groupBox_3)
         self.label_6.setObjectName(_fromUtf8("label_6"))
         self.gridLayout_2.addWidget(self.label_6, 0, 1, 1, 1)
-        self.intervalSpinBox = QtGui.QSpinBox(self.groupBox_3)
-        self.intervalSpinBox.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.intervalSpinBox.setMinimum(1)
-        self.intervalSpinBox.setMaximum(3600)
-        self.intervalSpinBox.setProperty("value", 10)
-        self.intervalSpinBox.setObjectName(_fromUtf8("intervalSpinBox"))
-        self.gridLayout_2.addWidget(self.intervalSpinBox, 1, 0, 1, 1)
         self.gainSpinBox = QtGui.QSpinBox(self.groupBox_3)
         self.gainSpinBox.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.gainSpinBox.setMinimum(-1)
@@ -164,6 +156,12 @@ class Ui_QSpectrumAnalyzerMainWindow(object):
         self.cropSpinBox.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.cropSpinBox.setObjectName(_fromUtf8("cropSpinBox"))
         self.gridLayout_2.addWidget(self.cropSpinBox, 3, 1, 1, 1)
+        self.intervalSpinBox = QtGui.QDoubleSpinBox(self.groupBox_3)
+        self.intervalSpinBox.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.intervalSpinBox.setMaximum(999.0)
+        self.intervalSpinBox.setProperty("value", 1.0)
+        self.intervalSpinBox.setObjectName(_fromUtf8("intervalSpinBox"))
+        self.gridLayout_2.addWidget(self.intervalSpinBox, 1, 0, 1, 1)
         self.verticalLayout_3.addWidget(self.groupBox_3)
         self.groupBox_4 = QtGui.QGroupBox(self.dockWidgetContents)
         self.groupBox_4.setObjectName(_fromUtf8("groupBox_4"))
