@@ -15,21 +15,31 @@ Requirements
 - PyQt >= 4.5
 - PyQtGraph (http://www.pyqtgraph.org)
 - rtl-sdr (https://github.com/keenerd/rtl-sdr)
+- Optional: rtl_power_fftw (https://github.com/AD-Vega/rtl-power-fftw)
 
-You should use Keenerds fork of rtl-sdr (latest Git revision),
-bacause ``rtl_power`` in original rtl-sdr (from osmocom.org) is broken
-(especially when used with cropping).
+You should use `Keenerds fork of rtl-sdr <https://github.com/keenerd/rtl-sdr>`_
+(latest Git revision), because ``rtl_power`` in original rtl-sdr (from osmocom.org)
+is broken (especially when used with cropping).
+
+Another alternative is
+`rtl_power_fftw <https://github.com/AD-Vega/rtl-power-fftw>`_ which has various
+benefits over ``rtl_power``. E.g. better FFT performance (thanks to
+use of ``fftw`` library) and possibility to use much shorter acquisition time
+for more real-time continuous measurement (minimum interval in original
+``rtl_power`` is 1 second, but in ``rtl_power_fftw`` you are only limited
+by number of frequency hops).
 
 Usage
 -----
 
 Start QSpectrumAnalyzer by running ``qspectrumanalyzer``.
 
-If you don't have ``rtl_power`` executable in system path, you can specify
-location of it manually in *File* -> *Settings*. You can also specify waterfall
-plot history size in there. Default is 100 lines, be aware that really large
-sweeps (with a lot of bins) would require a lot of system memory, so don't make
-this number too big.
+You can choose if you want to use ``rtl_power`` or ``rtl_power_fftw`` backend in
+*File* -> *Settings* (default is ``rtl_power``). Path to ``rtl_power``
+(or ``rtl_power_fftw``) executable can be also manually specified there. You can also
+set waterfall plot history size in there. Default is 100 lines, be aware that
+really large sweeps (with a lot of bins) would require a lot of system memory, so
+don't make this number too big.
 
 Controls should be intuitive, but if you want consistent results, you should
 turn off automatic gain control (set it to some fixed number) and also set
