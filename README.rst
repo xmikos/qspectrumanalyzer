@@ -49,3 +49,44 @@ stick, use `kalibrate-rtl <https://github.com/steve-m/kalibrate-rtl>`_.
 You can move and zoom plot with mouse, change plot settings or export plots
 from right-click menu. Waterfall plot black/white levels and color lookup
 table can be changed in mini-histogram widget.
+
+Installation
+------------
+
+**Arch Linux:**
+::
+
+    git clone https://aur.archlinux.org/qspectrumanalyzer.git
+    cd qspectrumanalyzer
+    makepkg -sri
+
+Or simply use `pacaur <https://aur.archlinux.org/packages/pacaur>`_ (or any other AUR helper):
+::
+
+    pacaur -S qspectrumanalyzer
+
+**Debian / Ubuntu:**
+::
+
+    sudo apt-get install python3-pip python3-pyqt4 python3-numpy
+    sudo pip3 install qspectrumanalyzer
+
+Warning! ``pip`` will install packages system-wide by default, but you
+should always use your distribution package manager for this.
+
+You can install it locally only for your current user by running this (without ``sudo``):
+::
+
+    pip3 install --user qspectrumanalyzer
+
+Exacutables will be then placed in ``~/.local/bin`` directory, you can add it to your
+PATH in ``~/.bashrc``.
+
+Todo:
+-----
+
+- peak hold (maybe even with gradual fading, RTSA-like spectrum visualization similar to
+  `gr-fosphor <http://www.cgran.org/pages/gr-fosphor.html>`_)
+- automatic peak detection / highlighting
+- frequency markers / bookmarks with notes (even importing / exporting .csv file with
+  predefined channels, etc.)
