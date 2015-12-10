@@ -79,7 +79,7 @@ You can install it locally only for your current user by running this (without `
 
     pip3 install --user qspectrumanalyzer
 
-Exacutables will be then placed in ``~/.local/bin`` directory, you can add it to your
+Executables will be then placed in ``~/.local/bin`` directory, you can add it to your
 PATH in ``~/.bashrc``.
 
 Todo:
