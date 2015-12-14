@@ -48,7 +48,7 @@ stick, use `kalibrate-rtl <https://github.com/steve-m/kalibrate-rtl>`_.
 
 You can move and zoom plot with mouse, change plot settings or export plots
 from right-click menu. Waterfall plot black/white levels and color lookup
-table can be changed in mini-histogram widget.
+table can be changed in mini-histogram widget (on *Levels* tab).
 
 Installation
 ------------
@@ -85,8 +85,7 @@ PATH in ``~/.bashrc``.
 Todo:
 -----
 
-- peak hold (maybe even with gradual fading, RTSA-like spectrum visualization similar to
-  `gr-fosphor <http://www.cgran.org/pages/gr-fosphor.html>`_)
 - automatic peak detection / highlighting
+- RTSA-like spectrum visualization similar to `gr-fosphor <http://www.cgran.org/pages/gr-fosphor.html>`_
 - frequency markers / bookmarks with notes (even importing / exporting .csv file with
   predefined channels, etc.)
