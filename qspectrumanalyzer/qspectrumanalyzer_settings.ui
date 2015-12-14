@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>350</width>
+    <width>400</width>
     <height>210</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>QSpectrumAnalyzer - Settings</string>
+   <string>Settings - QSpectrumAnalyzer</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -19,7 +19,10 @@
      <item row="0" column="0">
       <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>Backend:</string>
+        <string>&amp;Backend:</string>
+       </property>
+       <property name="buddy">
+        <cstring>backendComboBox</cstring>
        </property>
       </widget>
      </item>
@@ -40,7 +43,10 @@
      <item row="1" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Executable:</string>
+        <string>E&amp;xecutable:</string>
+       </property>
+       <property name="buddy">
+        <cstring>executableEdit</cstring>
        </property>
       </widget>
      </item>
@@ -65,7 +71,10 @@
      <item row="2" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Waterfall history size:</string>
+        <string>&amp;Waterfall history size:</string>
+       </property>
+       <property name="buddy">
+        <cstring>waterfallHistorySizeSpinBox</cstring>
        </property>
       </widget>
      </item>
@@ -85,7 +94,10 @@
      <item row="3" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>Sample rate:</string>
+        <string>Sa&amp;mple rate:</string>
+       </property>
+       <property name="buddy">
+        <cstring>sampleRateSpinBox</cstring>
        </property>
       </widget>
      </item>
@@ -133,10 +145,11 @@
   </layout>
  </widget>
  <tabstops>
+  <tabstop>backendComboBox</tabstop>
   <tabstop>executableEdit</tabstop>
   <tabstop>executableButton</tabstop>
   <tabstop>waterfallHistorySizeSpinBox</tabstop>
-  <tabstop>buttonBox</tabstop>
+  <tabstop>sampleRateSpinBox</tabstop>
  </tabstops>
  <resources/>
  <connections>
@@ -147,8 +160,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>224</x>
-     <y>126</y>
+     <x>230</x>
+     <y>203</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -163,8 +176,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>292</x>
-     <y>132</y>
+     <x>298</x>
+     <y>203</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>

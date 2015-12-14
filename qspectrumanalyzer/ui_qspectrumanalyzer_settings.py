@@ -25,7 +25,7 @@ except AttributeError:
 class Ui_QSpectrumAnalyzerSettings(object):
     def setupUi(self, QSpectrumAnalyzerSettings):
         QSpectrumAnalyzerSettings.setObjectName(_fromUtf8("QSpectrumAnalyzerSettings"))
-        QSpectrumAnalyzerSettings.resize(350, 210)
+        QSpectrumAnalyzerSettings.resize(400, 210)
         self.verticalLayout = QtGui.QVBoxLayout(QSpectrumAnalyzerSettings)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.formLayout = QtGui.QFormLayout()
@@ -77,23 +77,28 @@ class Ui_QSpectrumAnalyzerSettings(object):
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
         self.verticalLayout.addWidget(self.buttonBox)
+        self.label_3.setBuddy(self.backendComboBox)
+        self.label.setBuddy(self.executableEdit)
+        self.label_2.setBuddy(self.waterfallHistorySizeSpinBox)
+        self.label_4.setBuddy(self.sampleRateSpinBox)
 
         self.retranslateUi(QSpectrumAnalyzerSettings)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), QSpectrumAnalyzerSettings.accept)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), QSpectrumAnalyzerSettings.reject)
         QtCore.QMetaObject.connectSlotsByName(QSpectrumAnalyzerSettings)
+        QSpectrumAnalyzerSettings.setTabOrder(self.backendComboBox, self.executableEdit)
         QSpectrumAnalyzerSettings.setTabOrder(self.executableEdit, self.executableButton)
         QSpectrumAnalyzerSettings.setTabOrder(self.executableButton, self.waterfallHistorySizeSpinBox)
-        QSpectrumAnalyzerSettings.setTabOrder(self.waterfallHistorySizeSpinBox, self.buttonBox)
+        QSpectrumAnalyzerSettings.setTabOrder(self.waterfallHistorySizeSpinBox, self.sampleRateSpinBox)
 
     def retranslateUi(self, QSpectrumAnalyzerSettings):
-        QSpectrumAnalyzerSettings.setWindowTitle(_translate("QSpectrumAnalyzerSettings", "QSpectrumAnalyzer - Settings", None))
-        self.label_3.setText(_translate("QSpectrumAnalyzerSettings", "Backend:", None))
+        QSpectrumAnalyzerSettings.setWindowTitle(_translate("QSpectrumAnalyzerSettings", "Settings - QSpectrumAnalyzer", None))
+        self.label_3.setText(_translate("QSpectrumAnalyzerSettings", "&Backend:", None))
         self.backendComboBox.setItemText(0, _translate("QSpectrumAnalyzerSettings", "rtl_power", None))
         self.backendComboBox.setItemText(1, _translate("QSpectrumAnalyzerSettings", "rtl_power_fftw", None))
-        self.label.setText(_translate("QSpectrumAnalyzerSettings", "Executable:", None))
+        self.label.setText(_translate("QSpectrumAnalyzerSettings", "E&xecutable:", None))
         self.executableEdit.setText(_translate("QSpectrumAnalyzerSettings", "rtl_power", None))
         self.executableButton.setText(_translate("QSpectrumAnalyzerSettings", "...", None))
-        self.label_2.setText(_translate("QSpectrumAnalyzerSettings", "Waterfall history size:", None))
-        self.label_4.setText(_translate("QSpectrumAnalyzerSettings", "Sample rate:", None))
+        self.label_2.setText(_translate("QSpectrumAnalyzerSettings", "&Waterfall history size:", None))
+        self.label_4.setText(_translate("QSpectrumAnalyzerSettings", "Sa&mple rate:", None))
 
