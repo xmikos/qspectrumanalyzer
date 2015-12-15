@@ -101,8 +101,8 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
         self.spectrumPlotWidget = SpectrumPlotWidget(self.mainPlotLayout)
         self.waterfallPlotWidget = WaterfallPlotWidget(self.waterfallPlotLayout, self.histogramPlotLayout)
 
-        # Link waterfall plot to main plot
-        self.spectrumPlotWidget.mainPlotWidget.setXLink(self.waterfallPlotWidget.waterfallPlotWidget)
+        # Link main spectrum plot to waterfall plot
+        self.spectrumPlotWidget.plot.setXLink(self.waterfallPlotWidget.plot)
 
         self.update_buttons()
         self.load_settings()
@@ -231,6 +231,7 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
         self.waterfallPlotWidget.history_size = int(settings.value("waterfall_history_size") or 100)
         self.waterfallPlotWidget.counter = 0
         self.spectrumPlotWidget.peak_hold = bool(self.peakHoldCheckBox.isChecked())
+        self.spectrumPlotWidget.peak_hold_clear()
         self.spectrumPlotWidget.smooth = bool(self.smoothCheckBox.isChecked())
         self.spectrumPlotWidget.smooth_length = int(settings.value("smooth_length") or 11)
         self.spectrumPlotWidget.smooth_window = str(settings.value("smooth_window") or "hanning")
