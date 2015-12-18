@@ -1,5 +1,7 @@
 import numpy as np
 
+from PyQt4 import QtGui
+
 
 def smooth(x, window_len=11, window='hanning'):
     """Smooth 1D signal using specified window with given size"""
@@ -23,3 +25,13 @@ def smooth(x, window_len=11, window='hanning'):
     y = np.convolve(w / w.sum(), s, mode='same')
 
     return y[window_len - 1:-window_len + 1]
+
+
+def str_to_color(color_string):
+    """Create QColor from comma sepparated RGBA string"""
+    return QtGui.QColor(*[int(c.strip()) for c in color_string.split(',')])
+
+
+def color_to_str(color):
+    """Create comma separated RGBA string from QColor"""
+    return ", ".join([str(color.red()), str(color.green()), str(color.blue()), str(color.alpha())])

@@ -62,10 +62,12 @@ class Ui_QSpectrumAnalyzerSmooth(object):
         self.label_2.setBuddy(self.windowLengthSpinBox)
 
         self.retranslateUi(QSpectrumAnalyzerSmooth)
-        self.windowFunctionComboBox.setCurrentIndex(0)
+        self.windowFunctionComboBox.setCurrentIndex(1)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), QSpectrumAnalyzerSmooth.accept)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), QSpectrumAnalyzerSmooth.reject)
         QtCore.QMetaObject.connectSlotsByName(QSpectrumAnalyzerSmooth)
+        QSpectrumAnalyzerSmooth.setTabOrder(self.windowFunctionComboBox, self.windowLengthSpinBox)
+        QSpectrumAnalyzerSmooth.setTabOrder(self.windowLengthSpinBox, self.buttonBox)
 
     def retranslateUi(self, QSpectrumAnalyzerSmooth):
         QSpectrumAnalyzerSmooth.setWindowTitle(_translate("QSpectrumAnalyzerSmooth", "Smoothing - QSpectrumAnalyzer", None))

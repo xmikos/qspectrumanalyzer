@@ -88,7 +88,7 @@ class RtlPowerThread(RtlPowerBaseThread):
         if not self.process and self.params:
             settings = QtCore.QSettings()
             cmdline = [
-                str(settings.value("rtl_power_executable") or "rtl_power"),
+                settings.value("rtl_power_executable", "rtl_power"),
                 "-f", "{}M:{}M:{}k".format(self.params["start_freq"],
                                            self.params["stop_freq"],
                                            self.params["bin_size"]),
@@ -194,7 +194,7 @@ class RtlPowerFftwThread(RtlPowerBaseThread):
         if not self.process and self.params:
             settings = QtCore.QSettings()
             cmdline = [
-                str(settings.value("rtl_power_executable") or "rtl_power_fftw"),
+                settings.value("rtl_power_executable", "rtl_power_fftw"),
                 "-f", "{}M:{}M".format(self.params["start_freq"],
                                        self.params["stop_freq"]),
                 "-b", "{}".format(self.params["bins"]),
