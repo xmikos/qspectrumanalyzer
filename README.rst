@@ -86,6 +86,6 @@ Todo:
 -----
 
 - automatic peak detection / highlighting
-- RTSA-like spectrum visualization similar to `gr-fosphor <http://www.cgran.org/pages/gr-fosphor.html>`_
+- display average noise level
 - frequency markers / bookmarks with notes (even importing / exporting .csv file with
   predefined channels, etc.)
