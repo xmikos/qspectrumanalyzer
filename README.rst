@@ -3,10 +3,12 @@ QSpectrumAnalyzer
 
 Spectrum analyzer for RTL-SDR (GUI for rtl_power based on PyQtGraph)
 
-Screenshot
-----------
+Screenshots
+-----------
 
 .. image:: https://xmikos.github.io/qspectrumanalyzer/qspectrumanalyzer_screenshot.png
+
+.. image:: https://xmikos.github.io/qspectrumanalyzer/qspectrumanalyzer_screenshot2.png
 
 Requirements
 ------------
