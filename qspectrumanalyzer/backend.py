@@ -6,12 +6,12 @@ from PyQt4 import QtCore
 
 class RtlPowerBaseThread(QtCore.QThread):
     """Thread which runs rtl_power process"""
-    dataUpdated = QtCore.pyqtSignal(object)
     rtlPowerStarted = QtCore.pyqtSignal()
     rtlPowerStopped = QtCore.pyqtSignal()
 
-    def __init__(self, parent=None):
+    def __init__(self, data_storage, parent=None):
         super().__init__(parent)
+        self.data_storage = data_storage
         self.alive = False
         self.process = None
 
@@ -137,7 +137,7 @@ class RtlPowerThread(RtlPowerBaseThread):
         # This have to be stupid like this to be compatible with old broken version of rtl_power. Right way is:
         # if stop_freq == self.params["stop_freq"] * 1e6:
         if stop_freq > (self.params["stop_freq"] * 1e6) - step:
-            self.dataUpdated.emit(self.databuffer)
+            self.data_storage.update(self.databuffer)
 
 
 class RtlPowerFftwThread(RtlPowerBaseThread):
@@ -227,7 +227,7 @@ class RtlPowerFftwThread(RtlPowerBaseThread):
         # Two empty lines => new set
         elif not line and not self.prev_line:
             self.hop = 0
-            self.dataUpdated.emit(self.databuffer)
+            self.data_storage.update(self.databuffer)
             self.databuffer = {"timestamp": [], "x": [], "y": []}
 
         # Get timestamp for new hop and set
