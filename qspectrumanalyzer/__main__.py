@@ -32,6 +32,7 @@ class QSpectrumAnalyzerSettings(QtGui.QDialog, Ui_QSpectrumAnalyzerSettings):
         settings = QtCore.QSettings()
         self.executableEdit.setText(settings.value("rtl_power_executable", "rtl_power"))
         self.waterfallHistorySizeSpinBox.setValue(settings.value("waterfall_history_size", 100, int))
+        self.deviceIndexSpinBox.setValue(settings.value("device_index", 0, int))
         self.sampleRateSpinBox.setValue(settings.value("sample_rate", 2560000, int))
 
         backend = settings.value("backend", "rtl_power")
@@ -58,6 +59,7 @@ class QSpectrumAnalyzerSettings(QtGui.QDialog, Ui_QSpectrumAnalyzerSettings):
         settings = QtCore.QSettings()
         settings.setValue("rtl_power_executable", self.executableEdit.text())
         settings.setValue("waterfall_history_size", self.waterfallHistorySizeSpinBox.value())
+        settings.setValue("device_index", self.deviceIndexSpinBox.value())
         settings.setValue("sample_rate", self.sampleRateSpinBox.value())
         settings.setValue("backend", self.backendComboBox.currentText())
         QtGui.QDialog.accept(self)
@@ -345,6 +347,7 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
                                         ppm=int(self.ppmSpinBox.value()),
                                         crop=int(self.cropSpinBox.value()) / 100.0,
                                         single_shot=single_shot,
+                                        device_index=settings.value("device_index", 0, int),
                                         sample_rate=settings.value("sample_rate", 2560000, int))
             self.rtl_power_thread.start()
 

@@ -22,7 +22,7 @@ class RtlPowerBaseThread(QtCore.QThread):
         self.wait()
 
     def setup(self, start_freq, stop_freq, bin_size, interval=10.0, gain=-1,
-              ppm=0, crop=0, single_shot=False, sample_rate=2560000):
+              ppm=0, crop=0, single_shot=False, device_index=0, sample_rate=2560000):
         """Setup rtl_power params"""
         raise NotImplementedError
 
@@ -63,13 +63,14 @@ class RtlPowerBaseThread(QtCore.QThread):
 class RtlPowerThread(RtlPowerBaseThread):
     """Thread which runs rtl_power process"""
     def setup(self, start_freq, stop_freq, bin_size, interval=10.0, gain=-1,
-              ppm=0, crop=0, single_shot=False, sample_rate=2560000):
+              ppm=0, crop=0, single_shot=False, device_index=0, sample_rate=2560000):
         """Setup rtl_power params"""
         self.params = {
             "start_freq": start_freq,
             "stop_freq": stop_freq,
             "bin_size": bin_size,
             "interval": interval,
+            "device_index": device_index,
             "hops": 0,
             "gain": gain,
             "ppm": ppm,
@@ -93,6 +94,7 @@ class RtlPowerThread(RtlPowerBaseThread):
                                            self.params["stop_freq"],
                                            self.params["bin_size"]),
                 "-i", "{}".format(self.params["interval"]),
+                "-d", "{}".format(self.params["device_index"]),
                 "-p", "{}".format(self.params["ppm"]),
                 "-c", "{}".format(self.params["crop"])
             ]
@@ -143,7 +145,7 @@ class RtlPowerThread(RtlPowerBaseThread):
 class RtlPowerFftwThread(RtlPowerBaseThread):
     """Thread which runs rtl_power_fftw process"""
     def setup(self, start_freq, stop_freq, bin_size, interval=10.0, gain=-1,
-              ppm=0, crop=0, single_shot=False, sample_rate=2560000):
+              ppm=0, crop=0, single_shot=False, device_index=0, sample_rate=2560000):
         """Setup rtl_power_fftw params"""
         crop = crop * 100
         overlap = crop * 2
@@ -158,6 +160,7 @@ class RtlPowerFftwThread(RtlPowerBaseThread):
             "start_freq": start_freq,
             "stop_freq": stop_freq,
             "freq_range": freq_range,
+            "device_index": device_index,
             "sample_rate": sample_rate,
             "bin_size": bin_size,
             "bins": bins,
@@ -199,6 +202,7 @@ class RtlPowerFftwThread(RtlPowerBaseThread):
                                        self.params["stop_freq"]),
                 "-b", "{}".format(self.params["bins"]),
                 "-t", "{}".format(self.params["time"]),
+                "-d", "{}".format(self.params["device_index"]),
                 "-r", "{}".format(self.params["sample_rate"]),
                 "-p", "{}".format(self.params["ppm"]),
             ]
