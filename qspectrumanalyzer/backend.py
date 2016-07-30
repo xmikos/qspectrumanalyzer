@@ -327,6 +327,8 @@ class HackRFSweepThread(RtlPowerBaseThread):
             settings = QtCore.QSettings()
             cmdline = [
                 settings.value("rtl_power_executable", "hackrf_sweep"),
+                "-f", "{}:{}".format(int(self.params["start_freq"]),
+                                     int(self.params["stop_freq"])),
             ]
 
             self.process = subprocess.Popen(cmdline, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
