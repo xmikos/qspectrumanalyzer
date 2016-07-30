@@ -252,37 +252,37 @@
 <context>
     <name>QSpectrumAnalyzerSettings</name>
     <message>
-        <location filename="ui_qspectrumanalyzer_settings.py" line="112"/>
+        <location filename="ui_qspectrumanalyzer_settings.py" line="114"/>
         <source>rtl_power</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui_qspectrumanalyzer_settings.py" line="113"/>
+        <location filename="ui_qspectrumanalyzer_settings.py" line="115"/>
         <source>...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui_qspectrumanalyzer_settings.py" line="110"/>
+        <location filename="ui_qspectrumanalyzer_settings.py" line="111"/>
         <source>rtl_power_fftw</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui_qspectrumanalyzer_settings.py" line="108"/>
+        <location filename="ui_qspectrumanalyzer_settings.py" line="109"/>
         <source>&amp;Backend:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui_qspectrumanalyzer_settings.py" line="111"/>
+        <location filename="ui_qspectrumanalyzer_settings.py" line="113"/>
         <source>E&amp;xecutable:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui_qspectrumanalyzer_settings.py" line="114"/>
+        <location filename="ui_qspectrumanalyzer_settings.py" line="116"/>
         <source>&amp;Waterfall history size:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui_qspectrumanalyzer_settings.py" line="116"/>
+        <location filename="ui_qspectrumanalyzer_settings.py" line="118"/>
         <source>Sa&amp;mple rate:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -292,13 +292,18 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui_qspectrumanalyzer_settings.py" line="107"/>
+        <location filename="ui_qspectrumanalyzer_settings.py" line="108"/>
         <source>Settings - QSpectrumAnalyzer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui_qspectrumanalyzer_settings.py" line="115"/>
+        <location filename="ui_qspectrumanalyzer_settings.py" line="117"/>
         <source>&amp;Device index:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui_qspectrumanalyzer_settings.py" line="112"/>
+        <source>hackrf_sweep</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

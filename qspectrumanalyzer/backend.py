@@ -267,3 +267,85 @@ class RtlPowerFftwThread(RtlPowerBaseThread):
                 pass
 
         self.prev_line = line
+
+class HackRFSweepThread(RtlPowerBaseThread):
+    """Thread which runs hackrf_sweep process"""
+    def setup(self, start_freq, stop_freq, bin_size, interval=10.0, gain=-1,
+              ppm=0, crop=0, single_shot=False, device_index=0, sample_rate=2560000):
+        """Setup hackrf_sweep params"""
+        crop = crop * 100
+        overlap = crop * 2
+        freq_range = stop_freq * 1e6 - start_freq * 1e6
+        min_overhang = sample_rate * overlap * 0.01
+        hops = math.ceil((freq_range - min_overhang) / (sample_rate - min_overhang))
+        overhang = (hops * sample_rate - freq_range) / (hops - 1) if hops > 1 else 0
+        bins = math.ceil(sample_rate / (bin_size * 1e3))
+        crop_freq = sample_rate * crop * 0.01
+
+        self.params = {
+            "start_freq": start_freq,
+            "stop_freq": stop_freq,
+            "freq_range": freq_range,
+            "device_index": device_index,
+            "sample_rate": sample_rate,
+            "bin_size": bin_size,
+            "bins": bins,
+            "interval": interval,
+            "hops": hops,
+            "time": interval / hops,
+            "gain": gain * 10,
+            "ppm": ppm,
+            "crop": crop,
+            "overlap": overlap,
+            "min_overhang": min_overhang,
+            "overhang": overhang,
+            "single_shot": single_shot
+        }
+        self.freqs = [self.get_hop_freq(hop) for hop in range(hops)]
+        self.freqs_crop = [(f[0] + crop_freq, f[1] - crop_freq) for f in self.freqs]
+        self.databuffer = {"timestamp": [], "x": [], "y": []}
+        self.databuffer_hop = {"timestamp": [], "x": [], "y": []}
+        self.hop = 0
+        self.prev_line = ""
+
+        print("hackrf_sweep params:")
+        pprint.pprint(self.params)
+        print()
+
+    def get_hop_freq(self, hop):
+        """Get start and stop frequency for particular hop"""
+        start_freq = self.params["start_freq"] * 1e6 + (self.params["sample_rate"] - self.params["overhang"]) * hop
+        stop_freq = start_freq + self.params["sample_rate"] - (self.params["sample_rate"] / self.params["bins"])
+        return (start_freq, stop_freq)
+
+    def process_start(self):
+        """Start hackrf_sweep process"""
+        if not self.process and self.params:
+            settings = QtCore.QSettings()
+            cmdline = [
+                settings.value("rtl_power_executable", "hackrf_sweep"),
+            ]
+
+            self.process = subprocess.Popen(cmdline, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                                            universal_newlines=False)
+
+    def parse_output(self, buf):
+        """Parse one buf of output from hackrf_sweep"""
+        data = np.fromstring(buf, dtype='<f4')
+        print("Got buffer for {}MHz".format(data[0]))
+
+
+    def run(self):
+        """hackrf_sweep thread main loop"""
+        self.process_start()
+        self.alive = True
+        self.rtlPowerStarted.emit()
+
+        while self.alive:
+            buf = self.process.stdout.read(4*(1+32))
+            if buf:
+                self.parse_output(buf)
+
+        self.process_stop()
+        self.alive = False
+        self.rtlPowerStopped.emit()

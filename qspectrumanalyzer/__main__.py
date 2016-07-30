@@ -5,7 +5,7 @@ import sys, signal, time
 from PyQt4 import QtCore, QtGui
 
 from qspectrumanalyzer.version import __version__
-from qspectrumanalyzer.backend import RtlPowerThread, RtlPowerFftwThread
+from qspectrumanalyzer.backend import RtlPowerThread, RtlPowerFftwThread, HackRFSweepThread
 from qspectrumanalyzer.data import DataStorage
 from qspectrumanalyzer.plot import SpectrumPlotWidget, WaterfallPlotWidget
 from qspectrumanalyzer.utils import color_to_str, str_to_color
@@ -186,6 +186,9 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
         backend = settings.value("backend", "rtl_power")
         if backend == "rtl_power_fftw":
             self.rtl_power_thread = RtlPowerFftwThread(self.data_storage)
+        elif backend == "hackrf_sweep":
+            self.rtl_power_thread = HackRFSweepThread(self.data_storage)
+            print(self.rtl_power_thread)
         else:
             self.rtl_power_thread = RtlPowerThread(self.data_storage)
 
