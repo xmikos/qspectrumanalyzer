@@ -81,7 +81,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="__main__.py" line="465"/>
+        <location filename="__main__.py" line="468"/>
         <source>QSpectrumAnalyzer {}</source>
         <translation type="unfinished"></translation>
     </message>
@@ -176,12 +176,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="__main__.py" line="298"/>
+        <location filename="__main__.py" line="301"/>
         <source>N/A</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="__main__.py" line="465"/>
+        <location filename="__main__.py" line="468"/>
         <source>About - QSpectrumAnalyzer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -206,7 +206,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="__main__.py" line="298"/>
+        <location filename="__main__.py" line="301"/>
         <source>Frequency hops: {} | Sweep time: {:.2f} s | FPS: {:.2f}</source>
         <translation type="unfinished"></translation>
     </message>

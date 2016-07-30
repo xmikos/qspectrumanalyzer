@@ -189,10 +189,10 @@
         <number>3</number>
        </property>
        <property name="minimum">
-        <double>24.000000000000000</double>
+        <double>1.000000000000000</double>
        </property>
        <property name="maximum">
-        <double>1766.000000000000000</double>
+        <double>6000.000000000000000</double>
        </property>
        <property name="value">
         <double>87.000000000000000</double>
@@ -227,10 +227,10 @@
         <number>3</number>
        </property>
        <property name="minimum">
-        <double>24.000000000000000</double>
+        <double>1.000000000000000</double>
        </property>
        <property name="maximum">
-        <double>1766.000000000000000</double>
+        <double>6000.000000000000000</double>
        </property>
        <property name="value">
         <double>108.000000000000000</double>

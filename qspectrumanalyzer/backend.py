@@ -301,12 +301,15 @@ class HackRFSweepThread(RtlPowerBaseThread):
             "overhang": overhang,
             "single_shot": single_shot
         }
+        self.fft_size = 64
         self.freqs = [self.get_hop_freq(hop) for hop in range(hops)]
         self.freqs_crop = [(f[0] + crop_freq, f[1] - crop_freq) for f in self.freqs]
         self.databuffer = {"timestamp": [], "x": [], "y": []}
         self.databuffer_hop = {"timestamp": [], "x": [], "y": []}
         self.hop = 0
         self.prev_line = ""
+        self.prev_freq = 0
+        self.skip = True
 
         print("hackrf_sweep params:")
         pprint.pprint(self.params)
@@ -329,10 +332,28 @@ class HackRFSweepThread(RtlPowerBaseThread):
             self.process = subprocess.Popen(cmdline, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
                                             universal_newlines=False)
 
+    def filter_nan(self, num):
+        if np.isnan(num) or np.isinf(num) or np.isneginf(num):
+            return -80
+        return num
+
     def parse_output(self, buf):
         """Parse one buf of output from hackrf_sweep"""
         data = np.fromstring(buf, dtype='<f4')
-        print("Got buffer for {}MHz".format(data[0]))
+        centre_freq = data[0] * 1e6
+
+        if centre_freq != self.prev_freq:
+            if centre_freq < self.prev_freq:
+                # Skip first run through in case it was incomplete
+                # otherwise the data_storage array sizes are setup incorrectly and mismatch later
+                if not self.skip:
+                    self.data_storage.update(self.databuffer)
+                self.skip = False
+                self.databuffer = {"timestamp": [], "x": [], "y": []}
+
+            self.databuffer["x"] += [centre_freq + i * 20e6 / self.fft_size for i in range(int(-self.fft_size/2), int(self.fft_size/2))]
+            self.databuffer["y"] += [self.filter_nan(x) for x in data[1:]]
+            self.prev_freq = centre_freq
 
 
     def run(self):
@@ -342,7 +363,7 @@ class HackRFSweepThread(RtlPowerBaseThread):
         self.rtlPowerStarted.emit()
 
         while self.alive:
-            buf = self.process.stdout.read(4*(1+32))
+            buf = self.process.stdout.read(4*(1+self.fft_size))
             if buf:
                 self.parse_output(buf)
 
