@@ -349,12 +349,18 @@ class HackRFSweepThread(RtlPowerBaseThread):
                 # Skip first run through in case it was incomplete
                 # otherwise the data_storage array sizes are setup incorrectly and mismatch later
                 if not self.skip:
+                    sorted_data = sorted(zip(self.databuffer["x"], self.databuffer["y"]))
+                    self.databuffer["x"], self.databuffer["y"] = [list(x) for x in zip(*sorted_data)]
                     self.data_storage.update(self.databuffer)
                 self.skip = False
                 self.databuffer = {"timestamp": [], "x": [], "y": []}
 
-            self.databuffer["x"] += [centre_freq + i * 20e6 / self.fft_size for i in range(int(-self.fft_size/2), int(self.fft_size/2))]
-            self.databuffer["y"] += [self.filter_nan(x) for x in data[1:]]
+            fft_size_eighth = int(self.fft_size / 8)
+            valid_bins = list(range(fft_size_eighth, fft_size_eighth * 3)) + list(range(fft_size_eighth * 5, fft_size_eighth * 7))
+
+            for i in valid_bins:
+                self.databuffer["x"].append(centre_freq + (i - self.fft_size/2) * 20e6 / self.fft_size)
+                self.databuffer["y"].append(self.filter_nan(data[1+i]))
             self.prev_freq = centre_freq
 
 
