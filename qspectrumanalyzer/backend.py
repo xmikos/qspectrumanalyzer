@@ -17,7 +17,6 @@ class RtlPowerBaseThread(QtCore.QThread):
 
     def stop(self):
         """Stop rtl_power thread"""
-        self.process_stop()
         self.alive = False
         self.wait()
 
