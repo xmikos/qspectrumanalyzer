@@ -223,7 +223,7 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
     def load_settings(self):
         """Restore spectrum analyzer settings and window geometry"""
         settings = QtCore.QSettings()
-        self.startFreqSpinBox.setValue(settings.value("start_freq", 87.0, float))
+        self.startFreqSpinBox.setValue(settings.value("start_freq", 88.0, float))
         self.stopFreqSpinBox.setValue(settings.value("stop_freq", 108.0, float))
         self.binSizeSpinBox.setValue(settings.value("bin_size", 10.0, float))
         self.intervalSpinBox.setValue(settings.value("interval", 10.0, float))
