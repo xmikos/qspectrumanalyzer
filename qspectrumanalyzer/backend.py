@@ -270,18 +270,25 @@ class RtlPowerFftwThread(RtlPowerBaseThread):
 
 class HackRFSweepThread(RtlPowerBaseThread):
     """Thread which runs hackrf_sweep process"""
-    def setup(self, start_freq, stop_freq, bin_size, interval=10.0, gain=-1,
-              ppm=0, crop=0, single_shot=False, device_index=0, sample_rate=2560000):
+    def setup(self, start_freq=0, stop_freq=6000, bin_size=1000,
+            interval=0.0, gain=0, ppm=0, crop=0, single_shot=False,
+            device_index=0, sample_rate=20000000):
         """Setup hackrf_sweep params"""
+        # theoretically we can support bins smaller than 40 kHz, but it is
+        # unlikely to result in acceptable performance
+        if bin_size < 40:
+            bin_size = 40
+        if bin_size > 5000:
+            bin_size = 5000
 
         self.params = {
-            "start_freq": start_freq,
-            "stop_freq": stop_freq,
+            "start_freq": start_freq, # MHz
+            "stop_freq": stop_freq, # MHz
             "hops": 0,
             "device_index": 0,
-            "sample_rate": 20e6,
-            "bin_size": int(bin_size*1000),
-            "interval": 0,
+            "sample_rate": 20e6, # Msps
+            "bin_size": bin_size, # kHz
+            "interval": 0, # seconds
             "gain": 0,
             "ppm": 0,
             "crop": 0,
@@ -301,7 +308,8 @@ class HackRFSweepThread(RtlPowerBaseThread):
                 settings.value("rtl_power_executable", "hackrf_sweep"),
                         "-f", "{}:{}".format(int(self.params["start_freq"]),
                                 int(self.params["stop_freq"])),
-                        "-B", "-w", "{}".format(self.params["bin_size"]),
+                        "-B",
+                        "-w", "{}".format(int(self.params["bin_size"]*1000)),
             ]
 
             if self.params["single_shot"]:
