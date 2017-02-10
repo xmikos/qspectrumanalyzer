@@ -2,6 +2,8 @@ import subprocess, math, pprint
 
 import numpy as np
 from PyQt4 import QtCore
+import struct
+import time
 
 
 class RtlPowerBaseThread(QtCore.QThread):
@@ -279,7 +281,7 @@ class HackRFSweepThread(RtlPowerBaseThread):
             "hops": 0,
             "device_index": 0,
             "sample_rate": 20e6,
-            "bin_size": 1e6,
+            "bin_size": int(bin_size*1000),
             "interval": 0,
             "gain": 0,
             "ppm": 0,
@@ -301,7 +303,7 @@ class HackRFSweepThread(RtlPowerBaseThread):
                 settings.value("rtl_power_executable", "hackrf_sweep"),
                         "-f", "{}:{}".format(int(self.params["start_freq"]),
                                 int(self.params["stop_freq"])),
-                        "-B", "-w", "1000000",
+                        "-B", "-w", "{}".format(self.params["bin_size"]),
             ]
 
             if self.params["single_shot"]:
@@ -312,22 +314,18 @@ class HackRFSweepThread(RtlPowerBaseThread):
 
     def parse_output(self, buf):
         """Parse one buf of output from hackrf_sweep"""
-        data = np.fromstring(buf, dtype='<f4')
-        low_edge = data[0] * 1e6
-        high_edge = low_edge + self.params["sample_rate"] // 4
-        bin_width = self.params["sample_rate"] / self.fft_size
+        (low_edge, high_edge, bin_width) = struct.unpack('QQI', buf[:20])
+        data = np.fromstring(buf[20:], dtype='<f4')
 
         x_axis = list(np.arange(low_edge, high_edge, bin_width))
         self.databuffer["x"].extend(x_axis)
-        for i in range(self.fft_size//4):
-            self.databuffer["y"].append(data[1+i])
-	# The -1 below works around floating point errors
-        if (high_edge / 1e6) >= (self.params["stop_freq"] - 1):
+        for i in range(len(data)):
+            self.databuffer["y"].append(data[i])
+        if (high_edge / 1e6) >= (self.params["stop_freq"]):
             sorted_data = sorted(zip(self.databuffer["x"], self.databuffer["y"]))
             self.databuffer["x"], self.databuffer["y"] = [list(x) for x in zip(*sorted_data)]
             self.data_storage.update(self.databuffer)
             self.databuffer = {"timestamp": [], "x": [], "y": []}
-
 
     def run(self):
         """hackrf_sweep thread main loop"""
@@ -336,9 +334,12 @@ class HackRFSweepThread(RtlPowerBaseThread):
         self.rtlPowerStarted.emit()
 
         while self.alive:
-            buf = self.process.stdout.read(4*(1+self.fft_size//4))
+            buf = self.process.stdout.read(4)
             if buf:
-                self.parse_output(buf)
+                (record_length,) = struct.unpack('I', buf)
+                buf = self.process.stdout.read(record_length)
+                if buf:
+                    self.parse_output(buf)
 
         self.process_stop()
         self.alive = False
