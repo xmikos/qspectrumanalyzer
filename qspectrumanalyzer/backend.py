@@ -3,7 +3,6 @@ import subprocess, math, pprint
 import numpy as np
 from PyQt4 import QtCore
 import struct
-import time
 
 
 class RtlPowerBaseThread(QtCore.QThread):
@@ -288,7 +287,6 @@ class HackRFSweepThread(RtlPowerBaseThread):
             "crop": 0,
             "single_shot": single_shot
         }
-        self.fft_size = 20
         self.databuffer = {"timestamp": [], "x": [], "y": []}
 
         print("hackrf_sweep params:")
