@@ -312,8 +312,8 @@ class HackRFSweepThread(RtlPowerBaseThread):
 
     def parse_output(self, buf):
         """Parse one buf of output from hackrf_sweep"""
-        (low_edge, high_edge, bin_width) = struct.unpack('QQI', buf[:20])
-        data = np.fromstring(buf[20:], dtype='<f4')
+        (low_edge, high_edge) = struct.unpack('QQ', buf[:16])
+        data = np.fromstring(buf[16:], dtype='<f4')
         step = (high_edge - low_edge) / len(data)
 
         x_axis = list(np.arange(low_edge + step/2, high_edge, step))
