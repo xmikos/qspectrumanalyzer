@@ -2,6 +2,7 @@ import subprocess, math, pprint
 
 import numpy as np
 from PyQt4 import QtCore
+import struct
 
 
 class RtlPowerBaseThread(QtCore.QThread):
@@ -272,53 +273,25 @@ class HackRFSweepThread(RtlPowerBaseThread):
     def setup(self, start_freq, stop_freq, bin_size, interval=10.0, gain=-1,
               ppm=0, crop=0, single_shot=False, device_index=0, sample_rate=2560000):
         """Setup hackrf_sweep params"""
-        crop = crop * 100
-        overlap = crop * 2
-        freq_range = stop_freq * 1e6 - start_freq * 1e6
-        min_overhang = sample_rate * overlap * 0.01
-        hops = math.ceil((freq_range - min_overhang) / (sample_rate - min_overhang))
-        overhang = (hops * sample_rate - freq_range) / (hops - 1) if hops > 1 else 0
-        bins = math.ceil(sample_rate / (bin_size * 1e3))
-        crop_freq = sample_rate * crop * 0.01
 
         self.params = {
             "start_freq": start_freq,
             "stop_freq": stop_freq,
-            "freq_range": freq_range,
-            "device_index": device_index,
-            "sample_rate": sample_rate,
-            "bin_size": bin_size,
-            "bins": bins,
-            "interval": interval,
-            "hops": hops,
-            "time": interval / hops,
-            "gain": gain * 10,
-            "ppm": ppm,
-            "crop": crop,
-            "overlap": overlap,
-            "min_overhang": min_overhang,
-            "overhang": overhang,
+            "hops": 0,
+            "device_index": 0,
+            "sample_rate": 20e6,
+            "bin_size": int(bin_size*1000),
+            "interval": 0,
+            "gain": 0,
+            "ppm": 0,
+            "crop": 0,
             "single_shot": single_shot
         }
-        self.fft_size = 64
-        self.freqs = [self.get_hop_freq(hop) for hop in range(hops)]
-        self.freqs_crop = [(f[0] + crop_freq, f[1] - crop_freq) for f in self.freqs]
         self.databuffer = {"timestamp": [], "x": [], "y": []}
-        self.databuffer_hop = {"timestamp": [], "x": [], "y": []}
-        self.hop = 0
-        self.prev_line = ""
-        self.prev_freq = 0
-        self.skip = True
 
         print("hackrf_sweep params:")
         pprint.pprint(self.params)
         print()
-
-    def get_hop_freq(self, hop):
-        """Get start and stop frequency for particular hop"""
-        start_freq = self.params["start_freq"] * 1e6 + (self.params["sample_rate"] - self.params["overhang"]) * hop
-        stop_freq = start_freq + self.params["sample_rate"] - (self.params["sample_rate"] / self.params["bins"])
-        return (start_freq, stop_freq)
 
     def process_start(self):
         """Start hackrf_sweep process"""
@@ -326,42 +299,31 @@ class HackRFSweepThread(RtlPowerBaseThread):
             settings = QtCore.QSettings()
             cmdline = [
                 settings.value("rtl_power_executable", "hackrf_sweep"),
-                "-f", "{}:{}".format(int(self.params["start_freq"]),
-                                     int(self.params["stop_freq"])),
+                        "-f", "{}:{}".format(int(self.params["start_freq"]),
+                                int(self.params["stop_freq"])),
+                        "-B", "-w", "{}".format(self.params["bin_size"]),
             ]
+
+            if self.params["single_shot"]:
+                cmdline.append("-1")
 
             self.process = subprocess.Popen(cmdline, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
                                             universal_newlines=False)
 
-    def filter_nan(self, num):
-        if np.isnan(num) or np.isinf(num) or np.isneginf(num):
-            return -80
-        return num
-
     def parse_output(self, buf):
         """Parse one buf of output from hackrf_sweep"""
-        data = np.fromstring(buf, dtype='<f4')
-        centre_freq = data[0] * 1e6
+        (low_edge, high_edge, bin_width) = struct.unpack('QQI', buf[:20])
+        data = np.fromstring(buf[20:], dtype='<f4')
 
-        if centre_freq != self.prev_freq:
-            if centre_freq < self.prev_freq:
-                # Skip first run through in case it was incomplete
-                # otherwise the data_storage array sizes are setup incorrectly and mismatch later
-                if not self.skip:
-                    sorted_data = sorted(zip(self.databuffer["x"], self.databuffer["y"]))
-                    self.databuffer["x"], self.databuffer["y"] = [list(x) for x in zip(*sorted_data)]
-                    self.data_storage.update(self.databuffer)
-                self.skip = False
-                self.databuffer = {"timestamp": [], "x": [], "y": []}
-
-            fft_size_eighth = int(self.fft_size / 8)
-            valid_bins = list(range(fft_size_eighth, fft_size_eighth * 3)) + list(range(fft_size_eighth * 5, fft_size_eighth * 7))
-
-            for i in valid_bins:
-                self.databuffer["x"].append(centre_freq + (i - self.fft_size/2) * 20e6 / self.fft_size)
-                self.databuffer["y"].append(self.filter_nan(data[1+i]))
-            self.prev_freq = centre_freq
-
+        x_axis = list(np.arange(low_edge, high_edge, bin_width))
+        self.databuffer["x"].extend(x_axis)
+        for i in range(len(data)):
+            self.databuffer["y"].append(data[i])
+        if (high_edge / 1e6) >= (self.params["stop_freq"]):
+            sorted_data = sorted(zip(self.databuffer["x"], self.databuffer["y"]))
+            self.databuffer["x"], self.databuffer["y"] = [list(x) for x in zip(*sorted_data)]
+            self.data_storage.update(self.databuffer)
+            self.databuffer = {"timestamp": [], "x": [], "y": []}
 
     def run(self):
         """hackrf_sweep thread main loop"""
@@ -370,9 +332,12 @@ class HackRFSweepThread(RtlPowerBaseThread):
         self.rtlPowerStarted.emit()
 
         while self.alive:
-            buf = self.process.stdout.read(4*(1+self.fft_size))
+            buf = self.process.stdout.read(4)
             if buf:
-                self.parse_output(buf)
+                (record_length,) = struct.unpack('I', buf)
+                buf = self.process.stdout.read(record_length)
+                if buf:
+                    self.parse_output(buf)
 
         self.process_stop()
         self.alive = False
