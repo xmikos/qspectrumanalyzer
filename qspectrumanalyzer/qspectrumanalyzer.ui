@@ -265,10 +265,10 @@
         <number>3</number>
        </property>
        <property name="maximum">
-        <double>2800.000000000000000</double>
+        <double>5000.000000000000000</double>
        </property>
        <property name="value">
-        <double>10.000000000000000</double>
+        <double>100.000000000000000</double>
        </property>
       </widget>
      </item>

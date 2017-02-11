@@ -65,6 +65,8 @@ class RtlPowerThread(RtlPowerBaseThread):
     def setup(self, start_freq, stop_freq, bin_size, interval=10.0, gain=-1,
               ppm=0, crop=0, single_shot=False, device_index=0, sample_rate=2560000):
         """Setup rtl_power params"""
+        if bin_size > 2800:
+            bin_size = 2800
         self.params = {
             "start_freq": start_freq,
             "stop_freq": stop_freq,
@@ -153,6 +155,8 @@ class RtlPowerFftwThread(RtlPowerBaseThread):
         min_overhang = sample_rate * overlap * 0.01
         hops = math.ceil((freq_range - min_overhang) / (sample_rate - min_overhang))
         overhang = (hops * sample_rate - freq_range) / (hops - 1) if hops > 1 else 0
+        if bin_size > 2800:
+            bin_size = 2800
         bins = math.ceil(sample_rate / (bin_size * 1e3))
         crop_freq = sample_rate * crop * 0.01
 
