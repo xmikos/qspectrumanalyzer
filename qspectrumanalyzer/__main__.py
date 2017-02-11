@@ -225,7 +225,7 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
         settings = QtCore.QSettings()
         self.startFreqSpinBox.setValue(settings.value("start_freq", 88.0, float))
         self.stopFreqSpinBox.setValue(settings.value("stop_freq", 108.0, float))
-        self.binSizeSpinBox.setValue(settings.value("bin_size", 10.0, float))
+        self.binSizeSpinBox.setValue(settings.value("bin_size", 100.0, float))
         self.intervalSpinBox.setValue(settings.value("interval", 10.0, float))
         self.gainSpinBox.setValue(settings.value("gain", 0, int))
         self.ppmSpinBox.setValue(settings.value("ppm", 0, int))
