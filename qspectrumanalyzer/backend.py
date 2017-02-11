@@ -285,12 +285,20 @@ class HackRFSweepThread(RtlPowerBaseThread):
         if bin_size > 5000:
             bin_size = 5000
 
+        # We only support whole numbers of steps with bandwidth equal to the
+        # sample rate.
+        step_bandwidth = sample_rate / 1000000
+        total_bandwidth = stop_freq - start_freq
+        step_count = 1 + (total_bandwidth - 1) // step_bandwidth
+        total_bandwidth = step_count * step_bandwidth
+        stop_freq = start_freq + total_bandwidth
+
         self.params = {
             "start_freq": start_freq, # MHz
             "stop_freq": stop_freq, # MHz
             "hops": 0,
             "device_index": 0,
-            "sample_rate": 20e6, # Msps
+            "sample_rate": 20e6, # sps
             "bin_size": bin_size, # kHz
             "interval": 0, # seconds
             "gain": 0,
@@ -328,15 +336,19 @@ class HackRFSweepThread(RtlPowerBaseThread):
         data = np.fromstring(buf[16:], dtype='<f4')
         step = (high_edge - low_edge) / len(data)
 
+        if (low_edge//1000000) <= (self.params["start_freq"]):
+            # Reset databuffer at the start of each sweep even if we somehow
+            # did not complete the previous sweep.
+            self.databuffer = {"timestamp": [], "x": [], "y": []}
         x_axis = list(np.arange(low_edge + step/2, high_edge, step))
         self.databuffer["x"].extend(x_axis)
         for i in range(len(data)):
             self.databuffer["y"].append(data[i])
         if (high_edge / 1e6) >= (self.params["stop_freq"]):
+            # We've reached the end of a pass, so sort and display it.
             sorted_data = sorted(zip(self.databuffer["x"], self.databuffer["y"]))
             self.databuffer["x"], self.databuffer["y"] = [list(x) for x in zip(*sorted_data)]
             self.data_storage.update(self.databuffer)
-            self.databuffer = {"timestamp": [], "x": [], "y": []}
 
     def run(self):
         """hackrf_sweep thread main loop"""
