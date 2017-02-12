@@ -187,6 +187,8 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
         if backend == "rtl_power_fftw":
             self.rtl_power_thread = RtlPowerFftwThread(self.data_storage)
         elif backend == "hackrf_sweep":
+            self.gainSpinBox.setMaximum(102)
+            self.gainSpinBox.setValue(40)
             self.rtl_power_thread = HackRFSweepThread(self.data_storage)
             print(self.rtl_power_thread)
         else:

@@ -275,7 +275,7 @@ class RtlPowerFftwThread(RtlPowerBaseThread):
 class HackRFSweepThread(RtlPowerBaseThread):
     """Thread which runs hackrf_sweep process"""
     def setup(self, start_freq=0, stop_freq=6000, bin_size=1000,
-            interval=0.0, gain=0, ppm=0, crop=0, single_shot=False,
+            interval=0.0, gain=40, ppm=0, crop=0, single_shot=False,
             device_index=0, sample_rate=20000000):
         """Setup hackrf_sweep params"""
         # theoretically we can support bins smaller than 40 kHz, but it is
@@ -293,6 +293,14 @@ class HackRFSweepThread(RtlPowerBaseThread):
         total_bandwidth = step_count * step_bandwidth
         stop_freq = start_freq + total_bandwidth
 
+        # distribute gain between two analog gain stages
+        if gain < 0:
+            gain = 0
+        if gain > 102:
+            gain = 102
+        lna_gain = 8 * (gain // 18)
+        vga_gain = 2 * ((gain - lna_gain) // 2)
+
         self.params = {
             "start_freq": start_freq, # MHz
             "stop_freq": stop_freq, # MHz
@@ -301,7 +309,9 @@ class HackRFSweepThread(RtlPowerBaseThread):
             "sample_rate": 20e6, # sps
             "bin_size": bin_size, # kHz
             "interval": 0, # seconds
-            "gain": 0,
+            "gain": gain,
+            "lna_gain": lna_gain,
+            "vga_gain": vga_gain,
             "ppm": 0,
             "crop": 0,
             "single_shot": single_shot
@@ -322,6 +332,8 @@ class HackRFSweepThread(RtlPowerBaseThread):
                                 int(self.params["stop_freq"])),
                         "-B",
                         "-w", "{}".format(int(self.params["bin_size"]*1000)),
+                        "-l", "{}".format(int(self.params["lna_gain"])),
+                        "-g", "{}".format(int(self.params["vga_gain"])),
             ]
 
             if self.params["single_shot"]:
