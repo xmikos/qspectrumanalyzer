@@ -53,6 +53,14 @@ class QSpectrumAnalyzerSettings(QtGui.QDialog, Ui_QSpectrumAnalyzerSettings):
     def on_backendComboBox_currentIndexChanged(self, text):
         """Change executable when backend is changed"""
         self.executableEdit.setText(text)
+        if text == "hackrf_sweep":
+            self.sampleRateSpinBox.setMinimum(20000000)
+            self.sampleRateSpinBox.setMaximum(20000000)
+            self.sampleRateSpinBox.setValue(20000000)
+        else:
+            self.sampleRateSpinBox.setMinimum(0)
+            self.sampleRateSpinBox.setMaximum(25000000)
+            self.sampleRateSpinBox.setValue(2560000)
 
     def accept(self):
         """Save settings when dialog is accepted"""
