@@ -37,7 +37,7 @@ class SpectrumPlotWidget:
         self.posLabel = self.layout.addLabel(row=0, col=0, justify="right")
         self.plot = self.layout.addPlot(row=1, col=0)
         self.plot.showGrid(x=True, y=True)
-        self.plot.setLabel("left", "Power", units="dBm")
+        self.plot.setLabel("left", "Power", units="dB")
         self.plot.setLabel("bottom", "Frequency", units="Hz")
         self.plot.setLimits(xMin=0)
         self.plot.showButtons()
@@ -204,7 +204,7 @@ class SpectrumPlotWidget:
         if self.plot.sceneBoundingRect().contains(pos):
             mousePoint = self.plot.vb.mapSceneToView(pos)
             self.posLabel.setText(
-                "<span style='font-size: 12pt'>f={:0.3f} MHz, P={:0.3f} dBm</span>".format(
+                "<span style='font-size: 12pt'>f={:0.3f} MHz, P={:0.3f} dB</span>".format(
                     mousePoint.x() / 1e6,
                     mousePoint.y()
                 )
