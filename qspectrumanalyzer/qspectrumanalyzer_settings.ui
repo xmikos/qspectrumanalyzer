@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>325</width>
-    <height>259</height>
+    <width>420</width>
+    <height>255</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,12 +30,22 @@
       <widget class="QComboBox" name="backendComboBox">
        <item>
         <property name="text">
-         <string>rtl_power</string>
+         <string>soapy_power</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>rx_power</string>
         </property>
        </item>
        <item>
         <property name="text">
          <string>rtl_power_fftw</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>rtl_power</string>
         </property>
        </item>
       </widget>
@@ -55,7 +65,7 @@
        <item>
         <widget class="QLineEdit" name="executableEdit">
          <property name="text">
-          <string>rtl_power</string>
+          <string>soapy_power</string>
          </property>
         </widget>
        </item>
@@ -69,52 +79,19 @@
       </layout>
      </item>
      <item row="2" column="0">
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="label_5">
        <property name="text">
-        <string>&amp;Waterfall history size:</string>
+        <string>Device:</string>
        </property>
        <property name="buddy">
-        <cstring>waterfallHistorySizeSpinBox</cstring>
+        <cstring>deviceEdit</cstring>
        </property>
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QSpinBox" name="waterfallHistorySizeSpinBox">
-       <property name="minimum">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <number>10000000</number>
-       </property>
-       <property name="value">
-        <number>100</number>
-       </property>
-      </widget>
+      <widget class="QLineEdit" name="deviceEdit"/>
      </item>
      <item row="3" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>&amp;Device index:</string>
-       </property>
-       <property name="buddy">
-        <cstring>deviceIndexSpinBox</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QSpinBox" name="deviceIndexSpinBox">
-       <property name="minimum">
-        <number>0</number>
-       </property>
-       <property name="maximum">
-        <number>99</number>
-       </property>
-       <property name="value">
-        <number>0</number>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
         <string>Sa&amp;mple rate:</string>
@@ -124,7 +101,7 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="3" column="1">
       <widget class="QSpinBox" name="sampleRateSpinBox">
        <property name="minimum">
         <number>0</number>
@@ -137,6 +114,29 @@
        </property>
        <property name="value">
         <number>2560000</number>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>&amp;Waterfall history size:</string>
+       </property>
+       <property name="buddy">
+        <cstring>waterfallHistorySizeSpinBox</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QSpinBox" name="waterfallHistorySizeSpinBox">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>10000000</number>
+       </property>
+       <property name="value">
+        <number>100</number>
        </property>
       </widget>
      </item>
@@ -171,9 +171,9 @@
   <tabstop>backendComboBox</tabstop>
   <tabstop>executableEdit</tabstop>
   <tabstop>executableButton</tabstop>
-  <tabstop>waterfallHistorySizeSpinBox</tabstop>
-  <tabstop>deviceIndexSpinBox</tabstop>
+  <tabstop>deviceEdit</tabstop>
   <tabstop>sampleRateSpinBox</tabstop>
+  <tabstop>waterfallHistorySizeSpinBox</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources/>
@@ -185,8 +185,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>236</x>
-     <y>252</y>
+     <x>242</x>
+     <y>248</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -201,8 +201,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>304</x>
-     <y>252</y>
+     <x>310</x>
+     <y>248</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>

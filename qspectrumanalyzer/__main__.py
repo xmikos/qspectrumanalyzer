@@ -5,7 +5,7 @@ import sys, signal, time
 from PyQt4 import QtCore, QtGui
 
 from qspectrumanalyzer.version import __version__
-from qspectrumanalyzer.backend import RtlPowerThread, RtlPowerFftwThread
+from qspectrumanalyzer.backend import RtlPowerThread, RtlPowerFftwThread, SoapyPowerThread, RxPowerThread
 from qspectrumanalyzer.data import DataStorage
 from qspectrumanalyzer.plot import SpectrumPlotWidget, WaterfallPlotWidget
 from qspectrumanalyzer.utils import color_to_str, str_to_color
@@ -30,17 +30,19 @@ class QSpectrumAnalyzerSettings(QtGui.QDialog, Ui_QSpectrumAnalyzerSettings):
 
         # Load settings
         settings = QtCore.QSettings()
-        self.executableEdit.setText(settings.value("rtl_power_executable", "rtl_power"))
+        self.executableEdit.setText(settings.value("executable", "soapy_power"))
         self.waterfallHistorySizeSpinBox.setValue(settings.value("waterfall_history_size", 100, int))
-        self.deviceIndexSpinBox.setValue(settings.value("device_index", 0, int))
+        self.deviceEdit.setText(settings.value("device", ""))
         self.sampleRateSpinBox.setValue(settings.value("sample_rate", 2560000, int))
 
-        backend = settings.value("backend", "rtl_power")
+        backend = settings.value("backend", "soapy_power")
+        self.backendComboBox.blockSignals(True)
         i = self.backendComboBox.findText(backend)
         if i == -1:
             self.backendComboBox.setCurrentIndex(0)
         else:
             self.backendComboBox.setCurrentIndex(i)
+        self.backendComboBox.blockSignals(False)
 
     @QtCore.pyqtSlot()
     def on_executableButton_clicked(self):
@@ -53,13 +55,14 @@ class QSpectrumAnalyzerSettings(QtGui.QDialog, Ui_QSpectrumAnalyzerSettings):
     def on_backendComboBox_currentIndexChanged(self, text):
         """Change executable when backend is changed"""
         self.executableEdit.setText(text)
+        self.deviceEdit.setText("")
 
     def accept(self):
         """Save settings when dialog is accepted"""
         settings = QtCore.QSettings()
-        settings.setValue("rtl_power_executable", self.executableEdit.text())
+        settings.setValue("executable", self.executableEdit.text())
         settings.setValue("waterfall_history_size", self.waterfallHistorySizeSpinBox.value())
-        settings.setValue("device_index", self.deviceIndexSpinBox.value())
+        settings.setValue("device", self.deviceEdit.text())
         settings.setValue("sample_rate", self.sampleRateSpinBox.value())
         settings.setValue("backend", self.backendComboBox.currentText())
         QtGui.QDialog.accept(self)
@@ -157,18 +160,18 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
         # Link main spectrum plot to waterfall plot
         self.spectrumPlotWidget.plot.setXLink(self.waterfallPlotWidget.plot)
 
-        # Setup rtl_power thread and connect signals
+        # Setup power thread and connect signals
         self.prev_data_timestamp = None
         self.data_storage = None
-        self.rtl_power_thread = None
-        self.setup_rtl_power_thread()
+        self.power_thread = None
+        self.setup_power_thread()
 
         self.update_buttons()
         self.load_settings()
 
-    def setup_rtl_power_thread(self):
-        """Create rtl_power_thread and connect signals to slots"""
-        if self.rtl_power_thread:
+    def setup_power_thread(self):
+        """Create power_thread and connect signals to slots"""
+        if self.power_thread:
             self.stop()
 
         settings = QtCore.QSettings()
@@ -183,14 +186,18 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
         self.data_storage.peak_hold_max_updated.connect(self.spectrumPlotWidget.update_peak_hold_max)
         self.data_storage.peak_hold_min_updated.connect(self.spectrumPlotWidget.update_peak_hold_min)
 
-        backend = settings.value("backend", "rtl_power")
-        if backend == "rtl_power_fftw":
-            self.rtl_power_thread = RtlPowerFftwThread(self.data_storage)
+        backend = settings.value("backend", "soapy_power")
+        if backend == "soapy_power":
+            self.power_thread = SoapyPowerThread(self.data_storage)
+        elif backend == "rx_power":
+            self.power_thread = RxPowerThread(self.data_storage)
+        elif backend == "rtl_power_fftw":
+            self.power_thread = RtlPowerFftwThread(self.data_storage)
         else:
-            self.rtl_power_thread = RtlPowerThread(self.data_storage)
+            self.power_thread = RtlPowerThread(self.data_storage)
 
-        self.rtl_power_thread.rtlPowerStarted.connect(self.update_buttons)
-        self.rtl_power_thread.rtlPowerStopped.connect(self.update_buttons)
+        self.power_thread.powerThreadStarted.connect(self.update_buttons)
+        self.power_thread.powerThreadStopped.connect(self.update_buttons)
 
     def set_dock_size(self, dock, width, height):
         """Ugly hack for resizing QDockWidget (because it doesn't respect minimumSize / sizePolicy set in Designer)
@@ -284,9 +291,9 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
 
     def update_buttons(self):
         """Update state of control buttons"""
-        self.startButton.setEnabled(not self.rtl_power_thread.alive)
-        self.singleShotButton.setEnabled(not self.rtl_power_thread.alive)
-        self.stopButton.setEnabled(self.rtl_power_thread.alive)
+        self.startButton.setEnabled(not self.power_thread.alive)
+        self.singleShotButton.setEnabled(not self.power_thread.alive)
+        self.stopButton.setEnabled(self.power_thread.alive)
 
     def update_data(self, data_storage):
         """Update GUI when new data is received"""
@@ -297,7 +304,7 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
 
         self.show_status(
             self.tr("Frequency hops: {} | Sweep time: {:.2f} s | FPS: {:.2f}").format(
-                self.rtl_power_thread.params["hops"] or self.tr("N/A"),
+                self.power_thread.params["hops"] or self.tr("N/A"),
                 sweep_time,
                 1 / sweep_time
             ),
@@ -305,7 +312,7 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
         )
 
     def start(self, single_shot=False):
-        """Start rtl_power thread"""
+        """Start power thread"""
         settings = QtCore.QSettings()
         self.prev_data_timestamp = time.time()
 
@@ -338,23 +345,23 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
         self.spectrumPlotWidget.clear_average()
         self.spectrumPlotWidget.clear_persistence()
 
-        if not self.rtl_power_thread.alive:
-            self.rtl_power_thread.setup(float(self.startFreqSpinBox.value()),
-                                        float(self.stopFreqSpinBox.value()),
-                                        float(self.binSizeSpinBox.value()),
-                                        interval=float(self.intervalSpinBox.value()),
-                                        gain=int(self.gainSpinBox.value()),
-                                        ppm=int(self.ppmSpinBox.value()),
-                                        crop=int(self.cropSpinBox.value()) / 100.0,
-                                        single_shot=single_shot,
-                                        device_index=settings.value("device_index", 0, int),
-                                        sample_rate=settings.value("sample_rate", 2560000, int))
-            self.rtl_power_thread.start()
+        if not self.power_thread.alive:
+            self.power_thread.setup(float(self.startFreqSpinBox.value()),
+                                    float(self.stopFreqSpinBox.value()),
+                                    float(self.binSizeSpinBox.value()),
+                                    interval=float(self.intervalSpinBox.value()),
+                                    gain=int(self.gainSpinBox.value()),
+                                    ppm=int(self.ppmSpinBox.value()),
+                                    crop=int(self.cropSpinBox.value()) / 100.0,
+                                    single_shot=single_shot,
+                                    device=settings.value("device", ""),
+                                    sample_rate=settings.value("sample_rate", 2560000, int))
+            self.power_thread.start()
 
     def stop(self):
-        """Stop rtl_power thread"""
-        if self.rtl_power_thread.alive:
-            self.rtl_power_thread.stop()
+        """Stop power thread"""
+        if self.power_thread.alive:
+            self.power_thread.stop()
 
     @QtCore.pyqtSlot()
     def on_startButton_clicked(self):
@@ -458,7 +465,7 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
     def on_action_Settings_triggered(self):
         dialog = QSpectrumAnalyzerSettings(self)
         if dialog.exec_():
-            self.setup_rtl_power_thread()
+            self.setup_power_thread()
 
     @QtCore.pyqtSlot()
     def on_action_About_triggered(self):

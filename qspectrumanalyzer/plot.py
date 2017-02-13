@@ -107,7 +107,7 @@ class SpectrumPlotWidget:
         """Get alpha value for persistence curve (linear decay)"""
         return (-x / length) + 1
 
-    def decay_exponential(self, x, length, const=1/3):
+    def decay_exponential(self, x, length, const=1 / 3):
         """Get alpha value for persistence curve (exponential decay)"""
         return math.e**(-x / (length * const))
 
@@ -235,6 +235,7 @@ class SpectrumPlotWidget:
             curve.clear()
             self.plot.removeItem(curve)
         self.create_persistence_curves()
+
 
 class WaterfallPlotWidget:
     """Waterfall plot"""

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'qspectrumanalyzer/qspectrumanalyzer.ui'
 #
-# Created by: PyQt4 UI code generator 4.11.4
+# Created by: PyQt4 UI code generator 4.12
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -77,6 +77,7 @@ class Ui_QSpectrumAnalyzerMainWindow(object):
         self.controlsDockWidgetContents = QtGui.QWidget()
         self.controlsDockWidgetContents.setObjectName(_fromUtf8("controlsDockWidgetContents"))
         self.gridLayout_2 = QtGui.QGridLayout(self.controlsDockWidgetContents)
+        self.gridLayout_2.setMargin(0)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
         self.startButton = QtGui.QPushButton(self.controlsDockWidgetContents)
         self.startButton.setObjectName(_fromUtf8("startButton"))
@@ -104,6 +105,7 @@ class Ui_QSpectrumAnalyzerMainWindow(object):
         self.frequencyDockWidgetContents.setObjectName(_fromUtf8("frequencyDockWidgetContents"))
         self.formLayout = QtGui.QFormLayout(self.frequencyDockWidgetContents)
         self.formLayout.setFieldGrowthPolicy(QtGui.QFormLayout.ExpandingFieldsGrow)
+        self.formLayout.setMargin(0)
         self.formLayout.setObjectName(_fromUtf8("formLayout"))
         self.label_2 = QtGui.QLabel(self.frequencyDockWidgetContents)
         self.label_2.setObjectName(_fromUtf8("label_2"))
@@ -167,6 +169,7 @@ class Ui_QSpectrumAnalyzerMainWindow(object):
         self.settingsDockWidgetContents = QtGui.QWidget()
         self.settingsDockWidgetContents.setObjectName(_fromUtf8("settingsDockWidgetContents"))
         self.gridLayout = QtGui.QGridLayout(self.settingsDockWidgetContents)
+        self.gridLayout.setMargin(0)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.label_4 = QtGui.QLabel(self.settingsDockWidgetContents)
         self.label_4.setObjectName(_fromUtf8("label_4"))
@@ -248,6 +251,7 @@ class Ui_QSpectrumAnalyzerMainWindow(object):
         self.levelsDockWidgetContents = QtGui.QWidget()
         self.levelsDockWidgetContents.setObjectName(_fromUtf8("levelsDockWidgetContents"))
         self.verticalLayout_6 = QtGui.QVBoxLayout(self.levelsDockWidgetContents)
+        self.verticalLayout_6.setMargin(0)
         self.verticalLayout_6.setObjectName(_fromUtf8("verticalLayout_6"))
         self.histogramPlotLayout = GraphicsLayoutWidget(self.levelsDockWidgetContents)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Expanding)
