@@ -5,7 +5,7 @@ import sys, signal, time
 from PyQt4 import QtCore, QtGui
 
 from qspectrumanalyzer.version import __version__
-from qspectrumanalyzer.backend import RtlPowerThread, RtlPowerFftwThread, SoapyPowerThread, RxPowerThread
+from qspectrumanalyzer.backend import RtlPowerThread, RtlPowerFftwThread, SoapyPowerThread, RxPowerThread, HackRFSweepThread
 from qspectrumanalyzer.data import DataStorage
 from qspectrumanalyzer.plot import SpectrumPlotWidget, WaterfallPlotWidget
 from qspectrumanalyzer.utils import color_to_str, str_to_color
@@ -56,6 +56,15 @@ class QSpectrumAnalyzerSettings(QtGui.QDialog, Ui_QSpectrumAnalyzerSettings):
         """Change executable when backend is changed"""
         self.executableEdit.setText(text)
         self.deviceEdit.setText("")
+
+        if text == "hackrf_sweep":
+            self.sampleRateSpinBox.setMinimum(20000000)
+            self.sampleRateSpinBox.setMaximum(20000000)
+            self.sampleRateSpinBox.setValue(20000000)
+        else:
+            self.sampleRateSpinBox.setMinimum(0)
+            self.sampleRateSpinBox.setMaximum(25000000)
+            self.sampleRateSpinBox.setValue(2560000)
 
     def accept(self):
         """Save settings when dialog is accepted"""
@@ -193,6 +202,29 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
             self.power_thread = RxPowerThread(self.data_storage)
         elif backend == "rtl_power_fftw":
             self.power_thread = RtlPowerFftwThread(self.data_storage)
+        elif backend == "hackrf_sweep":
+            self.gainSpinBox.setMinimum(0)
+            self.gainSpinBox.setMaximum(102)
+            self.gainSpinBox.setValue(40)
+            self.startFreqSpinBox.setMinimum(0)
+            self.startFreqSpinBox.setMaximum(7230)
+            self.startFreqSpinBox.setValue(0)
+            self.stopFreqSpinBox.setMinimum(0)
+            self.stopFreqSpinBox.setMaximum(7250)
+            self.stopFreqSpinBox.setValue(6000)
+            self.binSizeSpinBox.setMinimum(40)
+            self.binSizeSpinBox.setMaximum(5000)
+            self.binSizeSpinBox.setValue(1000)
+            self.intervalSpinBox.setMinimum(0)
+            self.intervalSpinBox.setMaximum(0)
+            self.intervalSpinBox.setValue(0)
+            self.ppmSpinBox.setMinimum(0)
+            self.ppmSpinBox.setMaximum(0)
+            self.ppmSpinBox.setValue(0)
+            self.cropSpinBox.setMinimum(0)
+            self.cropSpinBox.setMaximum(0)
+            self.cropSpinBox.setValue(0)
+            self.power_thread = HackRFSweepThread(self.data_storage)
         else:
             self.power_thread = RtlPowerThread(self.data_storage)
 
