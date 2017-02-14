@@ -4,8 +4,8 @@ import sys, signal, time
 
 from PyQt4 import QtCore, QtGui
 
+from qspectrumanalyzer import backends
 from qspectrumanalyzer.version import __version__
-from qspectrumanalyzer.backend import RtlPowerThread, RtlPowerFftwThread, SoapyPowerThread, RxPowerThread, HackRFSweepThread
 from qspectrumanalyzer.data import DataStorage
 from qspectrumanalyzer.plot import SpectrumPlotWidget, WaterfallPlotWidget
 from qspectrumanalyzer.utils import color_to_str, str_to_color
@@ -33,9 +33,21 @@ class QSpectrumAnalyzerSettings(QtGui.QDialog, Ui_QSpectrumAnalyzerSettings):
         self.executableEdit.setText(settings.value("executable", "soapy_power"))
         self.waterfallHistorySizeSpinBox.setValue(settings.value("waterfall_history_size", 100, int))
         self.deviceEdit.setText(settings.value("device", ""))
-        self.sampleRateSpinBox.setValue(settings.value("sample_rate", 2560000, int))
 
         backend = settings.value("backend", "soapy_power")
+        try:
+            backend_module = getattr(backends, backend)
+        except AttributeError:
+            backend_module = backends.soapy_power
+
+        self.sampleRateSpinBox.setMinimum(backend_module.Info.sample_rate_min)
+        self.sampleRateSpinBox.setMaximum(backend_module.Info.sample_rate_max)
+        self.sampleRateSpinBox.setValue(settings.value("sample_rate", backend_module.Info.sample_rate, int))
+
+        self.backendComboBox.clear()
+        for b in sorted(backends.__all__):
+            self.backendComboBox.addItem(b)
+
         self.backendComboBox.blockSignals(True)
         i = self.backendComboBox.findText(backend)
         if i == -1:
@@ -57,14 +69,14 @@ class QSpectrumAnalyzerSettings(QtGui.QDialog, Ui_QSpectrumAnalyzerSettings):
         self.executableEdit.setText(text)
         self.deviceEdit.setText("")
 
-        if text == "hackrf_sweep":
-            self.sampleRateSpinBox.setMinimum(20000000)
-            self.sampleRateSpinBox.setMaximum(20000000)
-            self.sampleRateSpinBox.setValue(20000000)
-        else:
-            self.sampleRateSpinBox.setMinimum(0)
-            self.sampleRateSpinBox.setMaximum(25000000)
-            self.sampleRateSpinBox.setValue(2560000)
+        try:
+            backend_module = getattr(backends, text)
+        except AttributeError:
+            backend_module = backends.soapy_power
+
+        self.sampleRateSpinBox.setMinimum(backend_module.Info.sample_rate_min)
+        self.sampleRateSpinBox.setMaximum(backend_module.Info.sample_rate_max)
+        self.sampleRateSpinBox.setValue(backend_module.Info.sample_rate)
 
     def accept(self):
         """Save settings when dialog is accepted"""
@@ -196,38 +208,34 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
         self.data_storage.peak_hold_min_updated.connect(self.spectrumPlotWidget.update_peak_hold_min)
 
         backend = settings.value("backend", "soapy_power")
-        if backend == "soapy_power":
-            self.power_thread = SoapyPowerThread(self.data_storage)
-        elif backend == "rx_power":
-            self.power_thread = RxPowerThread(self.data_storage)
-        elif backend == "rtl_power_fftw":
-            self.power_thread = RtlPowerFftwThread(self.data_storage)
-        elif backend == "hackrf_sweep":
-            self.gainSpinBox.setMinimum(0)
-            self.gainSpinBox.setMaximum(102)
-            self.gainSpinBox.setValue(40)
-            self.startFreqSpinBox.setMinimum(0)
-            self.startFreqSpinBox.setMaximum(7230)
-            self.startFreqSpinBox.setValue(0)
-            self.stopFreqSpinBox.setMinimum(0)
-            self.stopFreqSpinBox.setMaximum(7250)
-            self.stopFreqSpinBox.setValue(6000)
-            self.binSizeSpinBox.setMinimum(40)
-            self.binSizeSpinBox.setMaximum(5000)
-            self.binSizeSpinBox.setValue(1000)
-            self.intervalSpinBox.setMinimum(0)
-            self.intervalSpinBox.setMaximum(0)
-            self.intervalSpinBox.setValue(0)
-            self.ppmSpinBox.setMinimum(0)
-            self.ppmSpinBox.setMaximum(0)
-            self.ppmSpinBox.setValue(0)
-            self.cropSpinBox.setMinimum(0)
-            self.cropSpinBox.setMaximum(0)
-            self.cropSpinBox.setValue(0)
-            self.power_thread = HackRFSweepThread(self.data_storage)
-        else:
-            self.power_thread = RtlPowerThread(self.data_storage)
+        try:
+            backend_module = getattr(backends, backend)
+        except AttributeError:
+            backend_module = backends.soapy_power
 
+        self.gainSpinBox.setMinimum(backend_module.Info.gain_min)
+        self.gainSpinBox.setMaximum(backend_module.Info.gain_max)
+        self.gainSpinBox.setValue(backend_module.Info.gain)
+        self.startFreqSpinBox.setMinimum(backend_module.Info.start_freq_min)
+        self.startFreqSpinBox.setMaximum(backend_module.Info.start_freq_max)
+        self.startFreqSpinBox.setValue(backend_module.Info.start_freq)
+        self.stopFreqSpinBox.setMinimum(backend_module.Info.stop_freq_min)
+        self.stopFreqSpinBox.setMaximum(backend_module.Info.stop_freq_max)
+        self.stopFreqSpinBox.setValue(backend_module.Info.stop_freq)
+        self.binSizeSpinBox.setMinimum(backend_module.Info.bin_size_min)
+        self.binSizeSpinBox.setMaximum(backend_module.Info.bin_size_max)
+        self.binSizeSpinBox.setValue(backend_module.Info.bin_size)
+        self.intervalSpinBox.setMinimum(backend_module.Info.interval_min)
+        self.intervalSpinBox.setMaximum(backend_module.Info.interval_max)
+        self.intervalSpinBox.setValue(backend_module.Info.interval)
+        self.ppmSpinBox.setMinimum(backend_module.Info.ppm_min)
+        self.ppmSpinBox.setMaximum(backend_module.Info.ppm_max)
+        self.ppmSpinBox.setValue(backend_module.Info.ppm)
+        self.cropSpinBox.setMinimum(backend_module.Info.crop_min)
+        self.cropSpinBox.setMaximum(backend_module.Info.crop_max)
+        self.cropSpinBox.setValue(backend_module.Info.crop)
+
+        self.power_thread = backend_module.PowerThread(self.data_storage)
         self.power_thread.powerThreadStarted.connect(self.update_buttons)
         self.power_thread.powerThreadStopped.connect(self.update_buttons)
 
