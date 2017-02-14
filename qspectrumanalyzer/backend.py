@@ -461,7 +461,7 @@ class HackRFSweepThread(BasePowerThread):
     """Thread which runs hackrf_sweep process"""
     def setup(self, start_freq=0, stop_freq=6000, bin_size=1000,
             interval=0.0, gain=40, ppm=0, crop=0, single_shot=False,
-            device_index=0, sample_rate=20000000):
+            device=0, sample_rate=20000000):
         """Setup hackrf_sweep params"""
         # theoretically we can support bins smaller than 40 kHz, but it is
         # unlikely to result in acceptable performance
@@ -490,7 +490,7 @@ class HackRFSweepThread(BasePowerThread):
             "start_freq": start_freq, # MHz
             "stop_freq": stop_freq, # MHz
             "hops": 0,
-            "device_index": 0,
+            "device": 0,
             "sample_rate": 20e6, # sps
             "bin_size": bin_size, # kHz
             "interval": 0, # seconds
