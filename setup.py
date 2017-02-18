@@ -11,7 +11,7 @@ setup(
     author_email="m.krenek@gmail.com",
     url="https://github.com/xmikos/qspectrumanalyzer",
     license="GNU GPLv3",
-    packages=["qspectrumanalyzer"],
+    packages=["qspectrumanalyzer" "qspectrumanalyzer.backends"],
     package_data={
         "qspectrumanalyzer": [
             "*.ui",
