@@ -84,6 +84,12 @@ You can install it locally only for your current user by running this (without `
 Executables will be then placed in ``~/.local/bin`` directory, you can add it to your
 PATH in ``~/.bashrc``.
 
+*Install from Git repository instead of release version*
+::
+    git clone https://aur.archlinux.org/qspectrumanalyzer.git
+    cd qspectrumanalyzer 
+    pip3 install --user qspectrumanalyzer .
+
 Todo:
 -----
 
