@@ -1,4 +1,4 @@
-import subprocess, math, pprint
+import subprocess, math, pprint, shlex
 
 from PyQt4 import QtCore
 
@@ -83,6 +83,10 @@ class PowerThread(BasePowerThread):
                 cmdline.extend(["-o", "{}".format(self.params["overlap"])])
             if not self.params["single_shot"]:
                 cmdline.append("-c")
+
+            additional_params = settings.value("params", Info.additional_params)
+            if additional_params:
+                cmdline.extend(shlex.split(additional_params))
 
             self.process = subprocess.Popen(cmdline, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
                                             universal_newlines=True)

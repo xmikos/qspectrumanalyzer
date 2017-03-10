@@ -1,19 +1,27 @@
-import subprocess, pprint, re
+import subprocess, pprint, sys, shlex
 
+import numpy as np
 from PyQt4 import QtCore
 
 from qspectrumanalyzer.backends import BaseInfo, BasePowerThread
+from soapypower.writer import SoapyPowerBinFormat
+
+formatter = SoapyPowerBinFormat()
 
 
 class Info(BaseInfo):
     """soapy_power device metadata"""
-    pass
+    sample_rate_min = 0
+    sample_rate_max = 61440000
+    start_freq_min = 0
+    start_freq_max = 6000
+    stop_freq_min = 0
+    stop_freq_max = 6000
+    additional_params = '--even --fft-window boxcar --remove-dc'
 
 
 class PowerThread(BasePowerThread):
     """Thread which runs soapy_power process"""
-    re_two_floats = re.compile(r'^[-+\d.eE]+\s+[-+\d.eE]+$')
-
     def setup(self, start_freq, stop_freq, bin_size, interval=10.0, gain=-1,
               ppm=0, crop=0, single_shot=False, device="", sample_rate=2560000):
         """Setup soapy_power params"""
@@ -31,10 +39,7 @@ class PowerThread(BasePowerThread):
             "single_shot": single_shot
         }
         self.databuffer = {"timestamp": [], "x": [], "y": []}
-        self.databuffer_hop = {"timestamp": [], "x": [], "y": []}
-        self.hop = 0
-        self.run = 0
-        self.prev_line = ""
+        self.min_freq = 0
 
         print("soapy_power params:")
         pprint.pprint(self.params)
@@ -53,6 +58,7 @@ class PowerThread(BasePowerThread):
                 "-d", "{}".format(self.params["device"]),
                 "-r", "{}".format(self.params["sample_rate"]),
                 "-p", "{}".format(self.params["ppm"]),
+                "-F", "soapy_power_bin",
             ]
 
             if self.params["gain"] >= 0:
@@ -62,50 +68,59 @@ class PowerThread(BasePowerThread):
             if not self.params["single_shot"]:
                 cmdline.append("-c")
 
+            additional_params = settings.value("params", Info.additional_params)
+            if additional_params:
+                cmdline.extend(shlex.split(additional_params))
+
             self.process = subprocess.Popen(cmdline, stdout=subprocess.PIPE,
-                                            universal_newlines=True)
+                                            universal_newlines=False)
 
-    def parse_output(self, line):
-        """Parse one line of output from soapy_power"""
-        line = line.strip()
+    def parse_output(self, data):
+        """Parse data from soapy_power"""
+        header, y_axis = data
 
-        # One empty line => new hop
-        if not line and self.prev_line:
-            self.hop += 1
-            print('    => HOP:', self.hop)
-            self.databuffer["x"].extend(self.databuffer_hop["x"])
-            self.databuffer["y"].extend(self.databuffer_hop["y"])
-            self.databuffer_hop = {"timestamp": [], "x": [], "y": []}
+        timestamp = header.timestamp
+        start_freq = header.start
+        stop_freq = header.stop
+        step = header.step
+        samples = header.samples
 
-        # Two empty lines => new set
-        elif not line and not self.prev_line:
-            self.hop = 0
-            self.run += 1
-            print('  * RUN:', self.run)
+        x_axis = np.arange(start_freq, stop_freq, step)
+        if len(x_axis) != len(y_axis):
+            print("ERROR: len(x_axis) != len(y_axis)")
+
+        if not self.min_freq:
+            self.min_freq = start_freq
+
+        if start_freq == self.min_freq:
+            self.databuffer = {"timestamp": timestamp,
+                               "x": list(x_axis),
+                               "y": list(y_axis)}
+        else:
+            self.databuffer["x"].extend(x_axis)
+            self.databuffer["y"].extend(y_axis)
+
+        if stop_freq > (self.params["stop_freq"] * 1e6) - step:
             self.data_storage.update(self.databuffer)
-            self.databuffer = {"timestamp": [], "x": [], "y": []}
 
-        # Get timestamp for new hop and set
-        elif line.startswith("# Acquisition start:"):
-            timestamp = line.split(":", 1)[1].strip()
-            if not self.databuffer_hop["timestamp"]:
-                self.databuffer_hop["timestamp"] = timestamp
-            if not self.databuffer["timestamp"]:
-                self.databuffer["timestamp"] = timestamp
+    def run(self):
+        """soapy_power thread main loop"""
+        self.process_start()
+        self.alive = True
+        self.powerThreadStarted.emit()
 
-        # Skip other comments
-        elif line.startswith("#"):
-            pass
-
-        # Parse frequency and power
-        elif self.re_two_floats.match(line):
+        while self.alive:
             try:
-                freq, power = line.split()
-            except ValueError:
-                return
+                data = formatter.read(self.process.stdout)
+            except ValueError as e:
+                print(e, file=sys.stderr)
+                break
 
-            freq, power = float(freq), float(power)
-            self.databuffer_hop["x"].append(freq)
-            self.databuffer_hop["y"].append(power)
+            if data:
+                self.parse_output(data)
+            else:
+                break
 
-        self.prev_line = line
+        self.process_stop()
+        self.alive = False
+        self.powerThreadStopped.emit()

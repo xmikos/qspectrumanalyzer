@@ -1,4 +1,4 @@
-import subprocess, pprint
+import subprocess, pprint, shlex
 
 import numpy as np
 from PyQt4 import QtCore
@@ -56,6 +56,10 @@ class PowerThread(BasePowerThread):
                 cmdline.extend(["-g", "{}".format(self.params["gain"])])
             if self.params["single_shot"]:
                 cmdline.append("-1")
+
+            additional_params = settings.value("params", Info.additional_params)
+            if additional_params:
+                cmdline.extend(shlex.split(additional_params))
 
             self.process = subprocess.Popen(cmdline, stdout=subprocess.PIPE,
                                             universal_newlines=True)

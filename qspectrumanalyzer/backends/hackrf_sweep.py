@@ -1,8 +1,7 @@
-import subprocess, pprint
+import subprocess, pprint, struct, shlex
 
 import numpy as np
 from PyQt4 import QtCore
-import struct
 
 from qspectrumanalyzer.backends import BaseInfo, BasePowerThread
 
@@ -102,6 +101,10 @@ class PowerThread(BasePowerThread):
             if self.params["single_shot"]:
                 cmdline.append("-1")
 
+            additional_params = settings.value("params", Info.additional_params)
+            if additional_params:
+                cmdline.extend(shlex.split(additional_params))
+
             self.process = subprocess.Popen(cmdline, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
                                             universal_newlines=False)
 
@@ -138,6 +141,10 @@ class PowerThread(BasePowerThread):
                 buf = self.process.stdout.read(record_length)
                 if buf:
                     self.parse_output(buf)
+                else:
+                    break
+            else:
+                break
 
         self.process_stop()
         self.alive = False

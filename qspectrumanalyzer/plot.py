@@ -42,6 +42,9 @@ class SpectrumPlotWidget:
         self.plot.setLimits(xMin=0)
         self.plot.showButtons()
 
+        #self.plot.setDownsampling(mode="peak")
+        #self.plot.setClipToView(True)
+
         self.create_persistence_curves()
         self.create_average_curve()
         self.create_peak_hold_min_curve()
@@ -264,6 +267,7 @@ class WaterfallPlotWidget:
         self.plot.setLimits(xMin=0, yMax=0)
         self.plot.showButtons()
         #self.plot.setAspectLocked(True)
+
         #self.plot.setDownsampling(mode="peak")
         #self.plot.setClipToView(True)
 

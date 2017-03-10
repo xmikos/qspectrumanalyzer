@@ -1,4 +1,4 @@
-import os, glob
+import os, glob, subprocess
 
 from PyQt4 import QtCore
 
@@ -6,16 +6,16 @@ from PyQt4 import QtCore
 class BaseInfo:
     """Default device metadata"""
     sample_rate_min = 0
-    sample_rate_max = 61440000
+    sample_rate_max = 3200000
     sample_rate = 2560000
     gain_min = -1
     gain_max = 49
-    gain = -1
+    gain = 37
     start_freq_min = 24
-    start_freq_max = 1766
+    start_freq_max = 2200
     start_freq = 87
     stop_freq_min = 24
-    stop_freq_max = 1766
+    stop_freq_max = 2200
     stop_freq = 108
     bin_size_min = 0
     bin_size_max = 2800
@@ -29,6 +29,18 @@ class BaseInfo:
     crop_min = 0
     crop_max = 99
     crop = 0
+    additional_params = ''
+
+    @classmethod
+    def help(cls, executable):
+        try:
+            p = subprocess.run([executable, '-h'], universal_newlines=True,
+                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                               env=dict(os.environ, COLUMNS='125'))
+            text = p.stdout
+        except OSError:
+            text = '{} executable not found!'.format(executable)
+        return text
 
 
 class BasePowerThread(QtCore.QThread):

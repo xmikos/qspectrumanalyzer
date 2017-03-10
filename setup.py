@@ -6,7 +6,8 @@ from qspectrumanalyzer.version import __version__
 setup(
     name="QSpectrumAnalyzer",
     version=__version__,
-    description="Spectrum analyzer for RTL-SDR (GUI for rtl_power based on PyQtGraph)",
+    description="Spectrum analyzer for multiple SDR platforms (PyQtGraph based GUI for soapy_power, rx_power, rtl_power, hackrf_sweep and other backends)",
+    long_description=open('README.rst').read(),
     author="Michal Krenek (Mikos)",
     author_email="m.krenek@gmail.com",
     url="https://github.com/xmikos/qspectrumanalyzer",
@@ -29,6 +30,7 @@ setup(
         ],
     },
     install_requires=[
+        "soapy_power",
         "pyqtgraph"
     ],
     classifiers=[

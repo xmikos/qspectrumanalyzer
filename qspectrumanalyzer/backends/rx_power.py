@@ -1,4 +1,4 @@
-import subprocess, pprint
+import subprocess, pprint, shlex
 
 import numpy as np
 from PyQt4 import QtCore
@@ -8,7 +8,12 @@ from qspectrumanalyzer.backends import BaseInfo, BasePowerThread
 
 class Info(BaseInfo):
     """rx_power device metadata"""
-    pass
+    sample_rate_min = 0
+    sample_rate_max = 61440000
+    start_freq_min = 0
+    start_freq_max = 6000
+    stop_freq_min = 0
+    stop_freq_max = 6000
 
 
 class PowerThread(BasePowerThread):
@@ -54,6 +59,10 @@ class PowerThread(BasePowerThread):
                 cmdline.extend(["-g", "{}".format(self.params["gain"])])
             if self.params["single_shot"]:
                 cmdline.append("-1")
+
+            additional_params = settings.value("params", Info.additional_params)
+            if additional_params:
+                cmdline.extend(shlex.split(additional_params))
 
             self.process = subprocess.Popen(cmdline, stdout=subprocess.PIPE,
                                             universal_newlines=True)

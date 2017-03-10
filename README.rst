@@ -17,7 +17,8 @@ Requirements
 - Python >= 3.3
 - PyQt >= 4.5
 - PyQtGraph (http://www.pyqtgraph.org)
-- soapy_power / rx_tools / rtl-sdr / rtl_power_fftw / hackrf
+- soapy_power (https://github.com/xmikos/soapy_power)
+- Optional: rx_tools / rtl-sdr / rtl_power_fftw / hackrf
 
 Backends
 --------
@@ -36,7 +37,7 @@ USRP and some other SDR devices).
 
 ``rx_power`` (part of ``rx_tools``) is also based on SoapySDR and therefore
 supports nearly all SDR platforms, but it is much slower than soapy_power, doesn't support
-near real-time continuous measurement (minimum interval is 1 second - same as ``rtl_power``)
+near real-time continuous measurement (minimum interval is 1 second, same as ``rtl_power``)
 and is little buggy.
 
 RTL-SDR backends
@@ -73,14 +74,14 @@ Usage
 Start QSpectrumAnalyzer by running ``qspectrumanalyzer``.
 
 You can choose which backend you want to use in *File* -> *Settings*
-(default is ``soapy_power``). Sample rate and path to backend executable
-can be also manually specified there. You can also set waterfall plot
-history size. Default is 100 lines, be aware that really large sweeps
-(with a lot of bins) would require a lot of system memory,
-so don't make this number too big.
+(default is ``soapy_power``). Sample rate, path to backend executable
+and additional backend parameters can be also manually specified there.
+You can also set waterfall plot history size. Default is 100 lines, be aware
+that really large sweeps (with a lot of bins) would require a lot of system
+memory, so don't make this number too big.
 
 Controls should be intuitive, but if you want consistent results, you should
-turn off automatic gain control (set it to some fixed number) and also set
+turn off automatic gain control (set gain to some fixed number) and also set
 crop to 20% or more. For finding out ppm correction factor for your rtl-sdr
 stick, use `kalibrate-rtl <https://github.com/steve-m/kalibrate-rtl>`_.
 
@@ -108,17 +109,30 @@ Git master branch:
     cd qspectrumanalyzer-git
     makepkg -sri
 
-Or simply use `pacaur <https://aur.archlinux.org/packages/pacaur>`_ (or any other AUR helper):
+Or simply use `pacaur <https://aur.archlinux.org/packages/pacaur>`_ (or any other AUR helper)
+which will also automatically install all QSpectrumAnalyzer dependencies:
 ::
 
     pacaur -S qspectrumanalyzer
     pacaur -S qspectrumanalyzer-git
 
-Debian / Ubuntu:
-****************
+Ubuntu:
+*******
 ::
 
-    sudo apt-get install python3-pip python3-pyqt4 python3-numpy
+    # Add SoapySDR PPA to your system
+    sudo add-apt-repository -y ppa:myriadrf/drivers
+
+    # Update list of packages
+    sudo apt-get update
+
+    # Install basic dependencies
+    sudo apt-get install python3-pip python3-pyqt4 python3-numpy soapysdr python3-soapysdr
+
+    # Install SoapySDR drivers for your hardware (e.g. RTL-SDR, Airspy, HackRF, LimeSDR, etc.)
+    sudo apt-get install soapysdr-module-rtlsdr soapysdr-module-airspy soapysdr-module-hackrf soapysdr-module-lms7
+
+    # Install QSpectrumAnalyzer
     sudo pip3 install qspectrumanalyzer
 
 Warning! ``pip`` will install packages system-wide by default, but you
@@ -142,7 +156,6 @@ If you want to install QSpectrumAnalyzer directly from Git master branch, you ca
 Todo:
 -----
 
-- finish soapy_power backend (new universal default backend)
 - show scan progress
 - allow setting LNB LO frequency
 - save & load FFT history (allow big waterfall plot saved to file)

@@ -11,6 +11,7 @@ from qspectrumanalyzer.plot import SpectrumPlotWidget, WaterfallPlotWidget
 from qspectrumanalyzer.utils import color_to_str, str_to_color
 
 from qspectrumanalyzer.ui_qspectrumanalyzer_settings import Ui_QSpectrumAnalyzerSettings
+from qspectrumanalyzer.ui_qspectrumanalyzer_settings_help import Ui_QSpectrumAnalyzerSettingsHelp
 from qspectrumanalyzer.ui_qspectrumanalyzer_smooth import Ui_QSpectrumAnalyzerSmooth
 from qspectrumanalyzer.ui_qspectrumanalyzer_persistence import Ui_QSpectrumAnalyzerPersistence
 from qspectrumanalyzer.ui_qspectrumanalyzer_colors import Ui_QSpectrumAnalyzerColors
@@ -27,6 +28,7 @@ class QSpectrumAnalyzerSettings(QtGui.QDialog, Ui_QSpectrumAnalyzerSettings):
         # Initialize UI
         super().__init__(parent)
         self.setupUi(self)
+        self.help_dialog = None
 
         # Load settings
         settings = QtCore.QSettings()
@@ -40,15 +42,16 @@ class QSpectrumAnalyzerSettings(QtGui.QDialog, Ui_QSpectrumAnalyzerSettings):
         except AttributeError:
             backend_module = backends.soapy_power
 
+        self.paramsEdit.setText(settings.value("params", backend_module.Info.additional_params))
         self.sampleRateSpinBox.setMinimum(backend_module.Info.sample_rate_min)
         self.sampleRateSpinBox.setMaximum(backend_module.Info.sample_rate_max)
         self.sampleRateSpinBox.setValue(settings.value("sample_rate", backend_module.Info.sample_rate, int))
 
+        self.backendComboBox.blockSignals(True)
         self.backendComboBox.clear()
         for b in sorted(backends.__all__):
             self.backendComboBox.addItem(b)
 
-        self.backendComboBox.blockSignals(True)
         i = self.backendComboBox.findText(backend)
         if i == -1:
             self.backendComboBox.setCurrentIndex(0)
@@ -63,6 +66,23 @@ class QSpectrumAnalyzerSettings(QtGui.QDialog, Ui_QSpectrumAnalyzerSettings):
         if filename:
             self.executableEdit.setText(filename)
 
+    @QtCore.pyqtSlot()
+    def on_helpButton_clicked(self):
+        """Open help dialog when button is clicked"""
+        try:
+            backend_module = getattr(backends, self.backendComboBox.currentText())
+        except AttributeError:
+            backend_module = backends.soapy_power
+
+        self.help_dialog = QSpectrumAnalyzerSettingsHelp(
+            backend_module.Info.help(self.executableEdit.text()),
+            parent=self
+        )
+
+        self.help_dialog.show()
+        self.help_dialog.raise_()
+        self.help_dialog.activateWindow()
+
     @QtCore.pyqtSlot(str)
     def on_backendComboBox_currentIndexChanged(self, text):
         """Change executable when backend is changed"""
@@ -74,6 +94,7 @@ class QSpectrumAnalyzerSettings(QtGui.QDialog, Ui_QSpectrumAnalyzerSettings):
         except AttributeError:
             backend_module = backends.soapy_power
 
+        self.paramsEdit.setText(backend_module.Info.additional_params)
         self.sampleRateSpinBox.setMinimum(backend_module.Info.sample_rate_min)
         self.sampleRateSpinBox.setMaximum(backend_module.Info.sample_rate_max)
         self.sampleRateSpinBox.setValue(backend_module.Info.sample_rate)
@@ -84,9 +105,23 @@ class QSpectrumAnalyzerSettings(QtGui.QDialog, Ui_QSpectrumAnalyzerSettings):
         settings.setValue("executable", self.executableEdit.text())
         settings.setValue("waterfall_history_size", self.waterfallHistorySizeSpinBox.value())
         settings.setValue("device", self.deviceEdit.text())
+        settings.setValue("params", self.paramsEdit.text())
         settings.setValue("sample_rate", self.sampleRateSpinBox.value())
         settings.setValue("backend", self.backendComboBox.currentText())
         QtGui.QDialog.accept(self)
+
+
+class QSpectrumAnalyzerSettingsHelp(QtGui.QDialog, Ui_QSpectrumAnalyzerSettingsHelp):
+    """QSpectrumAnalyzer settings help dialog"""
+    def __init__(self, text, parent=None):
+        # Initialize UI
+        super().__init__(parent)
+        self.setupUi(self)
+
+        monospace_font = QtGui.QFont('monospace')
+        monospace_font.setStyleHint(QtGui.QFont.Monospace)
+        self.helpTextEdit.setFont(monospace_font)
+        self.helpTextEdit.setPlainText(text)
 
 
 class QSpectrumAnalyzerSmooth(QtGui.QDialog, Ui_QSpectrumAnalyzerSmooth):
@@ -185,6 +220,7 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
         self.prev_data_timestamp = None
         self.data_storage = None
         self.power_thread = None
+        self.backend = None
         self.setup_power_thread()
 
         self.update_buttons()
@@ -213,27 +249,29 @@ class QSpectrumAnalyzerMainWindow(QtGui.QMainWindow, Ui_QSpectrumAnalyzerMainWin
         except AttributeError:
             backend_module = backends.soapy_power
 
-        self.gainSpinBox.setMinimum(backend_module.Info.gain_min)
-        self.gainSpinBox.setMaximum(backend_module.Info.gain_max)
-        self.gainSpinBox.setValue(backend_module.Info.gain)
-        self.startFreqSpinBox.setMinimum(backend_module.Info.start_freq_min)
-        self.startFreqSpinBox.setMaximum(backend_module.Info.start_freq_max)
-        self.startFreqSpinBox.setValue(backend_module.Info.start_freq)
-        self.stopFreqSpinBox.setMinimum(backend_module.Info.stop_freq_min)
-        self.stopFreqSpinBox.setMaximum(backend_module.Info.stop_freq_max)
-        self.stopFreqSpinBox.setValue(backend_module.Info.stop_freq)
-        self.binSizeSpinBox.setMinimum(backend_module.Info.bin_size_min)
-        self.binSizeSpinBox.setMaximum(backend_module.Info.bin_size_max)
-        self.binSizeSpinBox.setValue(backend_module.Info.bin_size)
-        self.intervalSpinBox.setMinimum(backend_module.Info.interval_min)
-        self.intervalSpinBox.setMaximum(backend_module.Info.interval_max)
-        self.intervalSpinBox.setValue(backend_module.Info.interval)
-        self.ppmSpinBox.setMinimum(backend_module.Info.ppm_min)
-        self.ppmSpinBox.setMaximum(backend_module.Info.ppm_max)
-        self.ppmSpinBox.setValue(backend_module.Info.ppm)
-        self.cropSpinBox.setMinimum(backend_module.Info.crop_min)
-        self.cropSpinBox.setMaximum(backend_module.Info.crop_max)
-        self.cropSpinBox.setValue(backend_module.Info.crop)
+        if not self.backend or backend != self.backend:
+            self.backend = backend
+            self.gainSpinBox.setMinimum(backend_module.Info.gain_min)
+            self.gainSpinBox.setMaximum(backend_module.Info.gain_max)
+            self.gainSpinBox.setValue(backend_module.Info.gain)
+            self.startFreqSpinBox.setMinimum(backend_module.Info.start_freq_min)
+            self.startFreqSpinBox.setMaximum(backend_module.Info.start_freq_max)
+            self.startFreqSpinBox.setValue(backend_module.Info.start_freq)
+            self.stopFreqSpinBox.setMinimum(backend_module.Info.stop_freq_min)
+            self.stopFreqSpinBox.setMaximum(backend_module.Info.stop_freq_max)
+            self.stopFreqSpinBox.setValue(backend_module.Info.stop_freq)
+            self.binSizeSpinBox.setMinimum(backend_module.Info.bin_size_min)
+            self.binSizeSpinBox.setMaximum(backend_module.Info.bin_size_max)
+            self.binSizeSpinBox.setValue(backend_module.Info.bin_size)
+            self.intervalSpinBox.setMinimum(backend_module.Info.interval_min)
+            self.intervalSpinBox.setMaximum(backend_module.Info.interval_max)
+            self.intervalSpinBox.setValue(backend_module.Info.interval)
+            self.ppmSpinBox.setMinimum(backend_module.Info.ppm_min)
+            self.ppmSpinBox.setMaximum(backend_module.Info.ppm_max)
+            self.ppmSpinBox.setValue(backend_module.Info.ppm)
+            self.cropSpinBox.setMinimum(backend_module.Info.crop_min)
+            self.cropSpinBox.setMaximum(backend_module.Info.crop_max)
+            self.cropSpinBox.setValue(backend_module.Info.crop)
 
         self.power_thread = backend_module.PowerThread(self.data_storage)
         self.power_thread.powerThreadStarted.connect(self.update_buttons)
