@@ -31,7 +31,8 @@ setup(
     },
     install_requires=[
         "soapy_power",
-        "pyqtgraph"
+        "pyqtgraph",
+        "Qt.py"
     ],
     classifiers=[
         "Development Status :: 4 - Beta",

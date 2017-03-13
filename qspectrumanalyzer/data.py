@@ -1,6 +1,6 @@
 import time, sys
 
-from PyQt4 import QtCore
+from Qt import QtCore
 import numpy as np
 
 from qspectrumanalyzer.utils import smooth
@@ -36,7 +36,7 @@ class HistoryBuffer:
 
 class TaskSignals(QtCore.QObject):
     """Task signals emitter"""
-    result = QtCore.pyqtSignal(object)
+    result = QtCore.Signal(object)
 
 
 class Task(QtCore.QRunnable):
@@ -57,12 +57,12 @@ class Task(QtCore.QRunnable):
 
 class DataStorage(QtCore.QObject):
     """Data storage for spectrum measurements"""
-    history_updated = QtCore.pyqtSignal(object)
-    data_updated = QtCore.pyqtSignal(object)
-    data_recalculated = QtCore.pyqtSignal(object)
-    average_updated = QtCore.pyqtSignal(object)
-    peak_hold_max_updated = QtCore.pyqtSignal(object)
-    peak_hold_min_updated = QtCore.pyqtSignal(object)
+    history_updated = QtCore.Signal(object)
+    data_updated = QtCore.Signal(object)
+    data_recalculated = QtCore.Signal(object)
+    average_updated = QtCore.Signal(object)
+    peak_hold_max_updated = QtCore.Signal(object)
+    peak_hold_min_updated = QtCore.Signal(object)
 
     def __init__(self, max_history_size=100, parent=None):
         super().__init__(parent)

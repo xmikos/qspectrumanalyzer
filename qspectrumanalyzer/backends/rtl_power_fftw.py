@@ -1,6 +1,6 @@
 import subprocess, math, pprint, shlex
 
-from PyQt4 import QtCore
+from Qt import QtCore
 
 from qspectrumanalyzer.backends import BaseInfo, BasePowerThread
 
