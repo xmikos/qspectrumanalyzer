@@ -1,4 +1,4 @@
-import os, glob, subprocess
+import os, glob, subprocess, threading
 
 from PyQt4 import QtCore
 
@@ -53,6 +53,7 @@ class BasePowerThread(QtCore.QThread):
         self.data_storage = data_storage
         self.alive = False
         self.process = None
+        self._shutdown_lock = threading.Lock()
 
     def stop(self):
         """Stop power process thread"""
@@ -71,13 +72,14 @@ class BasePowerThread(QtCore.QThread):
 
     def process_stop(self):
         """Terminate power process"""
-        if self.process:
-            try:
-                self.process.terminate()
-            except ProcessLookupError:
-                pass
-            self.process.wait()
-            self.process = None
+        with self._shutdown_lock:
+            if self.process:
+                try:
+                    self.process.terminate()
+                except ProcessLookupError:
+                    pass
+                self.process.wait()
+                self.process = None
 
     def parse_output(self, line):
         """Parse one line of output from power process"""

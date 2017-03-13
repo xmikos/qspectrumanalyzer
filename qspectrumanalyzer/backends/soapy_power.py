@@ -1,10 +1,24 @@
-import subprocess, pprint, sys, shlex
+import os, subprocess, pprint, sys, shlex
 
 import numpy as np
 from PyQt4 import QtCore
 
 from qspectrumanalyzer.backends import BaseInfo, BasePowerThread
 from soapypower.writer import SoapyPowerBinFormat
+
+if sys.platform == 'win32':
+    import msvcrt
+    import _winapi
+
+    def _make_inheritable_handle(fd):
+        """Return a duplicate of handle, which is inheritable"""
+        h = _winapi.DuplicateHandle(
+            _winapi.GetCurrentProcess(),
+            msvcrt.get_osfhandle(fd),
+            _winapi.GetCurrentProcess(), 0, 1,
+            _winapi.DUPLICATE_SAME_ACCESS
+        )
+        return subprocess.Handle(h)
 
 formatter = SoapyPowerBinFormat()
 
@@ -41,6 +55,11 @@ class PowerThread(BasePowerThread):
         self.databuffer = {"timestamp": [], "x": [], "y": []}
         self.min_freq = 0
 
+        self.pipe_read = None
+        self.pipe_read_fd = None
+        self.pipe_write_fd = None
+        self.pipe_write_handle = None
+
         print("soapy_power params:")
         pprint.pprint(self.params)
         print()
@@ -48,6 +67,16 @@ class PowerThread(BasePowerThread):
     def process_start(self):
         """Start soapy_power process"""
         if not self.process and self.params:
+            # Create pipe used for communication with soapy_power process
+            self.pipe_read_fd, self.pipe_write_fd = os.pipe()
+            self.pipe_read = open(self.pipe_read_fd, 'rb')
+            os.set_inheritable(self.pipe_write_fd, True)
+
+            if sys.platform == 'win32':
+                self.pipe_write_handle = _make_inheritable_handle(self.pipe_write_fd)
+                self.pipe_write_fd = int(self.pipe_write_handle)
+
+            # Prepare soapy_power cmdline parameters
             settings = QtCore.QSettings()
             cmdline = [
                 settings.value("executable", "soapy_power"),
@@ -59,6 +88,7 @@ class PowerThread(BasePowerThread):
                 "-r", "{}".format(self.params["sample_rate"]),
                 "-p", "{}".format(self.params["ppm"]),
                 "-F", "soapy_power_bin",
+                "--output-fd", "{}".format(self.pipe_write_fd),
             ]
 
             if self.params["gain"] >= 0:
@@ -72,8 +102,30 @@ class PowerThread(BasePowerThread):
             if additional_params:
                 cmdline.extend(shlex.split(additional_params))
 
-            self.process = subprocess.Popen(cmdline, stdout=subprocess.PIPE,
-                                            universal_newlines=False)
+            # Start soapy_power process and close write part of pipe
+            self.process = subprocess.Popen(cmdline, close_fds=False, universal_newlines=False)
+            os.close(self.pipe_write_fd)
+
+    def process_stop(self):
+        """Stop soapy_power process"""
+        with self._shutdown_lock:
+            if self.process:
+                try:
+                    self.process.terminate()
+                except ProcessLookupError:
+                    pass
+                self.process.wait()
+                self.process = None
+
+                # Close pipe used for communication with soapy_power process
+                self.pipe_read.close()
+                if sys.platform == 'win32':
+                    self.pipe_write_handle.Close()
+
+                self.pipe_read = None
+                self.pipe_read_fd = None
+                self.pipe_write_fd = None
+                self.pipe_write_handle = None
 
     def parse_output(self, data):
         """Parse data from soapy_power"""
@@ -111,10 +163,10 @@ class PowerThread(BasePowerThread):
 
         while self.alive:
             try:
-                data = formatter.read(self.process.stdout)
+                data = formatter.read(self.pipe_read)
             except ValueError as e:
                 print(e, file=sys.stderr)
-                break
+                continue
 
             if data:
                 self.parse_output(data)
