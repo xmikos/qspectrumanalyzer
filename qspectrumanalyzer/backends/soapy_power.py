@@ -1,7 +1,7 @@
 import os, subprocess, pprint, sys, shlex
 
 import numpy as np
-from PyQt4 import QtCore
+from Qt import QtCore
 
 from qspectrumanalyzer.backends import BaseInfo, BasePowerThread
 from soapypower.writer import SoapyPowerBinFormat

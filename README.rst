@@ -15,7 +15,8 @@ Requirements
 ------------
 
 - Python >= 3.3
-- PyQt >= 4.5
+- PyQt4 / PyQt5 / PySide / PySide2
+- Qt.py (https://github.com/mottosso/Qt.py)
 - PyQtGraph (http://www.pyqtgraph.org)
 - soapy_power (https://github.com/xmikos/soapy_power)
 - Optional: rx_tools / rtl-sdr / rtl_power_fftw / hackrf
@@ -127,7 +128,7 @@ Ubuntu:
     sudo apt-get update
 
     # Install basic dependencies
-    sudo apt-get install python3-pip python3-pyqt4 python3-numpy soapysdr python3-soapysdr
+    sudo apt-get install python3-pip python3-pyqt5 python3-numpy python3-scipy soapysdr python3-soapysdr
 
     # Install SoapySDR drivers for your hardware (e.g. RTL-SDR, Airspy, HackRF, LimeSDR, etc.)
     sudo apt-get install soapysdr-module-rtlsdr soapysdr-module-airspy soapysdr-module-hackrf soapysdr-module-lms7

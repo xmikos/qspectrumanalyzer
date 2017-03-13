@@ -1,6 +1,6 @@
 import os, glob, subprocess, threading
 
-from PyQt4 import QtCore
+from Qt import QtCore
 
 
 class BaseInfo:
@@ -45,8 +45,8 @@ class BaseInfo:
 
 class BasePowerThread(QtCore.QThread):
     """Thread which runs Power Spectral Density acquisition and calculation process"""
-    powerThreadStarted = QtCore.pyqtSignal()
-    powerThreadStopped = QtCore.pyqtSignal()
+    powerThreadStarted = QtCore.Signal()
+    powerThreadStopped = QtCore.Signal()
 
     def __init__(self, data_storage, parent=None):
         super().__init__(parent)
