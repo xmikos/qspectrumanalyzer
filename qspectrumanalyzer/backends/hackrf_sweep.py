@@ -88,15 +88,15 @@ class PowerThread(BasePowerThread):
         """Start hackrf_sweep process"""
         if not self.process and self.params:
             settings = QtCore.QSettings()
-            cmdline = [
-                settings.value("executable", "hackrf_sweep"),
+            cmdline = shlex.split(settings.value("executable", "hackrf_sweep"))
+            cmdline.extend([
                 "-f", "{}:{}".format(int(self.params["start_freq"]),
                                      int(self.params["stop_freq"])),
                 "-B",
                 "-w", "{}".format(int(self.params["bin_size"] * 1000)),
                 "-l", "{}".format(int(self.params["lna_gain"])),
                 "-g", "{}".format(int(self.params["vga_gain"])),
-            ]
+            ])
 
             if self.params["single_shot"]:
                 cmdline.append("-1")

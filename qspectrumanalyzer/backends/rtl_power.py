@@ -41,8 +41,8 @@ class PowerThread(BasePowerThread):
         """Start rtl_power process"""
         if not self.process and self.params:
             settings = QtCore.QSettings()
-            cmdline = [
-                settings.value("executable", "rtl_power"),
+            cmdline = shlex.split(settings.value("executable", "rtl_power"))
+            cmdline.extend([
                 "-f", "{}M:{}M:{}k".format(self.params["start_freq"],
                                            self.params["stop_freq"],
                                            self.params["bin_size"]),
@@ -50,7 +50,7 @@ class PowerThread(BasePowerThread):
                 "-d", "{}".format(self.params["device"]),
                 "-p", "{}".format(self.params["ppm"]),
                 "-c", "{}".format(self.params["crop"])
-            ]
+            ])
 
             if self.params["gain"] >= 0:
                 cmdline.extend(["-g", "{}".format(self.params["gain"])])

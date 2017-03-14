@@ -78,8 +78,8 @@ class PowerThread(BasePowerThread):
 
             # Prepare soapy_power cmdline parameters
             settings = QtCore.QSettings()
-            cmdline = [
-                settings.value("executable", "soapy_power"),
+            cmdline = shlex.split(settings.value("executable", "soapy_power"))
+            cmdline.extend([
                 "-f", "{}M:{}M".format(self.params["start_freq"],
                                        self.params["stop_freq"]),
                 "-B", "{}k".format(self.params["bin_size"]),
@@ -89,7 +89,7 @@ class PowerThread(BasePowerThread):
                 "-p", "{}".format(self.params["ppm"]),
                 "-F", "soapy_power_bin",
                 "--output-fd", "{}".format(self.pipe_write_fd),
-            ]
+            ])
 
             if self.params["gain"] >= 0:
                 cmdline.extend(["-g", "{}".format(self.params["gain"])])

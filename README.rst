@@ -75,10 +75,11 @@ Usage
 Start QSpectrumAnalyzer by running ``qspectrumanalyzer``.
 
 You can choose which backend you want to use in *File* -> *Settings*
-(default is ``soapy_power``). Sample rate, path to backend executable
-and additional backend parameters can be also manually specified there.
-You can also set waterfall plot history size. Default is 100 lines, be aware
-that really large sweeps (with a lot of bins) would require a lot of system
+(or *Application menu* -> *Preferences* on Mac OS X), default is
+``soapy_power``. Sample rate, path to backend executable and additional
+backend parameters can be also manually specified there. You can also
+set waterfall plot history size. Default is 100 lines, be aware that
+really large sweeps (with a lot of bins) would require a lot of system
 memory, so don't make this number too big.
 
 Controls should be intuitive, but if you want consistent results, you should
