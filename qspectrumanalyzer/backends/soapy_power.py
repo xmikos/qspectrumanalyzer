@@ -74,7 +74,6 @@ class PowerThread(BasePowerThread):
 
             if sys.platform == 'win32':
                 self.pipe_write_handle = _make_inheritable_handle(self.pipe_write_fd)
-                self.pipe_write_fd = int(self.pipe_write_handle)
 
             # Prepare soapy_power cmdline parameters
             settings = QtCore.QSettings()
@@ -88,7 +87,9 @@ class PowerThread(BasePowerThread):
                 "-r", "{}".format(self.params["sample_rate"]),
                 "-p", "{}".format(self.params["ppm"]),
                 "-F", "soapy_power_bin",
-                "--output-fd", "{}".format(self.pipe_write_fd),
+                "--output-fd", "{}".format(
+                    int(self.pipe_write_handle) if sys.platform == 'win32' else self.pipe_write_fd
+                ),
             ])
 
             if self.params["gain"] >= 0:
@@ -105,6 +106,8 @@ class PowerThread(BasePowerThread):
             # Start soapy_power process and close write part of pipe
             self.process = subprocess.Popen(cmdline, close_fds=False, universal_newlines=False)
             os.close(self.pipe_write_fd)
+            if sys.platform == 'win32':
+                self.pipe_write_handle.Close()
 
     def process_stop(self):
         """Stop soapy_power process"""
@@ -119,8 +122,6 @@ class PowerThread(BasePowerThread):
 
                 # Close pipe used for communication with soapy_power process
                 self.pipe_read.close()
-                if sys.platform == 'win32':
-                    self.pipe_write_handle.Close()
 
                 self.pipe_read = None
                 self.pipe_read_fd = None
