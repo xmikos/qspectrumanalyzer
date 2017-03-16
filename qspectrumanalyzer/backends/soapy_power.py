@@ -132,7 +132,8 @@ class PowerThread(BasePowerThread):
         """Parse data from soapy_power"""
         header, y_axis = data
 
-        timestamp = header.timestamp
+        time_start = header.time_start
+        time_stop = header.time_stop
         start_freq = header.start
         stop_freq = header.stop
         step = header.step
@@ -146,7 +147,7 @@ class PowerThread(BasePowerThread):
             self.min_freq = start_freq
 
         if start_freq == self.min_freq:
-            self.databuffer = {"timestamp": timestamp,
+            self.databuffer = {"timestamp": time_stop,
                                "x": list(x_axis),
                                "y": list(y_axis)}
         else:
