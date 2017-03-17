@@ -30,8 +30,8 @@ setup(
         ],
     },
     install_requires=[
-        "soapy_power",
-        "pyqtgraph",
+        "soapy_power>=1.3.0",
+        "pyqtgraph>=0.10.0",
         "Qt.py"
     ],
     classifiers=[
