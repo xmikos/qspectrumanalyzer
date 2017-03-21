@@ -27,23 +27,44 @@ class Info(BaseInfo):
     """soapy_power device metadata"""
     sample_rate_min = 0
     sample_rate_max = 61440000
+    bandwidth_min = 0
+    bandwidth_max = 61440000
     start_freq_min = 0
     start_freq_max = 6000
     stop_freq_min = 0
     stop_freq_max = 6000
     additional_params = '--even --fft-window boxcar --remove-dc'
 
+    @classmethod
+    def help_device(cls, executable, device):
+        try:
+            text = ''
+            p = subprocess.run([executable, '--detect'], universal_newlines=True,
+                               stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                               env=dict(os.environ, COLUMNS='125'))
+            text += p.stdout + '\n'
+
+            if p.returncode == 0:
+                p = subprocess.run([executable, '--device', device, '--info'], universal_newlines=True,
+                                   stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                                   env=dict(os.environ, COLUMNS='125'))
+                text += p.stdout
+        except OSError:
+            text = '{} executable not found!'.format(executable)
+        return text
+
 
 class PowerThread(BasePowerThread):
     """Thread which runs soapy_power process"""
-    def setup(self, start_freq, stop_freq, bin_size, interval=10.0, gain=-1,
-              ppm=0, crop=0, single_shot=False, device="", sample_rate=2560000):
+    def setup(self, start_freq, stop_freq, bin_size, interval=10.0, gain=-1, ppm=0, crop=0,
+              single_shot=False, device="", sample_rate=2560000, bandwidth=0, lnb_lo=0):
         """Setup soapy_power params"""
         self.params = {
             "start_freq": start_freq,
             "stop_freq": stop_freq,
             "device": device,
             "sample_rate": sample_rate,
+            "bandwidth": bandwidth,
             "bin_size": bin_size,
             "interval": interval,
             "hops": 0,
@@ -52,8 +73,9 @@ class PowerThread(BasePowerThread):
             "crop": crop * 100,
             "single_shot": single_shot
         }
+        self.lnb_lo = lnb_lo
         self.databuffer = {"timestamp": [], "x": [], "y": []}
-        self.min_freq = 0
+        self.min_freq = None
 
         self.pipe_read = None
         self.pipe_read_fd = None
@@ -92,6 +114,10 @@ class PowerThread(BasePowerThread):
                 ),
             ])
 
+            if self.lnb_lo != 0:
+                cmdline.extend(["--lnb-lo", "{}".format(self.lnb_lo)])
+            if self.params["bandwidth"] > 0:
+                cmdline.extend(["-w", "{}".format(self.params["bandwidth"])])
             if self.params["gain"] >= 0:
                 cmdline.extend(["-g", "{}".format(self.params["gain"])])
             if self.params["crop"] > 0:
@@ -143,7 +169,7 @@ class PowerThread(BasePowerThread):
         if len(x_axis) != len(y_axis):
             print("ERROR: len(x_axis) != len(y_axis)")
 
-        if not self.min_freq:
+        if self.min_freq is None:
             self.min_freq = start_freq
 
         if start_freq == self.min_freq:

@@ -38,7 +38,7 @@ class PowerThread(BasePowerThread):
     """Thread which runs hackrf_sweep process"""
     def setup(self, start_freq=0, stop_freq=6000, bin_size=1000,
               interval=0.0, gain=40, ppm=0, crop=0, single_shot=False,
-              device=0, sample_rate=20000000):
+              device=0, sample_rate=20000000, bandwidth=0, lnb_lo=0):
         """Setup hackrf_sweep params"""
         # theoretically we can support bins smaller than 40 kHz, but it is
         # unlikely to result in acceptable performance
@@ -78,6 +78,7 @@ class PowerThread(BasePowerThread):
             "crop": 0,
             "single_shot": single_shot
         }
+        self.lnb_lo = lnb_lo
         self.databuffer = {"timestamp": [], "x": [], "y": []}
 
         print("hackrf_sweep params:")
@@ -90,8 +91,8 @@ class PowerThread(BasePowerThread):
             settings = QtCore.QSettings()
             cmdline = shlex.split(settings.value("executable", "hackrf_sweep"))
             cmdline.extend([
-                "-f", "{}:{}".format(int(self.params["start_freq"]),
-                                     int(self.params["stop_freq"])),
+                "-f", "{}:{}".format(int(self.params["start_freq"] - self.lnb_lo / 1e6),
+                                     int(self.params["stop_freq"] - self.lnb_lo / 1e6)),
                 "-B",
                 "-w", "{}".format(int(self.params["bin_size"] * 1000)),
                 "-l", "{}".format(int(self.params["lna_gain"])),
@@ -114,15 +115,15 @@ class PowerThread(BasePowerThread):
         data = np.fromstring(buf[16:], dtype='<f4')
         step = (high_edge - low_edge) / len(data)
 
-        if (low_edge // 1000000) <= (self.params["start_freq"]):
+        if (low_edge // 1000000) <= (self.params["start_freq"] - self.lnb_lo / 1e6):
             # Reset databuffer at the start of each sweep even if we somehow
             # did not complete the previous sweep.
             self.databuffer = {"timestamp": [], "x": [], "y": []}
-        x_axis = list(np.arange(low_edge + step / 2, high_edge, step))
+        x_axis = list(np.arange(low_edge + self.lnb_lo + step / 2, high_edge + self.lnb_lo, step))
         self.databuffer["x"].extend(x_axis)
         for i in range(len(data)):
             self.databuffer["y"].append(data[i])
-        if (high_edge / 1e6) >= (self.params["stop_freq"]):
+        if (high_edge / 1e6) >= (self.params["stop_freq"] - self.lnb_lo / 1e6):
             # We've reached the end of a pass, so sort and display it.
             sorted_data = sorted(zip(self.databuffer["x"], self.databuffer["y"]))
             self.databuffer["x"], self.databuffer["y"] = [list(x) for x in zip(*sorted_data)]

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1200</width>
-    <height>810</height>
+    <height>840</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -52,7 +52,7 @@
      <x>0</x>
      <y>0</y>
      <width>1200</width>
-     <height>30</height>
+     <height>32</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -82,15 +82,15 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>10</width>
-     <height>10</height>
+     <width>190</width>
+     <height>130</height>
     </size>
    </property>
    <property name="features">
     <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
    <property name="windowTitle">
-    <string>Controls</string>
+    <string>&amp;Controls</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -143,15 +143,15 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>10</width>
-     <height>10</height>
+     <width>182</width>
+     <height>166</height>
     </size>
    </property>
    <property name="features">
     <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
    <property name="windowTitle">
-    <string>Frequency</string>
+    <string>Fre&amp;quency</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -181,6 +181,9 @@
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="showGroupSeparator" stdset="0">
+        <bool>true</bool>
        </property>
        <property name="suffix">
         <string> MHz</string>
@@ -220,6 +223,9 @@
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
+       <property name="showGroupSeparator" stdset="0">
+        <bool>true</bool>
+       </property>
        <property name="suffix">
         <string> MHz</string>
        </property>
@@ -240,7 +246,7 @@
      <item row="2" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Bin size:</string>
+        <string>&amp;Bin size:</string>
        </property>
        <property name="buddy">
         <cstring>binSizeSpinBox</cstring>
@@ -257,6 +263,9 @@
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="showGroupSeparator" stdset="0">
+        <bool>true</bool>
        </property>
        <property name="suffix">
         <string> kHz</string>
@@ -299,7 +308,7 @@
     <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
    <property name="windowTitle">
-    <string>Settings</string>
+    <string>Se&amp;ttings</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -309,7 +318,7 @@
      <item row="0" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>Interval [s]:</string>
+        <string>&amp;Interval [s]:</string>
        </property>
        <property name="buddy">
         <cstring>intervalSpinBox</cstring>
@@ -319,7 +328,7 @@
      <item row="0" column="1">
       <widget class="QLabel" name="label_6">
        <property name="text">
-        <string>Gain [dB]:</string>
+        <string>&amp;Gain [dB]:</string>
        </property>
        <property name="buddy">
         <cstring>gainSpinBox</cstring>
@@ -497,7 +506,7 @@
     <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
    <property name="windowTitle">
-    <string>Levels</string>
+    <string>&amp;Levels</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>

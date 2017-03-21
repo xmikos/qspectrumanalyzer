@@ -8,6 +8,9 @@ class BaseInfo:
     sample_rate_min = 0
     sample_rate_max = 3200000
     sample_rate = 2560000
+    bandwidth_min = 0
+    bandwidth_max = 0
+    bandwidth = 0
     gain_min = -1
     gain_max = 49
     gain = 37
@@ -30,9 +33,10 @@ class BaseInfo:
     crop_max = 99
     crop = 0
     additional_params = ''
+    help_device = None
 
     @classmethod
-    def help(cls, executable):
+    def help_params(cls, executable):
         try:
             p = subprocess.run([executable, '-h'], universal_newlines=True,
                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -61,8 +65,8 @@ class BasePowerThread(QtCore.QThread):
         self.alive = False
         self.wait()
 
-    def setup(self, start_freq, stop_freq, bin_size, interval=10.0, gain=-1,
-              ppm=0, crop=0, single_shot=False, device=0, sample_rate=2560000):
+    def setup(self, start_freq, stop_freq, bin_size, interval=10.0, gain=-1, ppm=0, crop=0,
+              single_shot=False, device=0, sample_rate=2560000, bandwidth=0, lnb_lo=0):
         """Setup power process params"""
         raise NotImplementedError
 

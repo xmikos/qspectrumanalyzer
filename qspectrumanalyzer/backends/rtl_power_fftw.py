@@ -12,8 +12,8 @@ class Info(BaseInfo):
 
 class PowerThread(BasePowerThread):
     """Thread which runs rtl_power_fftw process"""
-    def setup(self, start_freq, stop_freq, bin_size, interval=10.0, gain=-1,
-              ppm=0, crop=0, single_shot=False, device=0, sample_rate=2560000):
+    def setup(self, start_freq, stop_freq, bin_size, interval=10.0, gain=-1, ppm=0, crop=0,
+              single_shot=False, device=0, sample_rate=2560000, bandwidth=0, lnb_lo=0):
         """Setup rtl_power_fftw params"""
         crop = crop * 100
         overlap = crop * 2
@@ -31,7 +31,7 @@ class PowerThread(BasePowerThread):
             "stop_freq": stop_freq,
             "freq_range": freq_range,
             "device": device,
-            "sample_rate": sample_rate,
+            "sample_rate": int(sample_rate),
             "bin_size": bin_size,
             "bins": bins,
             "interval": interval,
@@ -45,6 +45,7 @@ class PowerThread(BasePowerThread):
             "overhang": overhang,
             "single_shot": single_shot
         }
+        self.lnb_lo = lnb_lo
         self.freqs = [self.get_hop_freq(hop) for hop in range(hops)]
         self.freqs_crop = [(f[0] + crop_freq, f[1] - crop_freq) for f in self.freqs]
         self.databuffer = {"timestamp": [], "x": [], "y": []}
@@ -68,13 +69,14 @@ class PowerThread(BasePowerThread):
             settings = QtCore.QSettings()
             cmdline = shlex.split(settings.value("executable", "rtl_power_fftw"))
             cmdline.extend([
-                "-f", "{}M:{}M".format(self.params["start_freq"],
-                                       self.params["stop_freq"]),
+                "-f", "{}M:{}M".format(self.params["start_freq"] - self.lnb_lo / 1e6,
+                                       self.params["stop_freq"] - self.lnb_lo / 1e6),
                 "-b", "{}".format(self.params["bins"]),
                 "-t", "{}".format(self.params["time"]),
                 "-d", "{}".format(self.params["device"]),
                 "-r", "{}".format(self.params["sample_rate"]),
                 "-p", "{}".format(self.params["ppm"]),
+                "-q",
             ])
 
             if self.params["gain"] >= 0:
@@ -88,7 +90,7 @@ class PowerThread(BasePowerThread):
             if additional_params:
                 cmdline.extend(shlex.split(additional_params))
 
-            self.process = subprocess.Popen(cmdline, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+            self.process = subprocess.Popen(cmdline, stdout=subprocess.PIPE,
                                             universal_newlines=True)
 
     def parse_output(self, line):
@@ -123,7 +125,7 @@ class PowerThread(BasePowerThread):
         # Parse frequency and power
         elif line[0].isdigit():
             freq, power = line.split()
-            freq, power = float(freq), float(power)
+            freq, power = float(freq) + self.lnb_lo, float(power)
             start_freq, stop_freq = self.freqs_crop[self.hop]
 
             # Apply cropping

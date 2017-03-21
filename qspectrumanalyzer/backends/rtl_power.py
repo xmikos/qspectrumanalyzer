@@ -13,8 +13,8 @@ class Info(BaseInfo):
 
 class PowerThread(BasePowerThread):
     """Thread which runs rtl_power process"""
-    def setup(self, start_freq, stop_freq, bin_size, interval=10.0, gain=-1,
-              ppm=0, crop=0, single_shot=False, device=0, sample_rate=2560000):
+    def setup(self, start_freq, stop_freq, bin_size, interval=10.0, gain=-1, ppm=0, crop=0,
+              single_shot=False, device=0, sample_rate=2560000, bandwidth=0, lnb_lo=0):
         """Setup rtl_power params"""
         if bin_size > 2800:
             bin_size = 2800
@@ -30,6 +30,7 @@ class PowerThread(BasePowerThread):
             "crop": crop,
             "single_shot": single_shot
         }
+        self.lnb_lo = lnb_lo
         self.databuffer = {}
         self.last_timestamp = ""
 
@@ -43,8 +44,8 @@ class PowerThread(BasePowerThread):
             settings = QtCore.QSettings()
             cmdline = shlex.split(settings.value("executable", "rtl_power"))
             cmdline.extend([
-                "-f", "{}M:{}M:{}k".format(self.params["start_freq"],
-                                           self.params["stop_freq"],
+                "-f", "{}M:{}M:{}k".format(self.params["start_freq"] - self.lnb_lo / 1e6,
+                                           self.params["stop_freq"] - self.lnb_lo / 1e6,
                                            self.params["bin_size"]),
                 "-i", "{}".format(self.params["interval"]),
                 "-d", "{}".format(self.params["device"]),
@@ -73,7 +74,7 @@ class PowerThread(BasePowerThread):
         step = float(line[4])
         samples = float(line[5])
 
-        x_axis = list(np.arange(start_freq, stop_freq, step))
+        x_axis = list(np.arange(start_freq + self.lnb_lo, stop_freq + self.lnb_lo, step))
         y_axis = [float(y) for y in line[6:]]
         if len(x_axis) != len(y_axis):
             print("ERROR: len(x_axis) != len(y_axis), use newer version of rtl_power!")
@@ -94,6 +95,6 @@ class PowerThread(BasePowerThread):
             self.databuffer["y"].extend(y_axis)
 
         # This have to be stupid like this to be compatible with old broken version of rtl_power. Right way is:
-        # if stop_freq == self.params["stop_freq"] * 1e6:
-        if stop_freq > (self.params["stop_freq"] * 1e6) - step:
+        # if stop_freq == (self.params["stop_freq"] - self.lnb_lo / 1e6) * 1e6:
+        if stop_freq > ((self.params["stop_freq"] - self.lnb_lo / 1e6) * 1e6) - step:
             self.data_storage.update(self.databuffer)

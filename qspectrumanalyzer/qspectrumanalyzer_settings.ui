@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>310</height>
+    <height>388</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -76,6 +76,12 @@
        </item>
        <item>
         <widget class="QToolButton" name="executableButton">
+         <property name="minimumSize">
+          <size>
+           <width>50</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="text">
           <string>...</string>
          </property>
@@ -83,7 +89,7 @@
        </item>
       </layout>
      </item>
-     <item row="2" column="0">
+     <item row="3" column="0">
       <widget class="QLabel" name="label_5">
        <property name="text">
         <string>&amp;Device:</string>
@@ -92,9 +98,6 @@
         <cstring>deviceEdit</cstring>
        </property>
       </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QLineEdit" name="deviceEdit"/>
      </item>
      <item row="4" column="0">
       <widget class="QLabel" name="label_4">
@@ -106,23 +109,7 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
-      <widget class="QSpinBox" name="sampleRateSpinBox">
-       <property name="minimum">
-        <number>0</number>
-       </property>
-       <property name="maximum">
-        <number>25000000</number>
-       </property>
-       <property name="singleStep">
-        <number>10000</number>
-       </property>
-       <property name="value">
-        <number>2560000</number>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
+     <item row="7" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
         <string>&amp;Waterfall history size:</string>
@@ -132,7 +119,7 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
+     <item row="7" column="1">
       <widget class="QSpinBox" name="waterfallHistorySizeSpinBox">
        <property name="minimum">
         <number>1</number>
@@ -145,29 +132,156 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="5" column="0">
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>Bandwidt&amp;h:</string>
+       </property>
+       <property name="buddy">
+        <cstring>bandwidthSpinBox</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="label_8">
+       <property name="toolTip">
+        <string>Negative frequency for upconverters, positive frequency for downconverters.</string>
+       </property>
+       <property name="text">
+        <string>&amp;LNB LO:</string>
+       </property>
+       <property name="buddy">
+        <cstring>lnbSpinBox</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
       <widget class="QLabel" name="label_6">
        <property name="text">
-        <string>Additional &amp;parameters:</string>
+        <string>Add&amp;itional parameters:</string>
        </property>
        <property name="buddy">
         <cstring>paramsEdit</cstring>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item row="2" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
         <widget class="QLineEdit" name="paramsEdit"/>
        </item>
        <item>
-        <widget class="QToolButton" name="helpButton">
+        <widget class="QToolButton" name="paramsHelpButton">
+         <property name="minimumSize">
+          <size>
+           <width>50</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="text">
-          <string>?</string>
+          <string> ? </string>
          </property>
         </widget>
        </item>
       </layout>
+     </item>
+     <item row="3" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QLineEdit" name="deviceEdit"/>
+       </item>
+       <item>
+        <widget class="QToolButton" name="deviceHelpButton">
+         <property name="minimumSize">
+          <size>
+           <width>50</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string> ? </string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="4" column="1">
+      <widget class="QDoubleSpinBox" name="sampleRateSpinBox">
+       <property name="showGroupSeparator" stdset="0">
+        <bool>true</bool>
+       </property>
+       <property name="suffix">
+        <string> MHz</string>
+       </property>
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="minimum">
+        <double>0.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>61.439999999999998</double>
+       </property>
+       <property name="singleStep">
+        <double>0.010000000000000</double>
+       </property>
+       <property name="value">
+        <double>61.439999999999998</double>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QDoubleSpinBox" name="bandwidthSpinBox">
+       <property name="showGroupSeparator" stdset="0">
+        <bool>true</bool>
+       </property>
+       <property name="suffix">
+        <string> MHz</string>
+       </property>
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="minimum">
+        <double>0.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>61.439999999999998</double>
+       </property>
+       <property name="singleStep">
+        <double>0.010000000000000</double>
+       </property>
+       <property name="value">
+        <double>0.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QDoubleSpinBox" name="lnbSpinBox">
+       <property name="toolTip">
+        <string>Negative frequency for upconverters, positive frequency for downconverters.</string>
+       </property>
+       <property name="showGroupSeparator" stdset="0">
+        <bool>true</bool>
+       </property>
+       <property name="suffix">
+        <string> MHz</string>
+       </property>
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="minimum">
+        <double>-999999.998999999952503</double>
+       </property>
+       <property name="maximum">
+        <double>999999.998999999952503</double>
+       </property>
+       <property name="singleStep">
+        <double>0.010000000000000</double>
+       </property>
+       <property name="value">
+        <double>0.000000000000000</double>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -200,12 +314,14 @@
   <tabstop>backendComboBox</tabstop>
   <tabstop>executableEdit</tabstop>
   <tabstop>executableButton</tabstop>
-  <tabstop>deviceEdit</tabstop>
   <tabstop>paramsEdit</tabstop>
-  <tabstop>helpButton</tabstop>
+  <tabstop>paramsHelpButton</tabstop>
+  <tabstop>deviceEdit</tabstop>
+  <tabstop>deviceHelpButton</tabstop>
   <tabstop>sampleRateSpinBox</tabstop>
+  <tabstop>bandwidthSpinBox</tabstop>
+  <tabstop>lnbSpinBox</tabstop>
   <tabstop>waterfallHistorySizeSpinBox</tabstop>
-  <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources/>
  <connections>
@@ -216,8 +332,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>303</y>
+     <x>254</x>
+     <y>377</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -232,8 +348,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>316</x>
-     <y>303</y>
+     <x>322</x>
+     <y>377</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>

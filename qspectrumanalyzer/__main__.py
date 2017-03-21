@@ -28,13 +28,15 @@ class QSpectrumAnalyzerSettings(QtWidgets.QDialog, Ui_QSpectrumAnalyzerSettings)
         # Initialize UI
         super().__init__(parent)
         self.setupUi(self)
-        self.help_dialog = None
+        self.params_help_dialog = None
+        self.device_help_dialog = None
 
         # Load settings
         settings = QtCore.QSettings()
         self.executableEdit.setText(settings.value("executable", "soapy_power"))
-        self.waterfallHistorySizeSpinBox.setValue(settings.value("waterfall_history_size", 100, int))
         self.deviceEdit.setText(settings.value("device", ""))
+        self.lnbSpinBox.setValue(settings.value("lnb_lo", 0, float) / 1e6)
+        self.waterfallHistorySizeSpinBox.setValue(settings.value("waterfall_history_size", 100, int))
 
         backend = settings.value("backend", "soapy_power")
         try:
@@ -43,9 +45,15 @@ class QSpectrumAnalyzerSettings(QtWidgets.QDialog, Ui_QSpectrumAnalyzerSettings)
             backend_module = backends.soapy_power
 
         self.paramsEdit.setText(settings.value("params", backend_module.Info.additional_params))
-        self.sampleRateSpinBox.setMinimum(backend_module.Info.sample_rate_min)
-        self.sampleRateSpinBox.setMaximum(backend_module.Info.sample_rate_max)
-        self.sampleRateSpinBox.setValue(settings.value("sample_rate", backend_module.Info.sample_rate, int))
+        self.deviceHelpButton.setEnabled(bool(backend_module.Info.help_device))
+
+        self.sampleRateSpinBox.setMinimum(backend_module.Info.sample_rate_min / 1e6)
+        self.sampleRateSpinBox.setMaximum(backend_module.Info.sample_rate_max / 1e6)
+        self.sampleRateSpinBox.setValue(settings.value("sample_rate", backend_module.Info.sample_rate, float) / 1e6)
+
+        self.bandwidthSpinBox.setMinimum(backend_module.Info.bandwidth_min / 1e6)
+        self.bandwidthSpinBox.setMaximum(backend_module.Info.bandwidth_max / 1e6)
+        self.bandwidthSpinBox.setValue(settings.value("bandwidth", backend_module.Info.bandwidth, float) / 1e6)
 
         self.backendComboBox.blockSignals(True)
         self.backendComboBox.clear()
@@ -67,21 +75,38 @@ class QSpectrumAnalyzerSettings(QtWidgets.QDialog, Ui_QSpectrumAnalyzerSettings)
             self.executableEdit.setText(filename)
 
     @QtCore.Slot()
-    def on_helpButton_clicked(self):
-        """Open help dialog when button is clicked"""
+    def on_paramsHelpButton_clicked(self):
+        """Open additional parameters help dialog when button is clicked"""
         try:
             backend_module = getattr(backends, self.backendComboBox.currentText())
         except AttributeError:
             backend_module = backends.soapy_power
 
-        self.help_dialog = QSpectrumAnalyzerSettingsHelp(
-            backend_module.Info.help(self.executableEdit.text()),
+        self.params_help_dialog = QSpectrumAnalyzerSettingsHelp(
+            backend_module.Info.help_params(self.executableEdit.text()),
             parent=self
         )
 
-        self.help_dialog.show()
-        self.help_dialog.raise_()
-        self.help_dialog.activateWindow()
+        self.params_help_dialog.show()
+        self.params_help_dialog.raise_()
+        self.params_help_dialog.activateWindow()
+
+    @QtCore.Slot()
+    def on_deviceHelpButton_clicked(self):
+        """Open device help dialog when button is clicked"""
+        try:
+            backend_module = getattr(backends, self.backendComboBox.currentText())
+        except AttributeError:
+            backend_module = backends.soapy_power
+
+        self.device_help_dialog = QSpectrumAnalyzerSettingsHelp(
+            backend_module.Info.help_device(self.executableEdit.text(), self.deviceEdit.text()),
+            parent=self
+        )
+
+        self.device_help_dialog.show()
+        self.device_help_dialog.raise_()
+        self.device_help_dialog.activateWindow()
 
     @QtCore.Slot(str)
     def on_backendComboBox_currentIndexChanged(self, text):
@@ -95,19 +120,25 @@ class QSpectrumAnalyzerSettings(QtWidgets.QDialog, Ui_QSpectrumAnalyzerSettings)
             backend_module = backends.soapy_power
 
         self.paramsEdit.setText(backend_module.Info.additional_params)
-        self.sampleRateSpinBox.setMinimum(backend_module.Info.sample_rate_min)
-        self.sampleRateSpinBox.setMaximum(backend_module.Info.sample_rate_max)
-        self.sampleRateSpinBox.setValue(backend_module.Info.sample_rate)
+        self.deviceHelpButton.setEnabled(bool(backend_module.Info.help_device))
+        self.sampleRateSpinBox.setMinimum(backend_module.Info.sample_rate_min / 1e6)
+        self.sampleRateSpinBox.setMaximum(backend_module.Info.sample_rate_max / 1e6)
+        self.sampleRateSpinBox.setValue(backend_module.Info.sample_rate / 1e6)
+        self.bandwidthSpinBox.setMinimum(backend_module.Info.bandwidth_min / 1e6)
+        self.bandwidthSpinBox.setMaximum(backend_module.Info.bandwidth_max / 1e6)
+        self.bandwidthSpinBox.setValue(backend_module.Info.bandwidth / 1e6)
 
     def accept(self):
         """Save settings when dialog is accepted"""
         settings = QtCore.QSettings()
-        settings.setValue("executable", self.executableEdit.text())
-        settings.setValue("waterfall_history_size", self.waterfallHistorySizeSpinBox.value())
-        settings.setValue("device", self.deviceEdit.text())
-        settings.setValue("params", self.paramsEdit.text())
-        settings.setValue("sample_rate", self.sampleRateSpinBox.value())
         settings.setValue("backend", self.backendComboBox.currentText())
+        settings.setValue("executable", self.executableEdit.text())
+        settings.setValue("params", self.paramsEdit.text())
+        settings.setValue("device", self.deviceEdit.text())
+        settings.setValue("sample_rate", self.sampleRateSpinBox.value() * 1e6)
+        settings.setValue("bandwidth", self.bandwidthSpinBox.value() * 1e6)
+        settings.setValue("lnb_lo", self.lnbSpinBox.value() * 1e6)
+        settings.setValue("waterfall_history_size", self.waterfallHistorySizeSpinBox.value())
         QtWidgets.QDialog.accept(self)
 
 
@@ -243,13 +274,14 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
         self.data_storage.peak_hold_max_updated.connect(self.spectrumPlotWidget.update_peak_hold_max)
         self.data_storage.peak_hold_min_updated.connect(self.spectrumPlotWidget.update_peak_hold_min)
 
+        # Setup default values and limits in case that backend is changed
         backend = settings.value("backend", "soapy_power")
         try:
             backend_module = getattr(backends, backend)
         except AttributeError:
             backend_module = backends.soapy_power
 
-        if not self.backend or backend != self.backend:
+        if self.backend is None or backend != self.backend:
             self.backend = backend
             self.gainSpinBox.setMinimum(backend_module.Info.gain_min)
             self.gainSpinBox.setMaximum(backend_module.Info.gain_max)
@@ -272,6 +304,26 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
             self.cropSpinBox.setMinimum(backend_module.Info.crop_min)
             self.cropSpinBox.setMaximum(backend_module.Info.crop_max)
             self.cropSpinBox.setValue(backend_module.Info.crop)
+
+        # Setup default values and limits in case that LNB LO is changed
+        lnb_lo = settings.value("lnb_lo", 0, float) / 1e6
+
+        start_freq_min = backend_module.Info.start_freq_min + lnb_lo
+        start_freq_max = backend_module.Info.start_freq_max + lnb_lo
+        start_freq = self.startFreqSpinBox.value()
+        stop_freq_min = backend_module.Info.stop_freq_min + lnb_lo
+        stop_freq_max = backend_module.Info.stop_freq_max + lnb_lo
+        stop_freq = self.stopFreqSpinBox.value()
+
+        self.startFreqSpinBox.setMinimum(start_freq_min if start_freq_min > 0 else 0)
+        self.startFreqSpinBox.setMaximum(start_freq_max)
+        if start_freq < start_freq_min or start_freq > start_freq_max:
+            self.startFreqSpinBox.setValue(start_freq_min)
+
+        self.stopFreqSpinBox.setMinimum(stop_freq_min if stop_freq_min > 0 else 0)
+        self.stopFreqSpinBox.setMaximum(stop_freq_max)
+        if stop_freq < stop_freq_min or stop_freq > stop_freq_max:
+            self.stopFreqSpinBox.setValue(stop_freq_max)
 
         self.power_thread = backend_module.PowerThread(self.data_storage)
         self.power_thread.powerThreadStarted.connect(self.update_buttons)
@@ -433,7 +485,9 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
                                     crop=int(self.cropSpinBox.value()) / 100.0,
                                     single_shot=single_shot,
                                     device=settings.value("device", ""),
-                                    sample_rate=settings.value("sample_rate", 2560000, int))
+                                    sample_rate=settings.value("sample_rate", 2560000, float),
+                                    bandwidth=settings.value("bandwidth", 0, float),
+                                    lnb_lo=settings.value("lnb_lo", 0, float))
             self.power_thread.start()
 
     def stop(self):
