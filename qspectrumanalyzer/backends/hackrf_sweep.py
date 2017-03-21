@@ -106,7 +106,7 @@ class PowerThread(BasePowerThread):
             if additional_params:
                 cmdline.extend(shlex.split(additional_params))
 
-            self.process = subprocess.Popen(cmdline, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+            self.process = subprocess.Popen(cmdline, stdout=subprocess.PIPE,
                                             universal_newlines=False)
 
     def parse_output(self, buf):

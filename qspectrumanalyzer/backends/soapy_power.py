@@ -68,7 +68,7 @@ class PowerThread(BasePowerThread):
             "bin_size": bin_size,
             "interval": interval,
             "hops": 0,
-            "gain": gain * 10,
+            "gain": gain,
             "ppm": ppm,
             "crop": crop * 100,
             "single_shot": single_shot
