@@ -1,4 +1,4 @@
-import os, subprocess, pprint, sys, shlex
+import os, subprocess, pprint, sys, shlex, signal
 
 import numpy as np
 from Qt import QtCore
@@ -130,7 +130,14 @@ class PowerThread(BasePowerThread):
                 cmdline.extend(shlex.split(additional_params))
 
             # Start soapy_power process and close write part of pipe
-            self.process = subprocess.Popen(cmdline, close_fds=False, universal_newlines=False)
+            if sys.platform == 'win32':
+                creationflags = subprocess.CREATE_NEW_PROCESS_GROUP
+            else:
+                creationflags = 0
+
+            self.process = subprocess.Popen(cmdline, close_fds=False, universal_newlines=False,
+                                            creationflags=creationflags)
+
             os.close(self.pipe_write_fd)
             if sys.platform == 'win32':
                 self.pipe_write_handle.Close()
@@ -140,7 +147,10 @@ class PowerThread(BasePowerThread):
         with self._shutdown_lock:
             if self.process:
                 try:
-                    self.process.terminate()
+                    if sys.platform == 'win32':
+                        self.process.send_signal(signal.CTRL_BREAK_EVENT)
+                    else:
+                        self.process.terminate()
                 except ProcessLookupError:
                     pass
                 self.process.wait()
