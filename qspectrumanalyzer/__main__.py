@@ -432,14 +432,11 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
         sweep_time = timestamp - self.prev_data_timestamp
         self.prev_data_timestamp = timestamp
 
-        self.show_status(
-            self.tr("Frequency hops: {} | Sweep time: {:.2f} s | FPS: {:.2f}").format(
-                self.power_thread.params["hops"] or self.tr("N/A"),
-                sweep_time,
-                1 / sweep_time
-            ),
-            timeout=0
-        )
+        status = []
+        if self.power_thread.params["hops"]:
+            status.append(self.tr("Frequency hops: {}").format(self.power_thread.params["hops"]))
+        status.append(self.tr("Sweep time: {:.2f} s | FPS: {:.2f}").format(sweep_time, 1 / sweep_time))
+        self.show_status(" | ".join(status), timeout=0)
 
     def start(self, single_shot=False):
         """Start power thread"""
