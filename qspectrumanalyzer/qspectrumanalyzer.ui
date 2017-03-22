@@ -90,7 +90,7 @@
     <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
    <property name="windowTitle">
-    <string>&amp;Controls</string>
+    <string>Controls</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -151,7 +151,7 @@
     <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
    <property name="windowTitle">
-    <string>Fre&amp;quency</string>
+    <string>Frequency</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -308,7 +308,7 @@
     <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
    <property name="windowTitle">
-    <string>Se&amp;ttings</string>
+    <string>Settings</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -506,7 +506,7 @@
     <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
    <property name="windowTitle">
-    <string>&amp;Levels</string>
+    <string>Levels</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
