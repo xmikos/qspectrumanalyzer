@@ -4,7 +4,13 @@ import numpy as np
 from Qt import QtCore
 
 from qspectrumanalyzer.backends import BaseInfo, BasePowerThread
-from soapypower.writer import SoapyPowerBinFormat
+
+try:
+    from soapypower.writer import SoapyPowerBinFormat
+    formatter = SoapyPowerBinFormat()
+except ImportError:
+    print('soapy_power module not found!')
+    formatter = None
 
 if sys.platform == 'win32':
     import msvcrt
@@ -19,8 +25,6 @@ if sys.platform == 'win32':
             _winapi.DUPLICATE_SAME_ACCESS
         )
         return subprocess.Handle(h)
-
-formatter = SoapyPowerBinFormat()
 
 
 class Info(BaseInfo):
@@ -195,6 +199,9 @@ class PowerThread(BasePowerThread):
 
     def run(self):
         """soapy_power thread main loop"""
+        if not formatter:
+            return
+
         self.process_start()
         self.alive = True
         self.powerThreadStarted.emit()
