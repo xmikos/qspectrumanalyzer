@@ -1,7 +1,32 @@
 #!/usr/bin/env python
 
-from setuptools import setup
+import sys, pathlib, subprocess, shutil, re
+import setuptools
+
 from qspectrumanalyzer.version import __version__
+
+setup_cmdclass = {}
+setup_kwargs = {}
+
+# Allow compilation of Qt .qrc, .ui and .ts files (build_qt command)
+try:
+    from setup_qt import build_qt
+    setup_cmdclass['build_qt'] = build_qt
+except ImportError:
+    pass
+
+# Allow building of frozen executables with cx_Freeze (build_exe command)
+try:
+    from cx_Freeze import setup, Executable
+
+    base = 'Win32GUI' if sys.platform == 'win32' else None
+    setup_kwargs['executables'] = [
+        Executable('qspectrumanalyzer.py', base=base),
+        Executable('soapy_power.py', base=None),
+    ]
+except ImportError:
+    from setuptools import setup
+
 
 setup(
     name="QSpectrumAnalyzer",
@@ -48,5 +73,23 @@ setup(
         "Programming Language :: Python :: 3",
         "Topic :: Communications :: Ham Radio",
         "Topic :: Scientific/Engineering :: Visualization"
-    ]
+    ],
+    options={
+        'build_exe': {
+            'packages': ['qspectrumanalyzer', 'qspectrumanalyzer.backends'],
+            'excludes': [],
+            'includes': [
+                'numpy.core._methods', 'numpy.lib.format', 'pyqtgraph.debug', 'pyqtgraph.ThreadsafeTimer'
+            ],
+            'include_msvcr': True,
+            'optimize': 2,
+        },
+        'build_qt': {
+            'packages': ['qspectrumanalyzer'],
+            'languages': ['cs'],
+            'replacement_bindings': 'Qt'
+        },
+    },
+    cmdclass=setup_cmdclass,
+    **setup_kwargs
 )
