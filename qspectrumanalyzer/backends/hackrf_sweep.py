@@ -1,4 +1,4 @@
-import subprocess, pprint, struct, shlex
+import subprocess, pprint, struct, shlex, sys, time
 
 import numpy as np
 from Qt import QtCore
@@ -20,11 +20,9 @@ class Info(BaseInfo):
     stop_freq_min = 0
     stop_freq_max = 7250
     stop_freq = 6000
-    bin_size_min = 40
+    bin_size_min = 3
     bin_size_max = 5000
     bin_size = 1000
-    interval_min = 0
-    interval_max = 0
     interval = 0
     ppm_min = 0
     ppm_max = 0
@@ -40,10 +38,11 @@ class PowerThread(BasePowerThread):
               interval=0.0, gain=40, ppm=0, crop=0, single_shot=False,
               device=0, sample_rate=20000000, bandwidth=0, lnb_lo=0):
         """Setup hackrf_sweep params"""
-        # theoretically we can support bins smaller than 40 kHz, but it is
-        # unlikely to result in acceptable performance
-        if bin_size < 40:
-            bin_size = 40
+        # Small bin sizes (<40 kHz) are only suitable with an arbitrarily
+        # reduced sweep interval. Bin sizes smaller than 3 kHz showed to be
+        # infeasible also in these cases.
+        if bin_size < 3:
+            bin_size = 3
         if bin_size > 5000:
             bin_size = 5000
 
@@ -70,7 +69,7 @@ class PowerThread(BasePowerThread):
             "device": 0,
             "sample_rate": 20e6,  # sps
             "bin_size": bin_size,  # kHz
-            "interval": 0,  # seconds
+            "interval": interval,  # seconds
             "gain": gain,
             "lna_gain": lna_gain,
             "vga_gain": vga_gain,
@@ -80,6 +79,8 @@ class PowerThread(BasePowerThread):
         }
         self.lnb_lo = lnb_lo
         self.databuffer = {"timestamp": [], "x": [], "y": []}
+        self.lastsweep = 0
+        self.interval = interval
 
         print("hackrf_sweep params:")
         pprint.pprint(self.params)
@@ -124,7 +125,13 @@ class PowerThread(BasePowerThread):
         for i in range(len(data)):
             self.databuffer["y"].append(data[i])
         if (high_edge / 1e6) >= (self.params["stop_freq"] - self.lnb_lo / 1e6):
-            # We've reached the end of a pass, so sort and display it.
+            # We've reached the end of a pass. If it went too fast for our sweep interval, ignore it
+            t_finish = time.time()
+            if (t_finish < self.lastsweep + self.interval):
+                return
+            self.lastsweep = t_finish
+
+            # otherwise sort and display the data.
             sorted_data = sorted(zip(self.databuffer["x"], self.databuffer["y"]))
             self.databuffer["x"], self.databuffer["y"] = [list(x) for x in zip(*sorted_data)]
             self.data_storage.update(self.databuffer)
@@ -136,10 +143,20 @@ class PowerThread(BasePowerThread):
         self.powerThreadStarted.emit()
 
         while self.alive:
-            buf = self.process.stdout.read(4)
+            try:
+                buf = self.process.stdout.read(4)
+            except AttributeError as e:
+                print(e, file=sys.stderr)
+                continue
+
             if buf:
                 (record_length,) = struct.unpack('I', buf)
-                buf = self.process.stdout.read(record_length)
+                try:
+                    buf = self.process.stdout.read(record_length)
+                except AttributeError as e:
+                    print(e, file=sys.stderr)
+                    continue
+
                 if buf:
                     self.parse_output(buf)
                 else:
