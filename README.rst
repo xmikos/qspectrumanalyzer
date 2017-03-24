@@ -24,50 +24,48 @@ Requirements
 Backends
 --------
 
-Universal SDR backends
-**********************
-
-- soapy_power (https://github.com/xmikos/soapy_power)
-
-``soapy_power`` is default recommended universal backend in QSpectrumAnalyzer.
-It is based on `SoapySDR <https://github.com/pothosware/SoapySDR>`_ and supports
-nearly all SDR platforms (RTL-SDR, HackRF, Airspy, SDRplay, LimeSDR, bladeRF,
-USRP and some other SDR devices).
-
-- rx_power (https://github.com/rxseger/rx_tools)
-
-``rx_power`` (part of ``rx_tools``) is also based on SoapySDR and therefore
-supports nearly all SDR platforms, but it is much slower than soapy_power, doesn't support
-near real-time continuous measurement (minimum interval is 1 second, same as ``rtl_power``)
-and is little buggy.
-
-RTL-SDR backends
-****************
-
-- rtl_power (https://github.com/keenerd/rtl-sdr)
-
-You should use `Keenerds fork of rtl-sdr <https://github.com/keenerd/rtl-sdr>`_
-(latest Git revision), because ``rtl_power`` in original rtl-sdr package (from osmocom.org)
-is broken (especially when used with cropping).
-
-- rtl_power_fftw (https://github.com/AD-Vega/rtl-power-fftw)
-
-Another alternative for RTL-SDR is
-`rtl_power_fftw <https://github.com/AD-Vega/rtl-power-fftw>`_ which has various
-benefits over ``rtl_power``. E.g. better FFT performance (thanks to
-use of ``fftw`` library) and possibility to use much shorter acquisition time
-for more real-time continuous measurement (minimum interval in original
-``rtl_power`` is 1 second, but in ``rtl_power_fftw`` you are only limited
-by number of frequency hops).
-
-HackRF backends
+Default backend
 ***************
 
-- hackrf_sweep (https://github.com/mossmann/hackrf)
+- **soapy_power** (https://github.com/xmikos/soapy_power)
+
+``soapy_power`` is the default and recommended universal SDR backend in QSpectrumAnalyzer.
+It is based on `SoapySDR <https://github.com/pothosware/SoapySDR>`_ and supports
+nearly all SDR platforms (RTL-SDR, HackRF, Airspy, SDRplay, LimeSDR, bladeRF,
+USRP and some other SDR devices). It is highly configurable (see additional parameters
+help in *Settings* menu) and supports short acquisition time for
+near real-time continuous measurement.
+
+Other backends
+**************
+
+- **hackrf_sweep** (https://github.com/mossmann/hackrf)
 
 ``hackrf_sweep`` backend enables wideband spectrum monitoring by rapidly retuning the radio
 without requiring individual tuning requests from the host computer. This allows unprecedented
-sweep rate of 8 GHz per second.
+sweep rate of 8 GHz per second. Only HackRF is supported.
+
+- **rtl_power_fftw** (https://github.com/AD-Vega/rtl-power-fftw)
+
+``rtl_power_fftw`` is alternative backend for RTL-SDR devices and has various
+benefits over ``rtl_power``. E.g. better FFT performance (thanks to
+use of ``fftw`` library) and possibility to use short acquisition time
+for near real-time continuous measurement (minimum interval in original
+``rtl_power`` is 1 second).
+
+- **rtl_power** (https://github.com/keenerd/rtl-sdr)
+
+``rtl_power`` is original backend for RTL-SDR devices. There are better alternatives now, but
+if you want to use it, you should use `Keenerds fork of rtl-sdr <https://github.com/keenerd/rtl-sdr>`_
+(latest Git revision), because ``rtl_power`` in original rtl-sdr package (from osmocom.org)
+is broken (especially when used with cropping).
+
+- **rx_power** (https://github.com/rxseger/rx_tools) *[unsupported]*
+
+``rx_power`` (part of ``rx_tools``) is also based on SoapySDR (like default ``soapy_power`` backend)
+and therefore supports nearly all SDR platforms. But it is much slower than soapy_power, doesn't support
+near real-time continuous measurement (minimum interval is 1 second, same as ``rtl_power``)
+and is buggy. Backend is currently unsupported, if you want to fix it, patches are welcome.
 
 Usage
 -----
@@ -76,9 +74,9 @@ Start QSpectrumAnalyzer by running ``qspectrumanalyzer``.
 
 You can choose which backend you want to use in *File* -> *Settings*
 (or *Application menu* -> *Preferences* on Mac OS X), default is
-``soapy_power``. Sample rate, path to backend executable and additional
-backend parameters can be also manually specified there. You can also
-set waterfall plot history size. Default is 100 lines, be aware that
+``soapy_power``. Device, sample rate, bandwidth, LNB LO, path to backend executable
+and additional backend parameters can be also manually specified there. You can
+also set waterfall plot history size. Default is 100 lines, be aware that
 really large sweeps (with a lot of bins) would require a lot of system
 memory, so don't make this number too big.
 
@@ -134,19 +132,11 @@ Ubuntu:
     # Install SoapySDR drivers for your hardware (e.g. RTL-SDR, Airspy, HackRF, LimeSDR, etc.)
     sudo apt-get install soapysdr-module-rtlsdr soapysdr-module-airspy soapysdr-module-hackrf soapysdr-module-lms7
 
-    # Install QSpectrumAnalyzer
-    sudo pip3 install qspectrumanalyzer
-
-Warning! ``pip`` will install packages system-wide by default, but you
-should always use your distribution package manager for this.
-
-You can install it locally only for your current user by running this (without ``sudo``):
-::
-
+    # Install QSpectrumAnalyzer locally for your current user
     pip3 install --user qspectrumanalyzer
 
-Executables will be then placed in ``~/.local/bin`` directory, you can add it to your
-PATH in ``~/.bashrc``.
+`qspectrumanalyzer` and `soapy_power` executables will be then placed in
+``~/.local/bin`` directory, you can add it to your PATH in ``~/.bashrc``.
 
 If you want to install QSpectrumAnalyzer directly from Git master branch, you can use this procedure:
 ::
@@ -159,9 +149,8 @@ Todo:
 -----
 
 - show scan progress
-- allow setting LNB LO frequency
-- save & load FFT history (allow big waterfall plot saved to file)
+- save FFT history (allow big waterfall plot saved to file)
 - automatic peak detection / highlighting
 - display average noise level
-- frequency markers / bookmarks with notes (even importing / exporting .csv file with
+- frequency markers / bookmarks with notes (even importing and exporting .csv file with
   predefined channels, etc.)
