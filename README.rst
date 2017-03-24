@@ -145,6 +145,27 @@ If you want to install QSpectrumAnalyzer directly from Git master branch, you ca
     cd qspectrumanalyzer
     pip3 install --user .
 
+Windows:
+********
+
+There is preliminary Windows support, but QSpectrumAnalyzer has to be installed manually for now.
+There will be installer (with all QSpectrumAnalyzer dependencies bundled with it) in the future.
+
+Only 64-bit Windows are supported (there are no public 32-bit builds of SoapySDR
+libraries and drivers).
+
+1. install Python 3.6 (64-bit) from python.org (`download <https://www.python.org/ftp/python/3.6.1/python-3.6.1-amd64.exe>`_)
+   and add Python to PATH
+2. install SoapySDR libraries and drivers (bundled as part of Pothos SDR installer:
+   `download <http://downloads.myriadrf.org/builds/PothosSDR/?C=M;O=D>`_)
+2. ``pip install PyQt5``
+3. ``pip install QSpectrumAnalyzer``
+
+You should now be able to run it with ``qspectrumanalyzer`` (or ``python -m qspectrumanalyzer``
+if it doesn't work for you). If ``soapy_power`` backend can't detect your SDR device, maybe you
+have to run `Zadig <http://zadig.akeo.ie/>`_ (also part of Pothos SDR bundle) to install USB
+drivers.
+
 Todo:
 -----
 
