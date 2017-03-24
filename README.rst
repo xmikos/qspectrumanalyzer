@@ -135,7 +135,7 @@ Ubuntu:
     # Install QSpectrumAnalyzer locally for your current user
     pip3 install --user qspectrumanalyzer
 
-`qspectrumanalyzer` and `soapy_power` executables will be then placed in
+``qspectrumanalyzer`` and ``soapy_power`` executables will be then placed in
 ``~/.local/bin`` directory, you can add it to your PATH in ``~/.bashrc``.
 
 If you want to install QSpectrumAnalyzer directly from Git master branch, you can use this procedure:
