@@ -158,8 +158,8 @@ libraries and drivers).
    and add Python to PATH
 2. install SoapySDR libraries and drivers (bundled as part of Pothos SDR installer:
    `download <http://downloads.myriadrf.org/builds/PothosSDR/?C=M;O=D>`_)
-2. ``pip install PyQt5``
-3. ``pip install QSpectrumAnalyzer``
+3. ``pip install PyQt5``
+4. ``pip install QSpectrumAnalyzer``
 
 You should now be able to run it with ``qspectrumanalyzer`` (or ``python -m qspectrumanalyzer``
 if it doesn't work for you). If ``soapy_power`` backend can't detect your SDR device, maybe you
