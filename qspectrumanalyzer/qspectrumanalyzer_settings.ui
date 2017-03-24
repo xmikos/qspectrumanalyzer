@@ -220,7 +220,7 @@
         <double>0.000000000000000</double>
        </property>
        <property name="maximum">
-        <double>61.439999999999998</double>
+        <double>999999.989999999990687</double>
        </property>
        <property name="singleStep">
         <double>0.010000000000000</double>
@@ -245,7 +245,7 @@
         <double>0.000000000000000</double>
        </property>
        <property name="maximum">
-        <double>61.439999999999998</double>
+        <double>999999.989999999990687</double>
        </property>
        <property name="singleStep">
         <double>0.010000000000000</double>

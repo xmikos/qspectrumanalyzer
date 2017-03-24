@@ -34,9 +34,13 @@ class Info(BaseInfo):
     bandwidth_min = 0
     bandwidth_max = 61440000
     start_freq_min = 0
-    start_freq_max = 6000
+    start_freq_max = 7250
     stop_freq_min = 0
-    stop_freq_max = 6000
+    stop_freq_max = 7250
+    gain_min = -1
+    gain_max = 999
+    bin_size_min = 0
+    bin_size_max = 10000
     additional_params = '--even --fft-window boxcar --remove-dc'
 
     @classmethod

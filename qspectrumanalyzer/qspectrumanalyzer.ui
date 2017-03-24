@@ -143,7 +143,7 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>182</width>
+     <width>197</width>
      <height>166</height>
     </size>
    </property>
@@ -192,10 +192,10 @@
         <number>3</number>
        </property>
        <property name="minimum">
-        <double>24.000000000000000</double>
+        <double>0.000000000000000</double>
        </property>
        <property name="maximum">
-        <double>1766.000000000000000</double>
+        <double>2200.000000000000000</double>
        </property>
        <property name="value">
         <double>87.000000000000000</double>
@@ -233,10 +233,10 @@
         <number>3</number>
        </property>
        <property name="minimum">
-        <double>24.000000000000000</double>
+        <double>0.000000000000000</double>
        </property>
        <property name="maximum">
-        <double>1766.000000000000000</double>
+        <double>2200.000000000000000</double>
        </property>
        <property name="value">
         <double>108.000000000000000</double>
@@ -273,8 +273,11 @@
        <property name="decimals">
         <number>3</number>
        </property>
+       <property name="minimum">
+        <double>0.000000000000000</double>
+       </property>
        <property name="maximum">
-        <double>2800.000000000000000</double>
+        <double>10000.000000000000000</double>
        </property>
        <property name="value">
         <double>10.000000000000000</double>
@@ -345,25 +348,6 @@
        </property>
        <property name="value">
         <double>1.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1" colspan="2">
-      <widget class="QSpinBox" name="gainSpinBox">
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-       <property name="specialValueText">
-        <string>auto</string>
-       </property>
-       <property name="minimum">
-        <number>-1</number>
-       </property>
-       <property name="maximum">
-        <number>49</number>
-       </property>
-       <property name="value">
-        <number>-1</number>
        </property>
       </widget>
      </item>
@@ -492,6 +476,31 @@
        </property>
       </widget>
      </item>
+     <item row="1" column="1" colspan="2">
+      <widget class="QDoubleSpinBox" name="gainSpinBox">
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="specialValueText">
+        <string>auto</string>
+       </property>
+       <property name="decimals">
+        <number>1</number>
+       </property>
+       <property name="minimum">
+        <double>-1.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>999.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>1.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>-1.000000000000000</double>
+       </property>
+      </widget>
+     </item>
     </layout>
    </widget>
   </widget>
@@ -573,8 +582,8 @@
   <tabstop>persistenceCheckBox</tabstop>
   <tabstop>persistenceButton</tabstop>
   <tabstop>histogramPlotLayout</tabstop>
-  <tabstop>mainPlotLayout</tabstop>
   <tabstop>waterfallPlotLayout</tabstop>
+  <tabstop>mainPlotLayout</tabstop>
  </tabstops>
  <resources/>
  <connections/>

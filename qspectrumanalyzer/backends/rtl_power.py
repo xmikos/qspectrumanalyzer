@@ -24,6 +24,7 @@ class PowerThread(BasePowerThread):
             "bin_size": bin_size,
             "interval": interval,
             "device": device,
+            "sample_rate": sample_rate,
             "hops": 0,
             "gain": gain,
             "ppm": ppm,
@@ -53,6 +54,8 @@ class PowerThread(BasePowerThread):
                 "-c", "{}".format(self.params["crop"])
             ])
 
+            if self.params["sample_rate"] > 0:
+                cmdline.extend(["-r", "{}M".format(self.params["sample_rate"] / 1e6)])
             if self.params["gain"] >= 0:
                 cmdline.extend(["-g", "{}".format(self.params["gain"])])
             if self.params["single_shot"]:

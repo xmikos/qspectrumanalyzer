@@ -9,11 +9,16 @@ from qspectrumanalyzer.backends import BaseInfo, BasePowerThread
 class Info(BaseInfo):
     """rx_power device metadata"""
     sample_rate_min = 0
-    sample_rate_max = 61440000
+    sample_rate_max = 0
+    sample_rate = 0
     start_freq_min = 0
-    start_freq_max = 6000
+    start_freq_max = 7250
     stop_freq_min = 0
-    stop_freq_max = 6000
+    stop_freq_max = 7250
+    gain_min = -1
+    gain_max = 999
+    bin_size_min = 0
+    bin_size_max = 2800
 
 
 class PowerThread(BasePowerThread):

@@ -361,7 +361,7 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
         self.stopFreqSpinBox.setValue(settings.value("stop_freq", 108.0, float))
         self.binSizeSpinBox.setValue(settings.value("bin_size", 10.0, float))
         self.intervalSpinBox.setValue(settings.value("interval", 10.0, float))
-        self.gainSpinBox.setValue(settings.value("gain", 0, int))
+        self.gainSpinBox.setValue(settings.value("gain", 0, float))
         self.ppmSpinBox.setValue(settings.value("ppm", 0, int))
         self.cropSpinBox.setValue(settings.value("crop", 0, int))
         self.mainCurveCheckBox.setChecked(settings.value("main_curve", 1, int))
@@ -477,7 +477,7 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
                                     float(self.stopFreqSpinBox.value()),
                                     float(self.binSizeSpinBox.value()),
                                     interval=float(self.intervalSpinBox.value()),
-                                    gain=int(self.gainSpinBox.value()),
+                                    gain=float(self.gainSpinBox.value()),
                                     ppm=int(self.ppmSpinBox.value()),
                                     crop=int(self.cropSpinBox.value()) / 100.0,
                                     single_shot=single_shot,

@@ -37,7 +37,7 @@ class PowerThread(BasePowerThread):
             "interval": interval,
             "hops": hops,
             "time": interval / hops,
-            "gain": gain * 10,
+            "gain": int(gain * 10),
             "ppm": ppm,
             "crop": crop,
             "overlap": overlap,
