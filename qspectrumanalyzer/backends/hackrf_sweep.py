@@ -20,7 +20,7 @@ class Info(BaseInfo):
     stop_freq_min = 0
     stop_freq_max = 7250
     stop_freq = 6000
-    bin_size_min = 40
+    bin_size_min = 3
     bin_size_max = 5000
     bin_size = 1000
     interval = 0
@@ -38,10 +38,11 @@ class PowerThread(BasePowerThread):
               interval=0.0, gain=40, ppm=0, crop=0, single_shot=False,
               device=0, sample_rate=20000000, bandwidth=0, lnb_lo=0):
         """Setup hackrf_sweep params"""
-        # theoretically we can support bins smaller than 40 kHz, but it is
-        # unlikely to result in acceptable performance
-        if bin_size < 40:
-            bin_size = 40
+        # Small bin sizes (<40 kHz) are only suitable with an arbitrarily
+        # reduced sweep interval. Bin sizes smaller than 3 kHz showed to be
+        # infeasible also in these cases.
+        if bin_size < 3:
+            bin_size = 3
         if bin_size > 5000:
             bin_size = 5000
 
