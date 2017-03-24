@@ -1,4 +1,4 @@
-import subprocess, pprint, struct, shlex, time
+import subprocess, pprint, struct, shlex, sys, time
 
 import numpy as np
 from Qt import QtCore
@@ -143,10 +143,20 @@ class PowerThread(BasePowerThread):
         self.powerThreadStarted.emit()
 
         while self.alive:
-            buf = self.process.stdout.read(4)
+            try:
+                buf = self.process.stdout.read(4)
+            except AttributeError as e:
+                print(e, file=sys.stderr)
+                continue
+
             if buf:
                 (record_length,) = struct.unpack('I', buf)
-                buf = self.process.stdout.read(record_length)
+                try:
+                    buf = self.process.stdout.read(record_length)
+                except AttributeError as e:
+                    print(e, file=sys.stderr)
+                    continue
+
                 if buf:
                     self.parse_output(buf)
                 else:
