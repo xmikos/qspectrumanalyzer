@@ -1,4 +1,4 @@
-import subprocess, pprint, struct, shlex
+import subprocess, pprint, struct, shlex, time
 
 import numpy as np
 from Qt import QtCore
@@ -23,8 +23,6 @@ class Info(BaseInfo):
     bin_size_min = 40
     bin_size_max = 5000
     bin_size = 1000
-    interval_min = 0
-    interval_max = 0
     interval = 0
     ppm_min = 0
     ppm_max = 0
@@ -70,7 +68,7 @@ class PowerThread(BasePowerThread):
             "device": 0,
             "sample_rate": 20e6,  # sps
             "bin_size": bin_size,  # kHz
-            "interval": 0,  # seconds
+            "interval": interval,  # seconds
             "gain": gain,
             "lna_gain": lna_gain,
             "vga_gain": vga_gain,
@@ -80,6 +78,8 @@ class PowerThread(BasePowerThread):
         }
         self.lnb_lo = lnb_lo
         self.databuffer = {"timestamp": [], "x": [], "y": []}
+        self.lastsweep = 0
+        self.interval = interval
 
         print("hackrf_sweep params:")
         pprint.pprint(self.params)
@@ -124,7 +124,13 @@ class PowerThread(BasePowerThread):
         for i in range(len(data)):
             self.databuffer["y"].append(data[i])
         if (high_edge / 1e6) >= (self.params["stop_freq"] - self.lnb_lo / 1e6):
-            # We've reached the end of a pass, so sort and display it.
+            # We've reached the end of a pass. If it went too fast for our sweep interval, ignore it
+            t_finish = time.time()
+            if (t_finish < self.lastsweep + self.interval):
+                return
+            self.lastsweep = t_finish
+
+            # otherwise sort and display the data.
             sorted_data = sorted(zip(self.databuffer["x"], self.databuffer["y"]))
             self.databuffer["x"], self.databuffer["y"] = [list(x) for x in zip(*sorted_data)]
             self.data_storage.update(self.databuffer)
