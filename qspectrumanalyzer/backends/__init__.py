@@ -106,13 +106,7 @@ class BasePowerThread(QtCore.QThread):
 
 
 # Build list of all backends
-_base_path = os.path.realpath(os.path.dirname(__file__))
-_backends_files = (glob.glob(os.path.join(_base_path, "*.py")) +
-                   glob.glob(os.path.join(_base_path, "*.pyc")) +
-                   glob.glob(os.path.join(_base_path, "*.pyo")))
-
-__all__ = [os.path.splitext(os.path.basename(f))[0] for f in _backends_files
-           if os.path.isfile(f) and not os.path.basename(f).startswith("_")]
+__all__ = ['soapy_power', 'hackrf_sweep', 'rtl_power', 'rtl_power_fftw', 'rx_power']
 
 # Import all backends
-from qspectrumanalyzer.backends import *
+from qspectrumanalyzer.backends import soapy_power, hackrf_sweep, rtl_power, rtl_power_fftw, rx_power

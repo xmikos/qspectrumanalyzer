@@ -1,12 +1,18 @@
 #!/usr/bin/env python
 
-import sys, pathlib, subprocess, shutil, re
+import sys
+
 import setuptools
+from setuptools import setup
 
 from qspectrumanalyzer.version import __version__
 
 setup_cmdclass = {}
-setup_kwargs = {}
+setup_entry_points = {
+    "gui_scripts": [
+        "qspectrumanalyzer=qspectrumanalyzer.__main__:main",
+    ],
+}
 
 # Allow compilation of Qt .qrc, .ui and .ts files (build_qt command)
 try:
@@ -15,17 +21,19 @@ try:
 except ImportError:
     pass
 
-# Allow building of frozen executables with cx_Freeze (build_exe command)
+# Allow building frozen executables with PyInstaller / subzero (build_exe command)
 try:
-    from cx_Freeze import setup, Executable
-
-    base = 'Win32GUI' if sys.platform == 'win32' else None
-    setup_kwargs['executables'] = [
-        Executable('qspectrumanalyzer.py', base=base),
-        Executable('soapy_power.py', base=None),
-    ]
+    from subzero import setup, Executable
+    setup_entry_points = {
+        "console_scripts": [
+            Executable('QSpectrumAnalyzer=qspectrumanalyzer.__main__:main',
+                       console=False, icon_file='qspectrumanalyzer.ico'),
+            Executable('soapy_power=soapypower.__main__:main',
+                       console=True),
+        ],
+    }
 except ImportError:
-    from setuptools import setup
+    pass
 
 
 setup(
@@ -49,11 +57,6 @@ setup(
         ("share/applications", ["qspectrumanalyzer.desktop"]),
         ("share/pixmaps", ["qspectrumanalyzer.png"])
     ],
-    entry_points={
-        "gui_scripts": [
-            "qspectrumanalyzer=qspectrumanalyzer.__main__:main"
-        ],
-    },
     install_requires=[
         "soapy_power>=1.5.0",
         "pyqtgraph>=0.10.0",
@@ -75,21 +78,19 @@ setup(
         "Topic :: Scientific/Engineering :: Visualization"
     ],
     options={
-        'build_exe': {
-            'packages': ['qspectrumanalyzer', 'qspectrumanalyzer.backends'],
-            'excludes': [],
-            'includes': [
-                'numpy.core._methods', 'numpy.lib.format', 'pyqtgraph.debug', 'pyqtgraph.ThreadsafeTimer'
-            ],
-            'include_msvcr': True,
-            'optimize': 2,
-        },
         'build_qt': {
             'packages': ['qspectrumanalyzer'],
             'languages': ['cs'],
             'replacement_bindings': 'Qt'
         },
+        'build_exe': {},
+        'bdist_msi': {
+            'upgrade_code': '30740ef4-84e7-4e67-8e4a-12b53492c387',
+            'shortcuts': [
+                'ProgramMenuFolder\\QSpectrumAnalyzer=qspectrumanalyzer',
+            ],
+        },
     },
+    entry_points=setup_entry_points,
     cmdclass=setup_cmdclass,
-    **setup_kwargs
 )
