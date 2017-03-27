@@ -87,7 +87,7 @@ setup(
         'bdist_msi': {
             'upgrade_code': '30740ef4-84e7-4e67-8e4a-12b53492c387',
             'shortcuts': [
-                'ProgramMenuFolder\\QSpectrumAnalyzer=qspectrumanalyzer',
+                'ProgramMenuFolder\\QSpectrumAnalyzer=QSpectrumAnalyzer',
             ],
         },
     },
