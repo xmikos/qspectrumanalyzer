@@ -1,4 +1,4 @@
-import os, threading
+import os, threading, shlex
 
 from Qt import QtCore
 
@@ -39,8 +39,9 @@ class BaseInfo:
 
     @classmethod
     def help_params(cls, executable):
+        cmdline = shlex.split(executable)
         try:
-            text = subprocess.check_output([executable, '-h'], universal_newlines=True,
+            text = subprocess.check_output(cmdline + ['-h'], universal_newlines=True,
                                            stderr=subprocess.STDOUT, env=dict(os.environ, COLUMNS='125'),
                                            console=False)
         except subprocess.CalledProcessError as e:

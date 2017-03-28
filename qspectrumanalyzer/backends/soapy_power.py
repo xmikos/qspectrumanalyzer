@@ -32,12 +32,13 @@ class Info(BaseInfo):
 
     @classmethod
     def help_device(cls, executable, device):
+        cmdline = shlex.split(executable)
         try:
-            text = subprocess.check_output([executable, '--detect'], universal_newlines=True,
+            text = subprocess.check_output(cmdline + ['--detect'], universal_newlines=True,
                                            stderr=subprocess.DEVNULL, env=dict(os.environ, COLUMNS='125'),
                                            console=False)
             text += '\n'
-            text += subprocess.check_output([executable, '--device', device, '--info'], universal_newlines=True,
+            text += subprocess.check_output(cmdline + ['--device', device, '--info'], universal_newlines=True,
                                             stderr=subprocess.DEVNULL, env=dict(os.environ, COLUMNS='125'),
                                             console=False)
         except subprocess.CalledProcessError as e:
