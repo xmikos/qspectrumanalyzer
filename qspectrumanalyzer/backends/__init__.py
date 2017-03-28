@@ -1,6 +1,8 @@
-import os, glob, subprocess, threading
+import os, threading
 
 from Qt import QtCore
+
+from qspectrumanalyzer import subprocess
 
 
 class BaseInfo:
@@ -39,8 +41,8 @@ class BaseInfo:
     def help_params(cls, executable):
         try:
             text = subprocess.check_output([executable, '-h'], universal_newlines=True,
-                                           stderr=subprocess.STDOUT,
-                                           env=dict(os.environ, COLUMNS='125'))
+                                           stderr=subprocess.STDOUT, env=dict(os.environ, COLUMNS='125'),
+                                           console=False)
         except subprocess.CalledProcessError as e:
             text = e.output
         except OSError:

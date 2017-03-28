@@ -1,8 +1,9 @@
-import os, subprocess, pprint, sys, shlex, signal
+import os, sys, pprint, shlex, signal
 
 import numpy as np
 from Qt import QtCore
 
+from qspectrumanalyzer import subprocess
 from qspectrumanalyzer.backends import BaseInfo, BasePowerThread
 
 try:
@@ -11,20 +12,6 @@ try:
 except ImportError:
     print('soapy_power module not found!')
     formatter = None
-
-if sys.platform == 'win32':
-    import msvcrt
-    import _winapi
-
-    def _make_inheritable_handle(fd):
-        """Return a duplicate of handle, which is inheritable"""
-        h = _winapi.DuplicateHandle(
-            _winapi.GetCurrentProcess(),
-            msvcrt.get_osfhandle(fd),
-            _winapi.GetCurrentProcess(), 0, 1,
-            _winapi.DUPLICATE_SAME_ACCESS
-        )
-        return subprocess.Handle(h)
 
 
 class Info(BaseInfo):
@@ -47,12 +34,12 @@ class Info(BaseInfo):
     def help_device(cls, executable, device):
         try:
             text = subprocess.check_output([executable, '--detect'], universal_newlines=True,
-                                           stderr=subprocess.DEVNULL,
-                                           env=dict(os.environ, COLUMNS='125'))
+                                           stderr=subprocess.DEVNULL, env=dict(os.environ, COLUMNS='125'),
+                                           console=False)
             text += '\n'
             text += subprocess.check_output([executable, '--device', device, '--info'], universal_newlines=True,
-                                            stderr=subprocess.DEVNULL,
-                                            env=dict(os.environ, COLUMNS='125'))
+                                            stderr=subprocess.DEVNULL, env=dict(os.environ, COLUMNS='125'),
+                                            console=False)
         except subprocess.CalledProcessError as e:
             text = e.output
         except OSError:
@@ -101,7 +88,7 @@ class PowerThread(BasePowerThread):
             os.set_inheritable(self.pipe_write_fd, True)
 
             if sys.platform == 'win32':
-                self.pipe_write_handle = _make_inheritable_handle(self.pipe_write_fd)
+                self.pipe_write_handle = subprocess.make_inheritable_handle(self.pipe_write_fd)
 
             # Prepare soapy_power cmdline parameters
             settings = QtCore.QSettings()
@@ -142,7 +129,7 @@ class PowerThread(BasePowerThread):
                 creationflags = 0
 
             self.process = subprocess.Popen(cmdline, close_fds=False, universal_newlines=False,
-                                            creationflags=creationflags)
+                                            creationflags=creationflags, console=False)
 
             os.close(self.pipe_write_fd)
             if sys.platform == 'win32':

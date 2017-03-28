@@ -1,8 +1,9 @@
-import subprocess, pprint, shlex
+import pprint, shlex
 
 import numpy as np
 from Qt import QtCore
 
+from qspectrumanalyzer import subprocess
 from qspectrumanalyzer.backends import BaseInfo, BasePowerThread
 
 
@@ -66,7 +67,7 @@ class PowerThread(BasePowerThread):
                 cmdline.extend(shlex.split(additional_params))
 
             self.process = subprocess.Popen(cmdline, stdout=subprocess.PIPE,
-                                            universal_newlines=True)
+                                            universal_newlines=True, console=False)
 
     def parse_output(self, line):
         """Parse one line of output from rtl_power"""

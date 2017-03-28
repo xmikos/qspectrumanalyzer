@@ -1,8 +1,9 @@
-import subprocess, pprint, struct, shlex, sys, time
+import pprint, struct, shlex, sys, time
 
 import numpy as np
 from Qt import QtCore
 
+from qspectrumanalyzer import subprocess
 from qspectrumanalyzer.backends import BaseInfo, BasePowerThread
 
 
@@ -108,7 +109,7 @@ class PowerThread(BasePowerThread):
                 cmdline.extend(shlex.split(additional_params))
 
             self.process = subprocess.Popen(cmdline, stdout=subprocess.PIPE,
-                                            universal_newlines=False)
+                                            universal_newlines=False, console=False)
 
     def parse_output(self, buf):
         """Parse one buf of output from hackrf_sweep"""
