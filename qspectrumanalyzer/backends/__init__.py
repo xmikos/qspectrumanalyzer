@@ -38,10 +38,11 @@ class BaseInfo:
     @classmethod
     def help_params(cls, executable):
         try:
-            p = subprocess.run([executable, '-h'], universal_newlines=True,
-                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                               env=dict(os.environ, COLUMNS='125'))
-            text = p.stdout
+            text = subprocess.check_output([executable, '-h'], universal_newlines=True,
+                                           stderr=subprocess.STDOUT,
+                                           env=dict(os.environ, COLUMNS='125'))
+        except subprocess.CalledProcessError as e:
+            text = e.output
         except OSError:
             text = '{} executable not found!'.format(executable)
         return text

@@ -46,17 +46,15 @@ class Info(BaseInfo):
     @classmethod
     def help_device(cls, executable, device):
         try:
-            text = ''
-            p = subprocess.run([executable, '--detect'], universal_newlines=True,
-                               stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-                               env=dict(os.environ, COLUMNS='125'))
-            text += p.stdout + '\n'
-
-            if p.returncode == 0:
-                p = subprocess.run([executable, '--device', device, '--info'], universal_newlines=True,
-                                   stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-                                   env=dict(os.environ, COLUMNS='125'))
-                text += p.stdout
+            text = subprocess.check_output([executable, '--detect'], universal_newlines=True,
+                                           stderr=subprocess.DEVNULL,
+                                           env=dict(os.environ, COLUMNS='125'))
+            text += '\n'
+            text += subprocess.check_output([executable, '--device', device, '--info'], universal_newlines=True,
+                                            stderr=subprocess.DEVNULL,
+                                            env=dict(os.environ, COLUMNS='125'))
+        except subprocess.CalledProcessError as e:
+            text = e.output
         except OSError:
             text = '{} executable not found!'.format(executable)
         return text
