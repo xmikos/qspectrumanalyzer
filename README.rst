@@ -148,23 +148,31 @@ If you want to install QSpectrumAnalyzer directly from Git master branch, you ca
 Windows:
 ********
 
-There is preliminary Windows support, but QSpectrumAnalyzer has to be installed manually for now.
-There will be installer (with all QSpectrumAnalyzer dependencies bundled with it) in the future.
+*Only 64-bit Windows are supported (there are no public 32-bit builds of SoapySDR
+libraries and drivers).*
 
-Only 64-bit Windows are supported (there are no public 32-bit builds of SoapySDR
-libraries and drivers).
+1. install `SoapySDR <https://github.com/pothosware/SoapySDR/wiki>`_ libraries and drivers
+   (bundled as part of Pothos SDR installer: `download <http://downloads.myriadrf.org/builds/PothosSDR/?C=M;O=D>`_).
+   This bundle also includes other great SDR apps like `CubicSDR <http://cubicsdr.com>`_, `GQRX <http://gqrx.dk>`_,
+   `GNU Radio Companion <https://gnuradio.org>`_, `Pothos GUI <https://github.com/pothosware/pothos/wiki>`_,
+   `Lime Suite <https://github.com/myriadrf/LimeSuite>`_ and `Zadig <http://zadig.akeo.ie>`_.
+   Utilities like ``hackrf_sweep`` and ``rtl_power`` are also included.
+2. download QSpectrumAnalyzer installer or portable zip archive from GitHub
+   `releases <https://github.com/xmikos/qspectrumanalyzer/releases>`_ page
+3. after you connect your SDR device, you have to run `Zadig <http://zadig.akeo.ie>`_ to install USB drivers
 
-1. install Python 3.6 (64-bit) from python.org (`download <https://www.python.org/ftp/python/3.6.1/python-3.6.1-amd64.exe>`_)
-   and add Python to PATH
-2. install SoapySDR libraries and drivers (bundled as part of Pothos SDR installer:
-   `download <http://downloads.myriadrf.org/builds/PothosSDR/?C=M;O=D>`_)
-3. ``pip install PyQt5``
-4. ``pip install QSpectrumAnalyzer``
+You can also install QSpectrumAnalyzer manually from [PyPI](https://pypi.python.org):
 
-You should now be able to run it with ``qspectrumanalyzer`` (or ``python -m qspectrumanalyzer``
-if it doesn't work for you). If ``soapy_power`` backend can't detect your SDR device, maybe you
-have to run `Zadig <http://zadig.akeo.ie/>`_ (also part of Pothos SDR bundle) to install USB
-drivers.
+1. install Python 3.6.x (64-bit) from `python.org <https://www.python.org>`_ and add Python to PATH
+2. install `SoapySDR <https://github.com/pothosware/SoapySDR/wiki>`_ libraries and drivers
+   (bundled as part of Pothos SDR installer: `download <http://downloads.myriadrf.org/builds/PothosSDR/?C=M;O=D>`_)
+3. Open ``cmd.exe`` and run::
+
+        pip install PyQt5
+        pip install QSpectrumAnalyzer
+
+You should then be able to run it with ``qspectrumanalyzer`` (or ``python -m qspectrumanalyzer``
+if it doesn't work for you).
 
 Todo:
 -----
