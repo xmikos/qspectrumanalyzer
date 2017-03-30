@@ -632,19 +632,23 @@ def main():
     args, unparsed_args = parser.parse_known_args()
     debug = args.debug
 
-    # Hide console window on Windows
-    if sys.platform == 'win32' and not debug:
-        from qspectrumanalyzer import windows
-        if windows.is_attached_console_visible():
+    try:
+        # Hide console window on Windows
+        if sys.platform == 'win32' and not debug:
+            from qspectrumanalyzer import windows
             windows.set_attached_console_visible(False)
 
-    # Start PyQt application
-    app = QtWidgets.QApplication(sys.argv[:1] + unparsed_args)
-    app.setOrganizationName("QSpectrumAnalyzer")
-    app.setOrganizationDomain("qspectrumanalyzer.eutopia.cz")
-    app.setApplicationName("QSpectrumAnalyzer")
-    window = QSpectrumAnalyzerMainWindow()
-    sys.exit(app.exec_())
+        # Start PyQt application
+        app = QtWidgets.QApplication(sys.argv[:1] + unparsed_args)
+        app.setOrganizationName("QSpectrumAnalyzer")
+        app.setOrganizationDomain("qspectrumanalyzer.eutopia.cz")
+        app.setApplicationName("QSpectrumAnalyzer")
+        window = QSpectrumAnalyzerMainWindow()
+        sys.exit(app.exec_())
+    finally:
+        # Unhide console window on Windows (we don't want to leave zombies behind)
+        if sys.platform == 'win32' and not debug:
+            windows.set_attached_console_visible(True)
 
 
 if __name__ == "__main__":
