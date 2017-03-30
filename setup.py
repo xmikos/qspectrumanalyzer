@@ -27,7 +27,7 @@ try:
     setup_entry_points = {
         "console_scripts": [
             Executable('QSpectrumAnalyzer=qspectrumanalyzer.__main__:main',
-                       console=False, icon_file='qspectrumanalyzer.ico'),
+                       console=True, icon_file='qspectrumanalyzer.ico'),
             Executable('soapy_power=soapypower.__main__:main',
                        console=True),
         ],
@@ -39,7 +39,8 @@ except ImportError:
 setup(
     name="QSpectrumAnalyzer",
     version=__version__,
-    description="Spectrum analyzer for multiple SDR platforms (PyQtGraph based GUI for soapy_power, rx_power, rtl_power, hackrf_sweep and other backends)",
+    description=("Spectrum analyzer for multiple SDR platforms "
+                 "(PyQtGraph based GUI for soapy_power, rtl_power, hackrf_sweep, rx_power and other backends)"),
     long_description=open('README.rst').read(),
     author="Michal Krenek (Mikos)",
     author_email="m.krenek@gmail.com",
@@ -48,19 +49,20 @@ setup(
     packages=["qspectrumanalyzer", "qspectrumanalyzer.backends"],
     package_data={
         "qspectrumanalyzer": [
+            "qspectrumanalyzer.svg",
             "*.ui",
             "languages/*.qm",
-            "languages/*.ts"
-        ]
+            "languages/*.ts",
+        ],
     },
     data_files=[
         ("share/applications", ["qspectrumanalyzer.desktop"]),
-        ("share/pixmaps", ["qspectrumanalyzer.png"])
+        ("share/pixmaps", ["qspectrumanalyzer.png"]),
     ],
     install_requires=[
-        "soapy_power>=1.5.0",
+        "soapy_power>=1.6.0",
         "pyqtgraph>=0.10.0",
-        "Qt.py"
+        "Qt.py",
     ],
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -75,17 +77,26 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
         "Topic :: Communications :: Ham Radio",
-        "Topic :: Scientific/Engineering :: Visualization"
+        "Topic :: Scientific/Engineering :: Visualization",
     ],
     options={
         'build_qt': {
             'packages': ['qspectrumanalyzer'],
             'languages': ['cs'],
-            'replacement_bindings': 'Qt'
+            'replacement_bindings': 'Qt',
         },
-        'build_exe': {},
+        'build_exe': {
+            'datas': [
+                ('qspectrumanalyzer/qspectrumanalyzer.svg', 'qspectrumanalyzer'),
+                ('qspectrumanalyzer/*.ui', 'qspectrumanalyzer'),
+                ('qspectrumanalyzer/languages/*.ts', 'qspectrumanalyzer/languages'),
+                ('qspectrumanalyzer/languages/*.qm', 'qspectrumanalyzer/languages'),
+                ('README.rst', '.'),
+                ('LICENSE', '.'),
+            ],
+        },
         'bdist_msi': {
-            'upgrade_code': '30740ef4-84e7-4e67-8e4a-12b53492c387',
+            'upgrade_code': '{30740EF4-84E7-4E67-8E4A-12B53492C387}',
             'shortcuts': [
                 'ProgramMenuFolder\\QSpectrumAnalyzer=QSpectrumAnalyzer',
             ],

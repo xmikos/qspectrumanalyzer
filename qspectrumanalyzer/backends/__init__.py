@@ -82,10 +82,11 @@ class BasePowerThread(QtCore.QThread):
         """Terminate power process"""
         with self._shutdown_lock:
             if self.process:
-                try:
-                    self.process.terminate()
-                except ProcessLookupError:
-                    pass
+                if self.process.poll() is None:
+                    try:
+                        self.process.terminate()
+                    except ProcessLookupError:
+                        pass
                 self.process.wait()
                 self.process = None
 

@@ -2,7 +2,7 @@ QSpectrumAnalyzer
 =================
 
 Spectrum analyzer for multiple SDR platforms (PyQtGraph based GUI for soapy_power,
-rx_power, rtl_power, hackrf_sweep and other backends)
+rtl_power, hackrf_sweep, rx_power and other backends)
 
 Screenshots
 -----------

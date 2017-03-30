@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, signal, time
+import sys, os, signal, time, argparse
 
 from Qt import QtCore, QtGui, QtWidgets, __binding__
 
@@ -16,6 +16,8 @@ from qspectrumanalyzer.ui_qspectrumanalyzer_smooth import Ui_QSpectrumAnalyzerSm
 from qspectrumanalyzer.ui_qspectrumanalyzer_persistence import Ui_QSpectrumAnalyzerPersistence
 from qspectrumanalyzer.ui_qspectrumanalyzer_colors import Ui_QSpectrumAnalyzerColors
 from qspectrumanalyzer.ui_qspectrumanalyzer import Ui_QSpectrumAnalyzerMainWindow
+
+debug = False
 
 # Allow CTRL+C and/or SIGTERM to kill us (PyQt blocks it otherwise)
 signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -239,6 +241,10 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
         # Initialize UI
         super().__init__(parent)
         self.setupUi(self)
+
+        # Set window icon
+        icon_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "qspectrumanalyzer.svg")
+        self.setWindowIcon(QtGui.QIcon(icon_path))
 
         # Create plot widgets and update UI
         self.spectrumPlotWidget = SpectrumPlotWidget(self.mainPlotLayout)
@@ -612,7 +618,28 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
 
 
 def main():
-    app = QtWidgets.QApplication(sys.argv)
+    global debug
+
+    # Parse command line arguments
+    parser= argparse.ArgumentParser(
+        prog="qspectrumanalyzer",
+        description="Spectrum analyzer for multiple SDR platforms",
+    )
+    parser.add_argument("--debug", action="store_true",
+                        help="detailed debugging messages")
+    parser.add_argument("--version", action="version",
+                        version="%(prog)s {}".format(__version__))
+    args, unparsed_args = parser.parse_known_args()
+    debug = args.debug
+
+    # Hide console window on Windows
+    if sys.platform == 'win32' and not debug:
+        from qspectrumanalyzer import windows
+        if windows.is_attached_console_visible():
+            windows.set_attached_console_visible(False)
+
+    # Start PyQt application
+    app = QtWidgets.QApplication(sys.argv[:1] + unparsed_args)
     app.setOrganizationName("QSpectrumAnalyzer")
     app.setOrganizationDomain("qspectrumanalyzer.eutopia.cz")
     app.setApplicationName("QSpectrumAnalyzer")

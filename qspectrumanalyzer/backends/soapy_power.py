@@ -140,13 +140,14 @@ class PowerThread(BasePowerThread):
         """Stop soapy_power process"""
         with self._shutdown_lock:
             if self.process:
-                try:
-                    if sys.platform == 'win32':
-                        self.process.send_signal(signal.CTRL_BREAK_EVENT)
-                    else:
-                        self.process.terminate()
-                except ProcessLookupError:
-                    pass
+                if self.process.poll() is None:
+                    try:
+                        if sys.platform == 'win32':
+                            self.process.send_signal(signal.CTRL_BREAK_EVENT)
+                        else:
+                            self.process.terminate()
+                    except ProcessLookupError:
+                        pass
                 self.process.wait()
                 self.process = None
 

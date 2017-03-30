@@ -2,7 +2,7 @@
 pkgname=qspectrumanalyzer
 pkgver=2.1.0
 pkgrel=1
-pkgdesc="Spectrum analyzer for multiple SDR platforms (PyQtGraph based GUI for soapy_power, rx_power, rtl_power, hackrf_sweep and other backends)"
+pkgdesc="Spectrum analyzer for multiple SDR platforms (PyQtGraph based GUI for soapy_power, rtl_power, hackrf_sweep, rx_power and other backends)"
 arch=('any')
 url="https://github.com/xmikos/qspectrumanalyzer"
 license=('GPL3')
