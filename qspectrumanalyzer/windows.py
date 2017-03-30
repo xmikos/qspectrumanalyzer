@@ -24,6 +24,7 @@ IsWindowVisible = windll.user32.IsWindowVisible
 # interpreter procss, 0 if there is no window
 console_window_handle = GetConsoleWindow()
 
+
 def set_attached_console_visible(state):
     """Show/hide system console window attached to current process.
        Return it's previous state.
@@ -32,9 +33,11 @@ def set_attached_console_visible(state):
     flag = {True: SW_SHOW, False: SW_HIDE}
     return bool(ShowWindow(console_window_handle, flag[state]))
 
+
 def is_attached_console_visible():
     """Return True if attached console window is visible"""
     return IsWindowVisible(console_window_handle)
+
 
 def set_windows_appusermodelid():
     """Make sure correct icon is used on Windows 7 taskbar"""

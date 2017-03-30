@@ -2,7 +2,7 @@
 
 import sys, os, signal, time, argparse
 
-from Qt import QtCore, QtGui, QtWidgets, __binding__
+from Qt import QtCore, QtGui, QtWidgets
 
 from qspectrumanalyzer import backends
 from qspectrumanalyzer.version import __version__
@@ -621,7 +621,7 @@ def main():
     global debug
 
     # Parse command line arguments
-    parser= argparse.ArgumentParser(
+    parser = argparse.ArgumentParser(
         prog="qspectrumanalyzer",
         description="Spectrum analyzer for multiple SDR platforms",
     )
