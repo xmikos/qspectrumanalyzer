@@ -2,7 +2,7 @@ QSpectrumAnalyzer
 =================
 
 Spectrum analyzer for multiple SDR platforms (PyQtGraph based GUI for soapy_power,
-rtl_power, hackrf_sweep, rx_power and other backends)
+hackrf_sweep, rtl_power, rx_power and other backends)
 
 Screenshots
 -----------
@@ -19,7 +19,7 @@ Requirements
 - Qt.py (https://github.com/mottosso/Qt.py)
 - PyQtGraph (http://www.pyqtgraph.org)
 - soapy_power (https://github.com/xmikos/soapy_power)
-- Optional: rx_tools / rtl-sdr / rtl_power_fftw / hackrf
+- Optional: hackrf / rtl-sdr / rtl_power_fftw / rx_tools
 
 Backends
 --------

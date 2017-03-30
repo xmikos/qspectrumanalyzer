@@ -40,7 +40,7 @@ setup(
     name="QSpectrumAnalyzer",
     version=__version__,
     description=("Spectrum analyzer for multiple SDR platforms "
-                 "(PyQtGraph based GUI for soapy_power, rtl_power, hackrf_sweep, rx_power and other backends)"),
+                 "(PyQtGraph based GUI for soapy_power, hackrf_sweep, rtl_power, rx_power and other backends)"),
     long_description=open('README.rst').read(),
     author="Michal Krenek (Mikos)",
     author_email="m.krenek@gmail.com",
