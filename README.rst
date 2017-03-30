@@ -161,7 +161,7 @@ libraries and drivers).*
    `releases <https://github.com/xmikos/qspectrumanalyzer/releases>`_ page
 3. after you connect your SDR device, you have to run `Zadig <http://zadig.akeo.ie>`_ to install USB drivers
 
-You can also install QSpectrumAnalyzer manually from [PyPI](https://pypi.python.org):
+You can also install QSpectrumAnalyzer manually from `PyPI <https://pypi.python.org>`_:
 
 1. install Python 3.6.x (64-bit) from `python.org <https://www.python.org>`_ and add Python to PATH
 2. install `SoapySDR <https://github.com/pothosware/SoapySDR/wiki>`_ libraries and drivers
