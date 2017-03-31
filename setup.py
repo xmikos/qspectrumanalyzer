@@ -24,7 +24,7 @@ try:
     from subzero import setup, Executable
     setup_entry_points = {
         "console_scripts": [
-            Executable('QSpectrumAnalyzer=qspectrumanalyzer.__main__:main',
+            Executable('qspectrumanalyzer=qspectrumanalyzer.__main__:main',
                        console=True, icon_file='qspectrumanalyzer.ico'),
             Executable('soapy_power=soapypower.__main__:main',
                        console=True),
@@ -79,9 +79,9 @@ setup(
             ],
         },
         'bdist_msi': {
-            'upgrade_code': '{30740EF4-84E7-4E67-8E4A-12B53492C387}',
+            'upgrade_code': '30740ef4-84e7-4e67-8e4a-12b53492c387',
             'shortcuts': [
-                'ProgramMenuFolder\\QSpectrumAnalyzer=QSpectrumAnalyzer',
+                'QSpectrumAnalyzer=qspectrumanalyzer',
             ],
         },
     },
