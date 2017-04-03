@@ -56,12 +56,10 @@ class PowerThread(BasePowerThread):
         stop_freq = start_freq + total_bandwidth
 
         # distribute gain between two analog gain stages
-        if gain < 0:
-            gain = 0
         if gain > 102:
             gain = 102
-        lna_gain = 8 * (gain // 18)
-        vga_gain = 2 * ((gain - lna_gain) // 2)
+        lna_gain = 8 * (gain // 18) if gain >= 0 else 0
+        vga_gain = 2 * ((gain - lna_gain) // 2) if gain >= 0 else 0
 
         self.params = {
             "start_freq": start_freq,  # MHz
@@ -97,9 +95,13 @@ class PowerThread(BasePowerThread):
                                      int(self.params["stop_freq"] - self.lnb_lo / 1e6)),
                 "-B",
                 "-w", "{}".format(int(self.params["bin_size"] * 1000)),
-                "-l", "{}".format(int(self.params["lna_gain"])),
-                "-g", "{}".format(int(self.params["vga_gain"])),
             ])
+
+            if self.params["gain"] >= 0:
+                cmdline.extend([
+                    "-l", "{}".format(int(self.params["lna_gain"])),
+                    "-g", "{}".format(int(self.params["vga_gain"])),
+                ])
 
             if self.params["single_shot"]:
                 cmdline.append("-1")
