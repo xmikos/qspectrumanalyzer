@@ -12,7 +12,7 @@ class Info(BaseInfo):
     sample_rate_min = 20000000
     sample_rate_max = 20000000
     sample_rate = 20000000
-    gain_min = 0
+    gain_min = -1
     gain_max = 102
     gain = 40
     start_freq_min = 0
