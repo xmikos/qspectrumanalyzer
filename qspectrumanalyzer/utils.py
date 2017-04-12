@@ -44,7 +44,7 @@ def human_time(seconds):
     h, m = divmod(m, 60)
 
     if h > 0:
-        timestr = '{:.0f} h {.0f} min {.0f} s'.format(h, m, s)
+        timestr = '{:.0f} h {:.0f} min {:.0f} s'.format(h, m, s)
     elif m > 0:
         timestr = '{:.0f} min {:.0f} s'.format(m, s)
     else:
