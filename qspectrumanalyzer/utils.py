@@ -35,3 +35,19 @@ def str_to_color(color_string):
 def color_to_str(color):
     """Create comma separated RGBA string from QColor"""
     return ", ".join([str(color.red()), str(color.green()), str(color.blue()), str(color.alpha())])
+
+
+def human_time(seconds):
+    """Format time in seconds to human readable form (e.g. 1 h 2 min 3 s)"""
+    seconds = int(seconds)
+    m, s = divmod(seconds, 60)
+    h, m = divmod(m, 60)
+
+    if h > 0:
+        timestr = '{:.0f} h {.0f} min {.0f} s'.format(h, m, s)
+    elif m > 0:
+        timestr = '{:.0f} min {:.0f} s'.format(m, s)
+    else:
+        timestr = '{:.0f} s'.format(s)
+
+    return timestr

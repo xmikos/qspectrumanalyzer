@@ -177,7 +177,6 @@ if it doesn't work for you).
 Todo:
 -----
 
-- show scan progress
 - save FFT history (allow big waterfall plot saved to file)
 - automatic peak detection / highlighting
 - display average noise level

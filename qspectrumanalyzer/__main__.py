@@ -8,7 +8,7 @@ from qspectrumanalyzer import backends
 from qspectrumanalyzer.version import __version__
 from qspectrumanalyzer.data import DataStorage
 from qspectrumanalyzer.plot import SpectrumPlotWidget, WaterfallPlotWidget
-from qspectrumanalyzer.utils import color_to_str, str_to_color
+from qspectrumanalyzer.utils import color_to_str, str_to_color, human_time
 
 from qspectrumanalyzer.ui_qspectrumanalyzer_settings import Ui_QSpectrumAnalyzerSettings
 from qspectrumanalyzer.ui_qspectrumanalyzer_settings_help import Ui_QSpectrumAnalyzerSettingsHelp
@@ -246,6 +246,12 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
         icon_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "qspectrumanalyzer.svg")
         self.setWindowIcon(QtGui.QIcon(icon_path))
 
+        # Create progress bar
+        self.progressbar = QtWidgets.QProgressBar()
+        self.progressbar.setMaximumWidth(250)
+        self.progressbar.setVisible(False)
+        self.statusbar.addPermanentWidget(self.progressbar)
+
         # Create plot widgets and update UI
         self.spectrumPlotWidget = SpectrumPlotWidget(self.mainPlotLayout)
         self.waterfallPlotWidget = WaterfallPlotWidget(self.waterfallPlotLayout, self.histogramPlotLayout)
@@ -254,7 +260,11 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
         self.spectrumPlotWidget.plot.setXLink(self.waterfallPlotWidget.plot)
 
         # Setup power thread and connect signals
+        self.update_status_timer = QtCore.QTimer()
+        self.update_status_timer.timeout.connect(self.update_status)
+        self.prev_sweep_time = None
         self.prev_data_timestamp = None
+        self.start_timestamp = None
         self.data_storage = None
         self.power_thread = None
         self.backend = None
@@ -332,8 +342,8 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
             self.stopFreqSpinBox.setValue(stop_freq_max)
 
         self.power_thread = backend_module.PowerThread(self.data_storage)
-        self.power_thread.powerThreadStarted.connect(self.update_buttons)
-        self.power_thread.powerThreadStopped.connect(self.update_buttons)
+        self.power_thread.powerThreadStarted.connect(self.on_power_thread_started)
+        self.power_thread.powerThreadStopped.connect(self.on_power_thread_stopped)
 
     def set_dock_size(self, dock, width, height):
         """Ugly hack for resizing QDockWidget (because it doesn't respect minimumSize / sizePolicy set in Designer)
@@ -433,21 +443,72 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
 
     def update_data(self, data_storage):
         """Update GUI when new data is received"""
-        # Show number of hops and how much time did the sweep really take
         timestamp = time.time()
-        sweep_time = timestamp - self.prev_data_timestamp
+        self.prev_sweep_time = timestamp - self.prev_data_timestamp
         self.prev_data_timestamp = timestamp
+        self.update_status()
 
+    def update_status(self):
+        """Update status bar"""
+        timestamp = time.time()
         status = []
+
         if self.power_thread.params["hops"]:
             status.append(self.tr("Frequency hops: {}").format(self.power_thread.params["hops"]))
-        status.append(self.tr("Sweep time: {:.2f} s | FPS: {:.2f}").format(sweep_time, 1 / sweep_time))
+
+        status.append(self.tr("Total time: {} | Sweep time: {:.2f} s ({:.2f} FPS)").format(
+            human_time(timestamp - self.start_timestamp),
+            self.prev_sweep_time,
+            (1 / self.prev_sweep_time) if self.prev_sweep_time else 0
+        ))
+
         self.show_status(" | ".join(status), timeout=0)
+        self.update_progress(timestamp - self.prev_data_timestamp)
+
+    def update_progress(self, value):
+        """Update progress bar"""
+        value *= 1000
+        value_max = self.intervalSpinBox.value() * 1000
+
+        if value_max < 1000:
+            return
+
+        if value > value_max + 1000:
+            self.progressbar.setRange(0, 0)
+            value = value_max
+        elif value > value_max:
+            value = value_max
+        else:
+            self.progressbar.setRange(0, value_max)
+
+        self.progressbar.setValue(value)
+
+    def on_power_thread_started(self):
+        """Update buttons state when power thread is started"""
+        self.update_buttons()
+        self.progressbar.setVisible(True)
+
+    def on_power_thread_stopped(self):
+        """Update buttons state and status bar when power thread is stopped"""
+        self.update_buttons()
+        self.update_status_timer.stop()
+        self.update_status()
+        self.progressbar.setVisible(False)
 
     def start(self, single_shot=False):
         """Start power thread"""
         settings = QtCore.QSettings()
+
+        self.prev_sweep_time = 0
         self.prev_data_timestamp = time.time()
+        self.start_timestamp = self.prev_data_timestamp
+
+        if self.intervalSpinBox.value() >= 1:
+            self.progressbar.setRange(0, self.intervalSpinBox.value() * 1000)
+        else:
+            self.progressbar.setRange(0, 0)
+        self.update_progress(0)
+        self.update_status_timer.start(100)
 
         self.data_storage.reset()
         self.data_storage.set_smooth(
