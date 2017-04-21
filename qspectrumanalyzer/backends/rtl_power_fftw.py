@@ -1,4 +1,4 @@
-import math, pprint, shlex
+import math, shlex
 
 from Qt import QtCore
 
@@ -54,10 +54,6 @@ class PowerThread(BasePowerThread):
         self.hop = 0
         self.prev_line = ""
 
-        print("rtl_power_fftw params:")
-        pprint.pprint(self.params)
-        print()
-
     def get_hop_freq(self, hop):
         """Get start and stop frequency for particular hop"""
         start_freq = self.params["start_freq"] * 1e6 + (self.params["sample_rate"] - self.params["overhang"]) * hop
@@ -91,6 +87,9 @@ class PowerThread(BasePowerThread):
             if additional_params:
                 cmdline.extend(shlex.split(additional_params))
 
+            print('Starting backend:')
+            print(' '.join(cmdline))
+            print()
             self.process = subprocess.Popen(cmdline, stdout=subprocess.PIPE,
                                             universal_newlines=True, console=False)
 

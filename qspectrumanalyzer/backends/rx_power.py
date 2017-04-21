@@ -1,4 +1,4 @@
-import pprint, shlex
+import shlex
 
 import numpy as np
 from Qt import QtCore
@@ -43,10 +43,6 @@ class PowerThread(BasePowerThread):
         self.databuffer = {}
         self.last_timestamp = ""
 
-        print("rx_power params:")
-        pprint.pprint(self.params)
-        print()
-
     def process_start(self):
         """Start rx_power process"""
         if not self.process and self.params:
@@ -71,6 +67,9 @@ class PowerThread(BasePowerThread):
             if additional_params:
                 cmdline.extend(shlex.split(additional_params))
 
+            print('Starting backend:')
+            print(' '.join(cmdline))
+            print()
             self.process = subprocess.Popen(cmdline, stdout=subprocess.PIPE,
                                             universal_newlines=True, console=False)
 

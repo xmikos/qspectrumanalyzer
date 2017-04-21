@@ -1,4 +1,4 @@
-import pprint, struct, shlex, sys, time
+import struct, shlex, sys, time
 
 import numpy as np
 from Qt import QtCore
@@ -81,10 +81,6 @@ class PowerThread(BasePowerThread):
         self.lastsweep = 0
         self.interval = interval
 
-        print("hackrf_sweep params:")
-        pprint.pprint(self.params)
-        print()
-
     def process_start(self):
         """Start hackrf_sweep process"""
         if not self.process and self.params:
@@ -110,6 +106,9 @@ class PowerThread(BasePowerThread):
             if additional_params:
                 cmdline.extend(shlex.split(additional_params))
 
+            print('Starting backend:')
+            print(' '.join(cmdline))
+            print()
             self.process = subprocess.Popen(cmdline, stdout=subprocess.PIPE,
                                             universal_newlines=False, console=False)
 

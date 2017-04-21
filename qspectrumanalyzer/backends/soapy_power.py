@@ -1,4 +1,4 @@
-import os, sys, pprint, shlex, signal
+import os, sys, shlex, signal
 
 import numpy as np
 from Qt import QtCore
@@ -76,10 +76,6 @@ class PowerThread(BasePowerThread):
         self.pipe_write_fd = None
         self.pipe_write_handle = None
 
-        print("soapy_power params:")
-        pprint.pprint(self.params)
-        print()
-
     def process_start(self):
         """Start soapy_power process"""
         if not self.process and self.params:
@@ -129,6 +125,9 @@ class PowerThread(BasePowerThread):
             else:
                 creationflags = 0
 
+            print('Starting backend:')
+            print(' '.join(cmdline))
+            print()
             self.process = subprocess.Popen(cmdline, close_fds=False, universal_newlines=False,
                                             creationflags=creationflags, console=False)
 
