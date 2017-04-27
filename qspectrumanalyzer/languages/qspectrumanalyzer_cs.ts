@@ -3,7 +3,7 @@
 <context>
     <name>QSpectrumAnalyzerBaseline</name>
     <message>
-        <location filename="../__main__.py" line="255"/>
+        <location filename="../baseline.py" line="20"/>
         <source>Select baseline file - QSpectrumAnalyzer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -74,12 +74,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../__main__.py" line="730"/>
+        <location filename="../__main__.py" line="496"/>
         <source>About - QSpectrumAnalyzer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../__main__.py" line="730"/>
+        <location filename="../__main__.py" line="496"/>
         <source>QSpectrumAnalyzer {}</source>
         <translation type="unfinished"></translation>
     </message>
@@ -114,12 +114,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../__main__.py" line="491"/>
+        <location filename="../__main__.py" line="253"/>
         <source>Frequency hops: {}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../__main__.py" line="493"/>
+        <location filename="../__main__.py" line="255"/>
         <source>Total time: {} | Sweep time: {:.2f} s ({:.2f} FPS)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -229,33 +229,33 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="320"/>
-        <source>&amp;Controls</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="324"/>
-        <source>Fre&amp;quency</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="331"/>
-        <source>Se&amp;ttings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../ui_qspectrumanalyzer.py" line="348"/>
         <source>Subtract baseline</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="349"/>
-        <source>&amp;Levels</source>
+        <location filename="../ui_qspectrumanalyzer.py" line="346"/>
+        <source>Baseline</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="346"/>
-        <source>Baseline</source>
+        <location filename="../ui_qspectrumanalyzer.py" line="320"/>
+        <source>Controls</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="324"/>
+        <source>Frequency</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="331"/>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="349"/>
+        <source>Levels</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -290,7 +290,7 @@
 <context>
     <name>QSpectrumAnalyzerSettings</name>
     <message>
-        <location filename="../__main__.py" line="76"/>
+        <location filename="../settings.py" line="57"/>
         <source>Select executable - QSpectrumAnalyzer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -394,44 +394,44 @@
     </message>
 </context>
 <context>
-    <name>QSpectrumAnalyzerSmooth</name>
+    <name>QSpectrumAnalyzerSmoothing</name>
     <message>
-        <location filename="../ui_qspectrumanalyzer_smooth.py" line="60"/>
+        <location filename="../ui_qspectrumanalyzer_smoothing.py" line="60"/>
         <source>Smoothing - QSpectrumAnalyzer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui_qspectrumanalyzer_smooth.py" line="61"/>
+        <location filename="../ui_qspectrumanalyzer_smoothing.py" line="61"/>
         <source>&amp;Window function:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui_qspectrumanalyzer_smooth.py" line="62"/>
+        <location filename="../ui_qspectrumanalyzer_smoothing.py" line="62"/>
         <source>rectangular</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui_qspectrumanalyzer_smooth.py" line="63"/>
+        <location filename="../ui_qspectrumanalyzer_smoothing.py" line="63"/>
         <source>hanning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui_qspectrumanalyzer_smooth.py" line="64"/>
+        <location filename="../ui_qspectrumanalyzer_smoothing.py" line="64"/>
         <source>hamming</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui_qspectrumanalyzer_smooth.py" line="65"/>
+        <location filename="../ui_qspectrumanalyzer_smoothing.py" line="65"/>
         <source>bartlett</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui_qspectrumanalyzer_smooth.py" line="66"/>
+        <location filename="../ui_qspectrumanalyzer_smoothing.py" line="66"/>
         <source>blackman</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui_qspectrumanalyzer_smooth.py" line="67"/>
+        <location filename="../ui_qspectrumanalyzer_smoothing.py" line="67"/>
         <source>Window len&amp;gth:</source>
         <translation type="unfinished"></translation>
     </message>
