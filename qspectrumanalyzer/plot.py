@@ -29,6 +29,8 @@ class SpectrumPlotWidget:
         self.peak_hold_min_color = pg.mkColor("b")
         self.average = False
         self.average_color = pg.mkColor("c")
+        self.baseline = False
+        self.baseline_color = pg.mkColor("m")
 
         self.create_plot()
 
@@ -45,6 +47,7 @@ class SpectrumPlotWidget:
         #self.plot.setDownsampling(mode="peak")
         #self.plot.setClipToView(True)
 
+        self.create_baseline_curve()
         self.create_persistence_curves()
         self.create_average_curve()
         self.create_peak_hold_min_curve()
@@ -81,6 +84,11 @@ class SpectrumPlotWidget:
         self.curve_average = self.plot.plot(pen=self.average_color)
         self.curve_average.setZValue(700)
 
+    def create_baseline_curve(self):
+        """Create baseline curve"""
+        self.curve_baseline = self.plot.plot(pen=self.baseline_color)
+        self.curve_baseline.setZValue(500)
+
     def create_persistence_curves(self):
         """Create spectrum persistence curves"""
         z_index_base = 600
@@ -99,6 +107,7 @@ class SpectrumPlotWidget:
         self.curve_peak_hold_max.setPen(self.peak_hold_max_color)
         self.curve_peak_hold_min.setPen(self.peak_hold_min_color)
         self.curve_average.setPen(self.average_color)
+        self.curve_baseline.setPen(self.baseline_color)
 
         decay = self.get_decay()
         for i, curve in enumerate(self.persistence_curves):
@@ -161,6 +170,17 @@ class SpectrumPlotWidget:
             if force:
                 self.curve_average.setVisible(self.average)
 
+    def update_baseline(self, data_storage, force=False):
+        """Update baseline curve"""
+        if data_storage.baseline_x is None or data_storage.baseline is None:
+            self.curve_baseline.clear()
+            return
+
+        if self.baseline or force:
+            self.curve_baseline.setData(data_storage.baseline_x, data_storage.baseline)
+            if force:
+                self.curve_baseline.setVisible(self.baseline)
+
     def update_persistence(self, data_storage, force=False):
         """Update persistence curves"""
         if data_storage.x is None:
@@ -184,6 +204,7 @@ class SpectrumPlotWidget:
 
         QtCore.QTimer.singleShot(0, lambda: self.update_plot(data_storage, force=True))
         QtCore.QTimer.singleShot(0, lambda: self.update_average(data_storage, force=True))
+        QtCore.QTimer.singleShot(0, lambda: self.update_baseline(data_storage, force=True))
         QtCore.QTimer.singleShot(0, lambda: self.update_peak_hold_max(data_storage, force=True))
         QtCore.QTimer.singleShot(0, lambda: self.update_peak_hold_min(data_storage, force=True))
 
@@ -230,6 +251,10 @@ class SpectrumPlotWidget:
     def clear_average(self):
         """Clear average curve"""
         self.curve_average.clear()
+
+    def clear_baseline(self):
+        """Clear baseline curve"""
+        self.curve_baseline.clear()
 
     def clear_persistence(self):
         """Clear spectrum persistence curves"""
@@ -308,3 +333,16 @@ class WaterfallPlotWidget:
     def clear_plot(self):
         """Clear waterfall plot"""
         self.counter = 0
+
+    def recalculate_plot(self, data_storage):
+        """Recalculate waterfall plot"""
+        if data_storage.x is None:
+            return
+
+        self.waterfallImg.setImage(data_storage.history.buffer[-self.counter:].T,
+                                   autoLevels=False, autoRange=False)
+        self.waterfallImg.setPos(
+            data_storage.x[0],
+            -self.counter if self.counter < self.history_size else -self.history_size
+        )
+        self.histogram.setImageItem(self.waterfallImg)

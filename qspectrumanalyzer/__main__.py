@@ -14,6 +14,7 @@ from qspectrumanalyzer.ui_qspectrumanalyzer_settings import Ui_QSpectrumAnalyzer
 from qspectrumanalyzer.ui_qspectrumanalyzer_settings_help import Ui_QSpectrumAnalyzerSettingsHelp
 from qspectrumanalyzer.ui_qspectrumanalyzer_smooth import Ui_QSpectrumAnalyzerSmooth
 from qspectrumanalyzer.ui_qspectrumanalyzer_persistence import Ui_QSpectrumAnalyzerPersistence
+from qspectrumanalyzer.ui_qspectrumanalyzer_baseline import Ui_QSpectrumAnalyzerBaseline
 from qspectrumanalyzer.ui_qspectrumanalyzer_colors import Ui_QSpectrumAnalyzerColors
 from qspectrumanalyzer.ui_qspectrumanalyzer import Ui_QSpectrumAnalyzerMainWindow
 
@@ -223,6 +224,7 @@ class QSpectrumAnalyzerColors(QtWidgets.QDialog, Ui_QSpectrumAnalyzerColors):
         self.peakHoldMinColorButton.setColor(str_to_color(settings.value("peak_hold_min_color", "0, 0, 255, 255")))
         self.averageColorButton.setColor(str_to_color(settings.value("average_color", "0, 255, 255, 255")))
         self.persistenceColorButton.setColor(str_to_color(settings.value("persistence_color", "0, 255, 0, 255")))
+        self.baselineColorButton.setColor(str_to_color(settings.value("baseline_color", "255, 0, 255, 255")))
 
     def accept(self):
         """Save settings when dialog is accepted"""
@@ -232,6 +234,32 @@ class QSpectrumAnalyzerColors(QtWidgets.QDialog, Ui_QSpectrumAnalyzerColors):
         settings.setValue("peak_hold_min_color", color_to_str(self.peakHoldMinColorButton.color()))
         settings.setValue("average_color", color_to_str(self.averageColorButton.color()))
         settings.setValue("persistence_color", color_to_str(self.persistenceColorButton.color()))
+        settings.setValue("baseline_color", color_to_str(self.baselineColorButton.color()))
+        QtWidgets.QDialog.accept(self)
+
+
+class QSpectrumAnalyzerBaseline(QtWidgets.QDialog, Ui_QSpectrumAnalyzerBaseline):
+    """QSpectrumAnalyzer baseline dialog"""
+    def __init__(self, parent=None):
+        # Initialize UI
+        super().__init__(parent)
+        self.setupUi(self)
+
+        # Load settings
+        settings = QtCore.QSettings()
+        self.baselineFileEdit.setText(settings.value("baseline_file", ""))
+
+    @QtCore.Slot()
+    def on_baselineFileButton_clicked(self):
+        """Open file dialog when button is clicked"""
+        filename = QtWidgets.QFileDialog.getOpenFileName(self, self.tr("Select baseline file - QSpectrumAnalyzer"))[0]
+        if filename:
+            self.baselineFileEdit.setText(filename)
+
+    def accept(self):
+        """Save settings when dialog is accepted"""
+        settings = QtCore.QSettings()
+        settings.setValue("baseline_file", self.baselineFileEdit.text())
         QtWidgets.QDialog.accept(self)
 
 
@@ -286,7 +314,9 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
         self.data_storage.data_recalculated.connect(self.spectrumPlotWidget.recalculate_plot)
         self.data_storage.data_recalculated.connect(self.spectrumPlotWidget.recalculate_persistence)
         self.data_storage.history_updated.connect(self.waterfallPlotWidget.update_plot)
+        self.data_storage.history_recalculated.connect(self.waterfallPlotWidget.recalculate_plot)
         self.data_storage.average_updated.connect(self.spectrumPlotWidget.update_average)
+        self.data_storage.baseline_updated.connect(self.spectrumPlotWidget.update_baseline)
         self.data_storage.peak_hold_max_updated.connect(self.spectrumPlotWidget.update_peak_hold_max)
         self.data_storage.peak_hold_min_updated.connect(self.spectrumPlotWidget.update_peak_hold_min)
 
@@ -386,6 +416,8 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
         self.averageCheckBox.setChecked(settings.value("average", 0, int))
         self.smoothCheckBox.setChecked(settings.value("smooth", 0, int))
         self.persistenceCheckBox.setChecked(settings.value("persistence", 0, int))
+        self.baselineCheckBox.setChecked(settings.value("baseline", 0, int))
+        self.subtractBaselineCheckBox.setChecked(settings.value("subtract_baseline", 0, int))
 
         # Restore window state
         if settings.value("window_state"):
@@ -425,6 +457,8 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
         settings.setValue("average", int(self.averageCheckBox.isChecked()))
         settings.setValue("smooth", int(self.smoothCheckBox.isChecked()))
         settings.setValue("persistence", int(self.persistenceCheckBox.isChecked()))
+        settings.setValue("baseline", int(self.baselineCheckBox.isChecked()))
+        settings.setValue("subtract_baseline", int(self.subtractBaselineCheckBox.isChecked()))
 
         # Save window state and geometry
         settings.setValue("window_geometry", self.saveGeometry())
@@ -510,14 +544,6 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
         self.update_progress(0)
         self.update_status_timer.start(100)
 
-        self.data_storage.reset()
-        self.data_storage.set_smooth(
-            bool(self.smoothCheckBox.isChecked()),
-            settings.value("smooth_length", 11, int),
-            settings.value("smooth_window", "hanning"),
-            recalculate=False
-        )
-
         self.waterfallPlotWidget.history_size = settings.value("waterfall_history_size", 100, int)
         self.waterfallPlotWidget.clear_plot()
 
@@ -529,6 +555,8 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
         self.spectrumPlotWidget.peak_hold_min_color = str_to_color(settings.value("peak_hold_min_color", "0, 0, 255, 255"))
         self.spectrumPlotWidget.average = bool(self.averageCheckBox.isChecked())
         self.spectrumPlotWidget.average_color = str_to_color(settings.value("average_color", "0, 255, 255, 255"))
+        self.spectrumPlotWidget.baseline = bool(self.baselineCheckBox.isChecked())
+        self.spectrumPlotWidget.baseline_color = str_to_color(settings.value("baseline_color", "255, 0, 255, 255"))
         self.spectrumPlotWidget.persistence = bool(self.persistenceCheckBox.isChecked())
         self.spectrumPlotWidget.persistence_length = settings.value("persistence_length", 5, int)
         self.spectrumPlotWidget.persistence_decay = settings.value("persistence_decay", "exponential")
@@ -537,21 +565,35 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
         self.spectrumPlotWidget.clear_peak_hold_max()
         self.spectrumPlotWidget.clear_peak_hold_min()
         self.spectrumPlotWidget.clear_average()
+        self.spectrumPlotWidget.clear_baseline()
         self.spectrumPlotWidget.clear_persistence()
 
+        self.data_storage.reset()
+        self.data_storage.set_smooth(
+            bool(self.smoothCheckBox.isChecked()),
+            settings.value("smooth_length", 11, int),
+            settings.value("smooth_window", "hanning")
+        )
+        self.data_storage.set_subtract_baseline(
+            bool(self.subtractBaselineCheckBox.isChecked()),
+            settings.value("baseline_file", None)
+        )
+
         if not self.power_thread.alive:
-            self.power_thread.setup(float(self.startFreqSpinBox.value()),
-                                    float(self.stopFreqSpinBox.value()),
-                                    float(self.binSizeSpinBox.value()),
-                                    interval=float(self.intervalSpinBox.value()),
-                                    gain=float(self.gainSpinBox.value()),
-                                    ppm=int(self.ppmSpinBox.value()),
-                                    crop=int(self.cropSpinBox.value()) / 100.0,
-                                    single_shot=single_shot,
-                                    device=settings.value("device", ""),
-                                    sample_rate=settings.value("sample_rate", 2560000, float),
-                                    bandwidth=settings.value("bandwidth", 0, float),
-                                    lnb_lo=settings.value("lnb_lo", 0, float))
+            self.power_thread.setup(
+                float(self.startFreqSpinBox.value()),
+                float(self.stopFreqSpinBox.value()),
+                float(self.binSizeSpinBox.value()),
+                interval=float(self.intervalSpinBox.value()),
+                gain=float(self.gainSpinBox.value()),
+                ppm=int(self.ppmSpinBox.value()),
+                crop=int(self.cropSpinBox.value()) / 100.0,
+                single_shot=single_shot,
+                device=settings.value("device", ""),
+                sample_rate=settings.value("sample_rate", 2560000, float),
+                bandwidth=settings.value("bandwidth", 0, float),
+                lnb_lo=settings.value("lnb_lo", 0, float)
+            )
             self.power_thread.start()
 
     def stop(self):
@@ -613,9 +655,33 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
         self.data_storage.set_smooth(
             checked,
             settings.value("smooth_length", 11, int),
-            settings.value("smooth_window", "hanning"),
-            recalculate=True
+            settings.value("smooth_window", "hanning")
         )
+
+    @QtCore.Slot(bool)
+    def on_baselineCheckBox_toggled(self, checked):
+        self.spectrumPlotWidget.baseline = checked
+        if self.spectrumPlotWidget.curve_baseline.xData is None:
+            self.spectrumPlotWidget.update_baseline(self.data_storage)
+        self.spectrumPlotWidget.curve_baseline.setVisible(checked)
+
+    @QtCore.Slot(bool)
+    def on_subtractBaselineCheckBox_toggled(self, checked):
+        settings = QtCore.QSettings()
+        self.data_storage.set_subtract_baseline(
+            checked,
+            settings.value("baseline_file", None)
+        )
+
+    @QtCore.Slot()
+    def on_baselineButton_clicked(self):
+        dialog = QSpectrumAnalyzerBaseline(self)
+        if dialog.exec_():
+            settings = QtCore.QSettings()
+            self.data_storage.set_subtract_baseline(
+                bool(self.subtractBaselineCheckBox.isChecked()),
+                settings.value("baseline_file", None)
+            )
 
     @QtCore.Slot()
     def on_smoothButton_clicked(self):
@@ -625,8 +691,7 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
             self.data_storage.set_smooth(
                 bool(self.smoothCheckBox.isChecked()),
                 settings.value("smooth_length", 11, int),
-                settings.value("smooth_window", "hanning"),
-                recalculate=True
+                settings.value("smooth_window", "hanning")
             )
 
     @QtCore.Slot()
@@ -655,6 +720,7 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
             self.spectrumPlotWidget.peak_hold_min_color = str_to_color(settings.value("peak_hold_min_color", "0, 0, 255, 255"))
             self.spectrumPlotWidget.average_color = str_to_color(settings.value("average_color", "0, 255, 255, 255"))
             self.spectrumPlotWidget.persistence_color = str_to_color(settings.value("persistence_color", "0, 255, 0, 255"))
+            self.spectrumPlotWidget.baseline_color = str_to_color(settings.value("baseline_color", "255, 0, 255, 255"))
             self.spectrumPlotWidget.set_colors()
 
     @QtCore.Slot()

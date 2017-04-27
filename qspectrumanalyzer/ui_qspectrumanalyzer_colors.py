@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'qspectrumanalyzer/qspectrumanalyzer_colors.ui'
 #
-# Created by: PyQt5 UI code generator 5.7.1
+# Created by: PyQt5 UI code generator 5.8
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -11,7 +11,7 @@ from Qt import QtCore, QtGui, QtWidgets
 class Ui_QSpectrumAnalyzerColors(object):
     def setupUi(self, QSpectrumAnalyzerColors):
         QSpectrumAnalyzerColors.setObjectName("QSpectrumAnalyzerColors")
-        QSpectrumAnalyzerColors.resize(232, 260)
+        QSpectrumAnalyzerColors.resize(253, 266)
         self.verticalLayout = QtWidgets.QVBoxLayout(QSpectrumAnalyzerColors)
         self.verticalLayout.setObjectName("verticalLayout")
         self.formLayout = QtWidgets.QFormLayout()
@@ -71,6 +71,17 @@ class Ui_QSpectrumAnalyzerColors(object):
         self.persistenceColorButton.setSizePolicy(sizePolicy)
         self.persistenceColorButton.setObjectName("persistenceColorButton")
         self.formLayout.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.persistenceColorButton)
+        self.label = QtWidgets.QLabel(QSpectrumAnalyzerColors)
+        self.label.setObjectName("label")
+        self.formLayout.setWidget(5, QtWidgets.QFormLayout.LabelRole, self.label)
+        self.baselineColorButton = ColorButton(QSpectrumAnalyzerColors)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.baselineColorButton.sizePolicy().hasHeightForWidth())
+        self.baselineColorButton.setSizePolicy(sizePolicy)
+        self.baselineColorButton.setObjectName("baselineColorButton")
+        self.formLayout.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.baselineColorButton)
         self.verticalLayout.addLayout(self.formLayout)
         spacerItem = QtWidgets.QSpacerItem(20, 2, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem)
@@ -84,6 +95,7 @@ class Ui_QSpectrumAnalyzerColors(object):
         self.label_6.setBuddy(self.peakHoldMinColorButton)
         self.label_5.setBuddy(self.averageColorButton)
         self.label_3.setBuddy(self.persistenceColorButton)
+        self.label.setBuddy(self.baselineColorButton)
 
         self.retranslateUi(QSpectrumAnalyzerColors)
         self.buttonBox.accepted.connect(QSpectrumAnalyzerColors.accept)
@@ -93,20 +105,22 @@ class Ui_QSpectrumAnalyzerColors(object):
         QSpectrumAnalyzerColors.setTabOrder(self.peakHoldMaxColorButton, self.peakHoldMinColorButton)
         QSpectrumAnalyzerColors.setTabOrder(self.peakHoldMinColorButton, self.averageColorButton)
         QSpectrumAnalyzerColors.setTabOrder(self.averageColorButton, self.persistenceColorButton)
-        QSpectrumAnalyzerColors.setTabOrder(self.persistenceColorButton, self.buttonBox)
+        QSpectrumAnalyzerColors.setTabOrder(self.persistenceColorButton, self.baselineColorButton)
 
     def retranslateUi(self, QSpectrumAnalyzerColors):
         _translate = QtCore.QCoreApplication.translate
         QSpectrumAnalyzerColors.setWindowTitle(_translate("QSpectrumAnalyzerColors", "Colors - QSpectrumAnalyzer"))
-        self.label_2.setText(_translate("QSpectrumAnalyzerColors", "Main curve color:"))
+        self.label_2.setText(_translate("QSpectrumAnalyzerColors", "&Main curve color:"))
         self.mainColorButton.setText(_translate("QSpectrumAnalyzerColors", "..."))
-        self.label_4.setText(_translate("QSpectrumAnalyzerColors", "Max. peak hold color:"))
+        self.label_4.setText(_translate("QSpectrumAnalyzerColors", "Max. peak &hold color:"))
         self.peakHoldMaxColorButton.setText(_translate("QSpectrumAnalyzerColors", "..."))
-        self.label_6.setText(_translate("QSpectrumAnalyzerColors", "Min. peak hold color:"))
+        self.label_6.setText(_translate("QSpectrumAnalyzerColors", "M&in. peak hold color:"))
         self.peakHoldMinColorButton.setText(_translate("QSpectrumAnalyzerColors", "..."))
-        self.label_5.setText(_translate("QSpectrumAnalyzerColors", "Average color:"))
+        self.label_5.setText(_translate("QSpectrumAnalyzerColors", "Average &color:"))
         self.averageColorButton.setText(_translate("QSpectrumAnalyzerColors", "..."))
-        self.label_3.setText(_translate("QSpectrumAnalyzerColors", "Persistence color:"))
+        self.label_3.setText(_translate("QSpectrumAnalyzerColors", "Persistence co&lor:"))
         self.persistenceColorButton.setText(_translate("QSpectrumAnalyzerColors", "..."))
+        self.label.setText(_translate("QSpectrumAnalyzerColors", "&Baseline color:"))
+        self.baselineColorButton.setText(_translate("QSpectrumAnalyzerColors", "..."))
 
 from pyqtgraph import ColorButton

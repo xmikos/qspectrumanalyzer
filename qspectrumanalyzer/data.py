@@ -1,9 +1,10 @@
-import time, sys
+import time, sys, os
 
 from Qt import QtCore
 import numpy as np
 
 from qspectrumanalyzer.utils import smooth
+from qspectrumanalyzer.backends import soapy_power
 
 
 class HistoryBuffer:
@@ -59,8 +60,10 @@ class DataStorage(QtCore.QObject):
     """Data storage for spectrum measurements"""
     history_updated = QtCore.Signal(object)
     data_updated = QtCore.Signal(object)
+    history_recalculated = QtCore.Signal(object)
     data_recalculated = QtCore.Signal(object)
     average_updated = QtCore.Signal(object)
+    baseline_updated = QtCore.Signal(object)
     peak_hold_max_updated = QtCore.Signal(object)
     peak_hold_min_updated = QtCore.Signal(object)
 
@@ -70,6 +73,10 @@ class DataStorage(QtCore.QObject):
         self.smooth = False
         self.smooth_length = 11
         self.smooth_window = "hanning"
+        self.subtract_baseline = False
+        self.prev_baseline = None
+        self.baseline = None
+        self.baseline_x = None
 
         # Use only one worker thread because it is not faster
         # with more threads (and memory consumption is much higher)
@@ -113,6 +120,11 @@ class DataStorage(QtCore.QObject):
 
         if self.x is None:
             self.x = data["x"]
+
+        # Subtract baseline from data
+        data["y"] = np.asarray(data["y"])
+        if self.subtract_baseline and self.baseline is not None and len(data["y"]) == len(self.baseline):
+            data["y"] -= self.baseline
 
         self.start_task(self.update_history, data.copy())
         self.start_task(self.update_data, data)
@@ -165,16 +177,63 @@ class DataStorage(QtCore.QObject):
         """Apply smoothing function to data"""
         return smooth(y, window_len=self.smooth_length, window=self.smooth_window)
 
-    def set_smooth(self, toggle, length=11, window="hanning", recalculate=False):
+    def set_smooth(self, toggle, length=11, window="hanning"):
         """Toggle smoothing and set smoothing params"""
         if toggle != self.smooth or length != self.smooth_length or window != self.smooth_window:
             self.smooth = toggle
             self.smooth_length = length
             self.smooth_window = window
-            if recalculate:
-                self.start_task(self.recalculate_data)
-            else:
-                self.reset_data()
+            self.start_task(self.recalculate_data)
+
+    def set_subtract_baseline(self, toggle, baseline_file=None):
+        """Toggle baseline subtraction and set baseline"""
+        baseline = None
+        baseline_x = None
+
+        # Load baseline from file (compute average if there are multiple PSD data in file)
+        if baseline_file and os.path.isfile(baseline_file):
+            average_counter = 0
+            with open(baseline_file, 'rb') as f:
+                for data in soapy_power.read_from_file(f):
+                    average_counter += 1
+                    if baseline is None:
+                        baseline = data['y'].copy()
+                        baseline_x = data['x'].copy()
+                    else:
+                        baseline = np.average((baseline, data['y']), axis=0, weights=(average_counter - 1, 1))
+
+        # Don't subtract baseline if number of bins in baseline differs from number of bins in data
+        if self.y is not None and baseline is not None and len(self.y) != len(baseline):
+            print("Can't subtract baseline (expected {:d} bins, but baseline has {:d} bins)".format(
+                len(self.y), len(baseline)
+            ))
+            #baseline = None
+
+        if self.subtract_baseline:
+            self.prev_baseline = self.baseline
+
+        #if not np.array_equal(baseline, self.baseline):
+        self.baseline = baseline
+        self.baseline_x = baseline_x
+        self.baseline_updated.emit(self)
+
+        self.subtract_baseline = toggle
+        self.start_task(self.recalculate_history)
+        self.start_task(self.recalculate_data)
+
+    def recalculate_history(self):
+        """Recalculate spectrum measurements history"""
+        if self.history is None:
+            return
+
+        history = self.history.get_buffer()
+        if self.prev_baseline is not None and len(history[-1]) == len(self.prev_baseline):
+            history += self.prev_baseline
+            self.prev_baseline = None
+        if self.subtract_baseline and self.baseline is not None and len(history[-1]) == len(self.baseline):
+            history -= self.baseline
+
+        self.history_recalculated.emit(self)
 
     def recalculate_data(self):
         """Recalculate current data from history"""

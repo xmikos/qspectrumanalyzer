@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'qspectrumanalyzer/qspectrumanalyzer.ui'
 #
-# Created by: PyQt5 UI code generator 5.7.1
+# Created by: PyQt5 UI code generator 5.8
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -11,7 +11,7 @@ from Qt import QtCore, QtGui, QtWidgets
 class Ui_QSpectrumAnalyzerMainWindow(object):
     def setupUi(self, QSpectrumAnalyzerMainWindow):
         QSpectrumAnalyzerMainWindow.setObjectName("QSpectrumAnalyzerMainWindow")
-        QSpectrumAnalyzerMainWindow.resize(1200, 840)
+        QSpectrumAnalyzerMainWindow.resize(1200, 892)
         self.centralwidget = QtWidgets.QWidget(QSpectrumAnalyzerMainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.centralwidget)
@@ -84,7 +84,7 @@ class Ui_QSpectrumAnalyzerMainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.frequencyDockWidget.sizePolicy().hasHeightForWidth())
         self.frequencyDockWidget.setSizePolicy(sizePolicy)
-        self.frequencyDockWidget.setMinimumSize(QtCore.QSize(197, 166))
+        self.frequencyDockWidget.setMinimumSize(QtCore.QSize(208, 166))
         self.frequencyDockWidget.setFeatures(QtWidgets.QDockWidget.DockWidgetFloatable|QtWidgets.QDockWidget.DockWidgetMovable)
         self.frequencyDockWidget.setObjectName("frequencyDockWidget")
         self.frequencyDockWidgetContents = QtWidgets.QWidget()
@@ -216,7 +216,7 @@ class Ui_QSpectrumAnalyzerMainWindow(object):
         self.persistenceButton.setObjectName("persistenceButton")
         self.gridLayout.addWidget(self.persistenceButton, 8, 2, 1, 1)
         spacerItem2 = QtWidgets.QSpacerItem(20, 1, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout.addItem(spacerItem2, 9, 0, 1, 1)
+        self.gridLayout.addItem(spacerItem2, 11, 0, 1, 1)
         self.cropSpinBox = QtWidgets.QSpinBox(self.settingsDockWidgetContents)
         self.cropSpinBox.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.cropSpinBox.setObjectName("cropSpinBox")
@@ -230,6 +230,16 @@ class Ui_QSpectrumAnalyzerMainWindow(object):
         self.gainSpinBox.setProperty("value", -1.0)
         self.gainSpinBox.setObjectName("gainSpinBox")
         self.gridLayout.addWidget(self.gainSpinBox, 1, 1, 1, 2)
+        self.baselineCheckBox = QtWidgets.QCheckBox(self.settingsDockWidgetContents)
+        self.baselineCheckBox.setObjectName("baselineCheckBox")
+        self.gridLayout.addWidget(self.baselineCheckBox, 9, 0, 1, 1)
+        self.baselineButton = QtWidgets.QToolButton(self.settingsDockWidgetContents)
+        self.baselineButton.setAutoRaise(False)
+        self.baselineButton.setObjectName("baselineButton")
+        self.gridLayout.addWidget(self.baselineButton, 9, 2, 1, 1)
+        self.subtractBaselineCheckBox = QtWidgets.QCheckBox(self.settingsDockWidgetContents)
+        self.subtractBaselineCheckBox.setObjectName("subtractBaselineCheckBox")
+        self.gridLayout.addWidget(self.subtractBaselineCheckBox, 10, 0, 1, 1)
         self.settingsDockWidget.setWidget(self.settingsDockWidgetContents)
         QSpectrumAnalyzerMainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.settingsDockWidget)
         self.levelsDockWidget = QtWidgets.QDockWidget(QSpectrumAnalyzerMainWindow)
@@ -295,27 +305,30 @@ class Ui_QSpectrumAnalyzerMainWindow(object):
         QSpectrumAnalyzerMainWindow.setTabOrder(self.smoothCheckBox, self.smoothButton)
         QSpectrumAnalyzerMainWindow.setTabOrder(self.smoothButton, self.persistenceCheckBox)
         QSpectrumAnalyzerMainWindow.setTabOrder(self.persistenceCheckBox, self.persistenceButton)
-        QSpectrumAnalyzerMainWindow.setTabOrder(self.persistenceButton, self.histogramPlotLayout)
-        QSpectrumAnalyzerMainWindow.setTabOrder(self.histogramPlotLayout, self.waterfallPlotLayout)
-        QSpectrumAnalyzerMainWindow.setTabOrder(self.waterfallPlotLayout, self.mainPlotLayout)
+        QSpectrumAnalyzerMainWindow.setTabOrder(self.persistenceButton, self.baselineCheckBox)
+        QSpectrumAnalyzerMainWindow.setTabOrder(self.baselineCheckBox, self.baselineButton)
+        QSpectrumAnalyzerMainWindow.setTabOrder(self.baselineButton, self.subtractBaselineCheckBox)
+        QSpectrumAnalyzerMainWindow.setTabOrder(self.subtractBaselineCheckBox, self.histogramPlotLayout)
+        QSpectrumAnalyzerMainWindow.setTabOrder(self.histogramPlotLayout, self.mainPlotLayout)
+        QSpectrumAnalyzerMainWindow.setTabOrder(self.mainPlotLayout, self.waterfallPlotLayout)
 
     def retranslateUi(self, QSpectrumAnalyzerMainWindow):
         _translate = QtCore.QCoreApplication.translate
         QSpectrumAnalyzerMainWindow.setWindowTitle(_translate("QSpectrumAnalyzerMainWindow", "QSpectrumAnalyzer"))
         self.menu_File.setTitle(_translate("QSpectrumAnalyzerMainWindow", "&File"))
         self.menu_Help.setTitle(_translate("QSpectrumAnalyzerMainWindow", "&Help"))
-        self.controlsDockWidget.setWindowTitle(_translate("QSpectrumAnalyzerMainWindow", "Controls"))
+        self.controlsDockWidget.setWindowTitle(_translate("QSpectrumAnalyzerMainWindow", "&Controls"))
         self.startButton.setText(_translate("QSpectrumAnalyzerMainWindow", "&Start"))
         self.stopButton.setText(_translate("QSpectrumAnalyzerMainWindow", "S&top"))
         self.singleShotButton.setText(_translate("QSpectrumAnalyzerMainWindow", "Si&ngle shot"))
-        self.frequencyDockWidget.setWindowTitle(_translate("QSpectrumAnalyzerMainWindow", "Frequency"))
+        self.frequencyDockWidget.setWindowTitle(_translate("QSpectrumAnalyzerMainWindow", "Fre&quency"))
         self.label_2.setText(_translate("QSpectrumAnalyzerMainWindow", "Start:"))
         self.startFreqSpinBox.setSuffix(_translate("QSpectrumAnalyzerMainWindow", " MHz"))
         self.label_3.setText(_translate("QSpectrumAnalyzerMainWindow", "Stop:"))
         self.stopFreqSpinBox.setSuffix(_translate("QSpectrumAnalyzerMainWindow", " MHz"))
         self.label.setText(_translate("QSpectrumAnalyzerMainWindow", "&Bin size:"))
         self.binSizeSpinBox.setSuffix(_translate("QSpectrumAnalyzerMainWindow", " kHz"))
-        self.settingsDockWidget.setWindowTitle(_translate("QSpectrumAnalyzerMainWindow", "Settings"))
+        self.settingsDockWidget.setWindowTitle(_translate("QSpectrumAnalyzerMainWindow", "Se&ttings"))
         self.label_4.setText(_translate("QSpectrumAnalyzerMainWindow", "&Interval [s]:"))
         self.label_6.setText(_translate("QSpectrumAnalyzerMainWindow", "&Gain [dB]:"))
         self.label_5.setText(_translate("QSpectrumAnalyzerMainWindow", "Corr. [ppm]:"))
@@ -330,7 +343,10 @@ class Ui_QSpectrumAnalyzerMainWindow(object):
         self.persistenceCheckBox.setText(_translate("QSpectrumAnalyzerMainWindow", "Persistence"))
         self.persistenceButton.setText(_translate("QSpectrumAnalyzerMainWindow", "..."))
         self.gainSpinBox.setSpecialValueText(_translate("QSpectrumAnalyzerMainWindow", "auto"))
-        self.levelsDockWidget.setWindowTitle(_translate("QSpectrumAnalyzerMainWindow", "Levels"))
+        self.baselineCheckBox.setText(_translate("QSpectrumAnalyzerMainWindow", "Baseline"))
+        self.baselineButton.setText(_translate("QSpectrumAnalyzerMainWindow", "..."))
+        self.subtractBaselineCheckBox.setText(_translate("QSpectrumAnalyzerMainWindow", "Subtract baseline"))
+        self.levelsDockWidget.setWindowTitle(_translate("QSpectrumAnalyzerMainWindow", "&Levels"))
         self.action_Settings.setText(_translate("QSpectrumAnalyzerMainWindow", "&Settings..."))
         self.action_Quit.setText(_translate("QSpectrumAnalyzerMainWindow", "&Quit"))
         self.action_Quit.setShortcut(_translate("QSpectrumAnalyzerMainWindow", "Ctrl+Q"))

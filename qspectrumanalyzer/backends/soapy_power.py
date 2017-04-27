@@ -212,3 +212,43 @@ class PowerThread(BasePowerThread):
         self.process_stop()
         self.alive = False
         self.powerThreadStopped.emit()
+
+
+def read_from_file(f):
+    """Generator for reading data from soapy_power binary files"""
+    if not formatter:
+        return
+
+    min_freq = None
+    databuffer = None
+
+    while True:
+        try:
+            data = formatter.read(f)
+        except ValueError as e:
+            print(e, file=sys.stderr)
+            continue
+
+        if not data:
+            if min_freq is not None:
+                yield databuffer
+            return
+
+        header, y_axis = data
+        x_axis = np.linspace(header.start, header.stop, round((header.stop - header.start) / header.step))
+        if len(x_axis) != len(y_axis):
+            print("ERROR: len(x_axis) != len(y_axis)")
+            continue
+
+        if min_freq is None:
+            min_freq = header.start
+        elif header.start == min_freq:
+            yield databuffer
+
+        if header.start == min_freq:
+            databuffer = {"timestamp": header.time_stop,
+                          "x": list(x_axis),
+                          "y": list(y_axis)}
+        else:
+            databuffer["x"].extend(x_axis)
+            databuffer["y"].extend(y_axis)

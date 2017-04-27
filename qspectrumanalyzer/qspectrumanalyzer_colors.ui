@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>232</width>
-    <height>260</height>
+    <width>253</width>
+    <height>266</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <item row="0" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Main curve color:</string>
+        <string>&amp;Main curve color:</string>
        </property>
        <property name="buddy">
         <cstring>mainColorButton</cstring>
@@ -42,7 +42,7 @@
      <item row="1" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>Max. peak hold color:</string>
+        <string>Max. peak &amp;hold color:</string>
        </property>
        <property name="buddy">
         <cstring>peakHoldMaxColorButton</cstring>
@@ -65,7 +65,7 @@
      <item row="2" column="0">
       <widget class="QLabel" name="label_6">
        <property name="text">
-        <string>Min. peak hold color:</string>
+        <string>M&amp;in. peak hold color:</string>
        </property>
        <property name="buddy">
         <cstring>peakHoldMinColorButton</cstring>
@@ -88,7 +88,7 @@
      <item row="3" column="0">
       <widget class="QLabel" name="label_5">
        <property name="text">
-        <string>Average color:</string>
+        <string>Average &amp;color:</string>
        </property>
        <property name="buddy">
         <cstring>averageColorButton</cstring>
@@ -111,7 +111,7 @@
      <item row="4" column="0">
       <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>Persistence color:</string>
+        <string>Persistence co&amp;lor:</string>
        </property>
        <property name="buddy">
         <cstring>persistenceColorButton</cstring>
@@ -120,6 +120,29 @@
      </item>
      <item row="4" column="1">
       <widget class="ColorButton" name="persistenceColorButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>&amp;Baseline color:</string>
+       </property>
+       <property name="buddy">
+        <cstring>baselineColorButton</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="ColorButton" name="baselineColorButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -171,7 +194,7 @@
   <tabstop>peakHoldMinColorButton</tabstop>
   <tabstop>averageColorButton</tabstop>
   <tabstop>persistenceColorButton</tabstop>
-  <tabstop>buttonBox</tabstop>
+  <tabstop>baselineColorButton</tabstop>
  </tabstops>
  <resources/>
  <connections>
@@ -182,12 +205,12 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
+     <x>246</x>
+     <y>259</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
-     <y>274</y>
+     <y>265</y>
     </hint>
    </hints>
   </connection>
@@ -198,12 +221,12 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
+     <x>246</x>
+     <y>259</y>
     </hint>
     <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
+     <x>252</x>
+     <y>265</y>
     </hint>
    </hints>
   </connection>

@@ -1,223 +1,261 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="2.0">
 <context>
+    <name>QSpectrumAnalyzerBaseline</name>
+    <message>
+        <location filename="../__main__.py" line="255"/>
+        <source>Select baseline file - QSpectrumAnalyzer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer_baseline.py" line="50"/>
+        <source>Baseline - QSpectrumAnalyzer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer_baseline.py" line="51"/>
+        <source>Baseline &amp;file:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer_baseline.py" line="52"/>
+        <source>...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>QSpectrumAnalyzerColors</name>
     <message>
-        <location filename="../ui_qspectrumanalyzer_colors.py" line="100"/>
+        <location filename="../ui_qspectrumanalyzer_colors.py" line="112"/>
         <source>Colors - QSpectrumAnalyzer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui_qspectrumanalyzer_colors.py" line="101"/>
-        <source>Main curve color:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer_colors.py" line="110"/>
+        <location filename="../ui_qspectrumanalyzer_colors.py" line="124"/>
         <source>...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui_qspectrumanalyzer_colors.py" line="107"/>
-        <source>Average color:</source>
+        <location filename="../ui_qspectrumanalyzer_colors.py" line="113"/>
+        <source>&amp;Main curve color:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui_qspectrumanalyzer_colors.py" line="109"/>
-        <source>Persistence color:</source>
+        <location filename="../ui_qspectrumanalyzer_colors.py" line="115"/>
+        <source>Max. peak &amp;hold color:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui_qspectrumanalyzer_colors.py" line="103"/>
-        <source>Max. peak hold color:</source>
+        <location filename="../ui_qspectrumanalyzer_colors.py" line="117"/>
+        <source>M&amp;in. peak hold color:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui_qspectrumanalyzer_colors.py" line="105"/>
-        <source>Min. peak hold color:</source>
+        <location filename="../ui_qspectrumanalyzer_colors.py" line="119"/>
+        <source>Average &amp;color:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer_colors.py" line="121"/>
+        <source>Persistence co&amp;lor:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer_colors.py" line="123"/>
+        <source>&amp;Baseline color:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>QSpectrumAnalyzerMainWindow</name>
     <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="304"/>
+        <location filename="../ui_qspectrumanalyzer.py" line="317"/>
         <source>QSpectrumAnalyzer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="315"/>
+        <location filename="../__main__.py" line="730"/>
+        <source>About - QSpectrumAnalyzer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../__main__.py" line="730"/>
+        <source>QSpectrumAnalyzer {}</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="318"/>
+        <source>&amp;File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="319"/>
+        <source>&amp;Help</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="350"/>
+        <source>&amp;Settings...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="351"/>
+        <source>&amp;Quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="352"/>
+        <source>Ctrl+Q</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="353"/>
+        <source>&amp;About</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../__main__.py" line="491"/>
+        <source>Frequency hops: {}</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../__main__.py" line="493"/>
+        <source>Total time: {} | Sweep time: {:.2f} s ({:.2f} FPS)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="321"/>
+        <source>&amp;Start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="322"/>
+        <source>S&amp;top</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="323"/>
+        <source>Si&amp;ngle shot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="325"/>
+        <source>Start:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="328"/>
         <source> MHz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="317"/>
+        <location filename="../ui_qspectrumanalyzer.py" line="327"/>
+        <source>Stop:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="329"/>
+        <source>&amp;Bin size:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="330"/>
         <source> kHz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ui_qspectrumanalyzer.py" line="332"/>
-        <source>auto</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../__main__.py" line="601"/>
-        <source>About - QSpectrumAnalyzer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../__main__.py" line="601"/>
-        <source>QSpectrumAnalyzer {}</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="305"/>
-        <source>&amp;File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="306"/>
-        <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="308"/>
-        <source>&amp;Start</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="309"/>
-        <source>S&amp;top</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="310"/>
-        <source>Si&amp;ngle shot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="312"/>
-        <source>Start:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="314"/>
-        <source>Stop:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="321"/>
-        <source>Corr. [ppm]:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="322"/>
-        <source>Crop [%]:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="323"/>
-        <source>Main curve</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="324"/>
-        <source>Colors...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="325"/>
-        <source>Max. hold</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="326"/>
-        <source>Min. hold</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="327"/>
-        <source>Average</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="328"/>
-        <source>Smoothing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="331"/>
-        <source>...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="330"/>
-        <source>Persistence</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="334"/>
-        <source>&amp;Settings...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="335"/>
-        <source>&amp;Quit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="336"/>
-        <source>Ctrl+Q</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="337"/>
-        <source>&amp;About</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="316"/>
-        <source>&amp;Bin size:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="319"/>
         <source>&amp;Interval [s]:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="320"/>
+        <location filename="../ui_qspectrumanalyzer.py" line="333"/>
         <source>&amp;Gain [dB]:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../__main__.py" line="437"/>
-        <source>Frequency hops: {}</source>
+        <location filename="../ui_qspectrumanalyzer.py" line="334"/>
+        <source>Corr. [ppm]:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../__main__.py" line="438"/>
-        <source>Sweep time: {:.2f} s | FPS: {:.2f}</source>
+        <location filename="../ui_qspectrumanalyzer.py" line="335"/>
+        <source>Crop [%]:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="307"/>
-        <source>Controls</source>
+        <location filename="../ui_qspectrumanalyzer.py" line="336"/>
+        <source>Main curve</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="311"/>
-        <source>Frequency</source>
+        <location filename="../ui_qspectrumanalyzer.py" line="337"/>
+        <source>Colors...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="318"/>
-        <source>Settings</source>
+        <location filename="../ui_qspectrumanalyzer.py" line="338"/>
+        <source>Max. hold</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui_qspectrumanalyzer.py" line="333"/>
-        <source>Levels</source>
+        <location filename="../ui_qspectrumanalyzer.py" line="339"/>
+        <source>Min. hold</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="340"/>
+        <source>Average</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="341"/>
+        <source>Smoothing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="347"/>
+        <source>...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="343"/>
+        <source>Persistence</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="345"/>
+        <source>auto</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="320"/>
+        <source>&amp;Controls</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="324"/>
+        <source>Fre&amp;quency</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="331"/>
+        <source>Se&amp;ttings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="348"/>
+        <source>Subtract baseline</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="349"/>
+        <source>&amp;Levels</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui_qspectrumanalyzer.py" line="346"/>
+        <source>Baseline</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -252,7 +290,7 @@
 <context>
     <name>QSpectrumAnalyzerSettings</name>
     <message>
-        <location filename="../__main__.py" line="73"/>
+        <location filename="../__main__.py" line="76"/>
         <source>Select executable - QSpectrumAnalyzer</source>
         <translation type="unfinished"></translation>
     </message>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'qspectrumanalyzer/qspectrumanalyzer_settings_help.ui'
 #
-# Created by: PyQt5 UI code generator 5.7.1
+# Created by: PyQt5 UI code generator 5.8
 #
 # WARNING! All changes made in this file will be lost!
 
