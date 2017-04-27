@@ -169,9 +169,10 @@ class PowerThread(BasePowerThread):
         step = header.step
         samples = header.samples
 
-        x_axis = np.arange(start_freq, stop_freq, step)
+        x_axis = np.linspace(start_freq, stop_freq, round((stop_freq - start_freq) / step))
         if len(x_axis) != len(y_axis):
             print("ERROR: len(x_axis) != len(y_axis)")
+            return
 
         if self.min_freq is None:
             self.min_freq = start_freq

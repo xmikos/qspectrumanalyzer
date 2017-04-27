@@ -82,7 +82,8 @@ class PowerThread(BasePowerThread):
         step = float(line[4])
         samples = float(line[5])
 
-        x_axis = list(np.arange(start_freq + self.lnb_lo, stop_freq + self.lnb_lo, step))
+        x_axis = list(np.linspace(start_freq + self.lnb_lo, stop_freq + self.lnb_lo,
+                                  round((stop_freq - start_freq) / step)))
         y_axis = [float(y) for y in line[6:]]
         if len(x_axis) != len(y_axis):
             print("ERROR: len(x_axis) != len(y_axis)!")
