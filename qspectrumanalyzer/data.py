@@ -77,6 +77,7 @@ class DataStorage(QtCore.QObject):
         self.prev_baseline = None
         self.baseline = None
         self.baseline_x = None
+        self.average_samples = 0
 
         # Use only one worker thread because it is not faster
         # with more threads (and memory consumption is much higher)
@@ -154,7 +155,8 @@ class DataStorage(QtCore.QObject):
         if self.average is None:
             self.average = data["y"].copy()
         else:
-            self.average = np.average((self.average, data["y"]), axis=0, weights=(self.average_counter - 1, 1))
+            weight = self.average_samples if self.average_samples > 0 else self.average_counter - 1
+            self.average = np.average((self.average, data["y"]), axis=0, weights=(weight, 1))
             self.average_updated.emit(self)
 
     def update_peak_hold_max(self, data):
@@ -176,6 +178,10 @@ class DataStorage(QtCore.QObject):
     def smooth_data(self, y):
         """Apply smoothing function to data"""
         return smooth(y, window_len=self.smooth_length, window=self.smooth_window)
+
+    def set_average(self, average=0):
+        """Set average params"""
+        self.average_samples = average
 
     def set_smooth(self, toggle, length=11, window="hanning"):
         """Toggle smoothing and set smoothing params"""

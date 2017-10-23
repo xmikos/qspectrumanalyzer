@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'qspectrumanalyzer/qspectrumanalyzer.ui'
 #
-# Created by: PyQt5 UI code generator 5.8
+# Created by: PyQt5 UI code generator 5.9
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -41,7 +41,7 @@ class Ui_QSpectrumAnalyzerMainWindow(object):
         self.horizontalLayout.addWidget(self.plotSplitter)
         QSpectrumAnalyzerMainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(QSpectrumAnalyzerMainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1200, 32))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1200, 22))
         self.menubar.setObjectName("menubar")
         self.menu_File = QtWidgets.QMenu(self.menubar)
         self.menu_File.setObjectName("menu_File")
@@ -240,6 +240,9 @@ class Ui_QSpectrumAnalyzerMainWindow(object):
         self.subtractBaselineCheckBox = QtWidgets.QCheckBox(self.settingsDockWidgetContents)
         self.subtractBaselineCheckBox.setObjectName("subtractBaselineCheckBox")
         self.gridLayout.addWidget(self.subtractBaselineCheckBox, 10, 0, 1, 1)
+        self.averageButton = QtWidgets.QToolButton(self.settingsDockWidgetContents)
+        self.averageButton.setObjectName("averageButton")
+        self.gridLayout.addWidget(self.averageButton, 6, 2, 1, 1)
         self.settingsDockWidget.setWidget(self.settingsDockWidgetContents)
         QSpectrumAnalyzerMainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.settingsDockWidget)
         self.levelsDockWidget = QtWidgets.QDockWidget(QSpectrumAnalyzerMainWindow)
@@ -346,6 +349,7 @@ class Ui_QSpectrumAnalyzerMainWindow(object):
         self.baselineCheckBox.setText(_translate("QSpectrumAnalyzerMainWindow", "Baseline"))
         self.baselineButton.setText(_translate("QSpectrumAnalyzerMainWindow", "..."))
         self.subtractBaselineCheckBox.setText(_translate("QSpectrumAnalyzerMainWindow", "Subtract baseline"))
+        self.averageButton.setText(_translate("QSpectrumAnalyzerMainWindow", "..."))
         self.levelsDockWidget.setWindowTitle(_translate("QSpectrumAnalyzerMainWindow", "Levels"))
         self.action_Settings.setText(_translate("QSpectrumAnalyzerMainWindow", "&Settings..."))
         self.action_Quit.setText(_translate("QSpectrumAnalyzerMainWindow", "&Quit"))
