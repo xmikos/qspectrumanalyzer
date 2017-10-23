@@ -11,6 +11,7 @@ from qspectrumanalyzer.plot import SpectrumPlotWidget, WaterfallPlotWidget
 from qspectrumanalyzer.utils import str_to_color, human_time
 
 from qspectrumanalyzer.settings import QSpectrumAnalyzerSettings
+from qspectrumanalyzer.average import QSpectrumAnalyzerAverage
 from qspectrumanalyzer.smoothing import QSpectrumAnalyzerSmoothing
 from qspectrumanalyzer.persistence import QSpectrumAnalyzerPersistence
 from qspectrumanalyzer.colors import QSpectrumAnalyzerColors
@@ -443,6 +444,15 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
             self.data_storage.set_subtract_baseline(
                 bool(self.subtractBaselineCheckBox.isChecked()),
                 settings.value("baseline_file", None)
+            )
+
+    @QtCore.Slot()
+    def on_averageButton_clicked(self):
+        dialog = QSpectrumAnalyzerAverage(self)
+        if dialog.exec_():
+            settings = QtCore.QSettings()
+            self.data_storage.set_average(
+                settings.value("average_samples", 0, int)
             )
 
     @QtCore.Slot()
