@@ -174,6 +174,20 @@ You can also install QSpectrumAnalyzer manually from `PyPI <https://pypi.python.
 You should then be able to run it with ``qspectrumanalyzer`` (or ``python -m qspectrumanalyzer``
 if it doesn't work for you).
 
+OSX:
+********
+*Tested with MacOS High Sierra 10.13.4 (2018-05-29)*
+
+0. Install XCode and its command line tools. Then install  `Homebrew <https://brew.sh/>`_.
+1. Install `SoapySDR <https://github.com/pothosware/homebrew-pothos/wiki>`_ by following the steps for Homebrew.
+2. Python 3.6 and pip3 will be installed as a dependency from the installation above, now run::
+
+        pip3 install PyQt5
+        pip3 install QSpectrumAnalyzer
+        
+You should then be able to run it with ``qspectrumanalyzer`` (or ``python3 -m qspectrumanalyzer`` if it doesn't work for you).
+
+
 Todo:
 -----
 
