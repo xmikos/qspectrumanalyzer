@@ -3,7 +3,7 @@ import os, sys, shlex, signal
 import numpy as np
 from Qt import QtCore
 
-from qspectrumanalyzer import subprocess
+from qspectrumanalyzer import subproc
 from qspectrumanalyzer.backends import BaseInfo, BasePowerThread
 
 try:
@@ -34,14 +34,14 @@ class Info(BaseInfo):
     def help_device(cls, executable, device):
         cmdline = shlex.split(executable)
         try:
-            text = subprocess.check_output(cmdline + ['--detect'], universal_newlines=True,
-                                           stderr=subprocess.DEVNULL, env=dict(os.environ, COLUMNS='125'),
+            text = subproc.check_output(cmdline + ['--detect'], universal_newlines=True,
+                                           stderr=subproc.DEVNULL, env=dict(os.environ, COLUMNS='125'),
                                            console=False)
             text += '\n'
-            text += subprocess.check_output(cmdline + ['--device', device, '--info'], universal_newlines=True,
-                                            stderr=subprocess.DEVNULL, env=dict(os.environ, COLUMNS='125'),
+            text += subproc.check_output(cmdline + ['--device', device, '--info'], universal_newlines=True,
+                                            stderr=subproc.DEVNULL, env=dict(os.environ, COLUMNS='125'),
                                             console=False)
-        except subprocess.CalledProcessError as e:
+        except subproc.CalledProcessError as e:
             text = e.output
         except OSError:
             text = '{} executable not found!'.format(executable)
@@ -85,7 +85,7 @@ class PowerThread(BasePowerThread):
             os.set_inheritable(self.pipe_write_fd, True)
 
             if sys.platform == 'win32':
-                self.pipe_write_handle = subprocess.make_inheritable_handle(self.pipe_write_fd)
+                self.pipe_write_handle = subproc.make_inheritable_handle(self.pipe_write_fd)
 
             # Prepare soapy_power cmdline parameters
             settings = QtCore.QSettings()
@@ -121,14 +121,14 @@ class PowerThread(BasePowerThread):
 
             # Start soapy_power process and close write part of pipe
             if sys.platform == 'win32':
-                creationflags = subprocess.CREATE_NEW_PROCESS_GROUP
+                creationflags = subproc.CREATE_NEW_PROCESS_GROUP
             else:
                 creationflags = 0
 
             print('Starting backend:')
             print(' '.join(cmdline))
             print()
-            self.process = subprocess.Popen(cmdline, close_fds=False, universal_newlines=False,
+            self.process = subproc.Popen(cmdline, close_fds=False, universal_newlines=False,
                                             creationflags=creationflags, console=False)
 
             os.close(self.pipe_write_fd)

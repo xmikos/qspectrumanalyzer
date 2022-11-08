@@ -2,7 +2,7 @@ import os, threading, shlex
 
 from Qt import QtCore
 
-from qspectrumanalyzer import subprocess
+from qspectrumanalyzer import subproc
 
 
 class BaseInfo:
@@ -41,10 +41,10 @@ class BaseInfo:
     def help_params(cls, executable):
         cmdline = shlex.split(executable)
         try:
-            text = subprocess.check_output(cmdline + ['-h'], universal_newlines=True,
-                                           stderr=subprocess.STDOUT, env=dict(os.environ, COLUMNS='125'),
+            text = subproc.check_output(cmdline + ['-h'], universal_newlines=True,
+                                           stderr=subproc.STDOUT, env=dict(os.environ, COLUMNS='125'),
                                            console=False)
-        except subprocess.CalledProcessError as e:
+        except subproc.CalledProcessError as e:
             text = e.output
         except OSError:
             text = '{} executable not found!'.format(executable)
