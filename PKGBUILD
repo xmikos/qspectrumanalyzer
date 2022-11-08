@@ -1,4 +1,3 @@
-# Maintainer: Michal Krenek (Mikos) <m.krenek@gmail.com>
 pkgname=qspectrumanalyzer
 pkgver=2.2.0
 pkgrel=1
@@ -27,4 +26,3 @@ package() {
   python setup.py install --root="$pkgdir"
 }
 
-# vim:set ts=2 sw=2 et:
