@@ -9,13 +9,11 @@ from qspectrumanalyzer.version import __version__
 from qspectrumanalyzer.data import DataStorage
 from qspectrumanalyzer.plot import SpectrumPlotWidget, WaterfallPlotWidget
 from qspectrumanalyzer.utils import str_to_color, human_time
-
 from qspectrumanalyzer.settings import QSpectrumAnalyzerSettings
 from qspectrumanalyzer.smoothing import QSpectrumAnalyzerSmoothing
 from qspectrumanalyzer.persistence import QSpectrumAnalyzerPersistence
 from qspectrumanalyzer.colors import QSpectrumAnalyzerColors
 from qspectrumanalyzer.baseline import QSpectrumAnalyzerBaseline
-
 from qspectrumanalyzer.ui_qspectrumanalyzer import Ui_QSpectrumAnalyzerMainWindow
 
 debug = False
