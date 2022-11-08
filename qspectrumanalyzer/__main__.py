@@ -14,7 +14,6 @@ from qspectrumanalyzer.smoothing import QSpectrumAnalyzerSmoothing
 from qspectrumanalyzer.persistence import QSpectrumAnalyzerPersistence
 from qspectrumanalyzer.colors import QSpectrumAnalyzerColors
 from qspectrumanalyzer.baseline import QSpectrumAnalyzerBaseline
-
 from qspectrumanalyzer.ui_qspectrumanalyzer import Ui_QSpectrumAnalyzerMainWindow
 
 debug = False
