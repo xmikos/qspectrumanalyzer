@@ -2,7 +2,7 @@ import math, shlex
 
 from Qt import QtCore
 
-from qspectrumanalyzer import subprocess
+from qspectrumanalyzer import subproc
 from qspectrumanalyzer.backends import BaseInfo, BasePowerThread
 
 
@@ -90,7 +90,7 @@ class PowerThread(BasePowerThread):
             print('Starting backend:')
             print(' '.join(cmdline))
             print()
-            self.process = subprocess.Popen(cmdline, stdout=subprocess.PIPE,
+            self.process = subproc.Popen(cmdline, stdout=subproc.PIPE,
                                             universal_newlines=True, console=False)
 
     def parse_output(self, line):
