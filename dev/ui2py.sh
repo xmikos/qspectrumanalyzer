@@ -1,6 +1,6 @@
  #!/bin/bash
 
-cd ../qspectrumanalyzer/
+cd ../src/
 
 pyuic5 qspectrumanalyzer.ui -o ui_qspectrumanalyzer.py
 pyuic5 qspectrumanalyzer_baseline.ui -o ui_qspectrumanalyzer_baseline.py
