@@ -51,7 +51,8 @@ class Info(BaseInfo):
 class PowerThread(BasePowerThread):
     """Thread which runs soapy_power process"""
     def setup(self, start_freq, stop_freq, bin_size, interval=10.0, gain=-1, ppm=0, crop=0,
-              single_shot=False, device="", sample_rate=2560000, bandwidth=0, lnb_lo=0):
+              single_shot=False, device="", sample_rate=2560000, bandwidth=0, lnb_lo=0,
+              mode=None, filename=None):
         """Setup soapy_power params"""
         self.params = {
             "start_freq": start_freq,

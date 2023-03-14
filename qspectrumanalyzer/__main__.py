@@ -9,6 +9,7 @@ from qspectrumanalyzer.version import __version__
 from qspectrumanalyzer.data import DataStorage
 from qspectrumanalyzer.plot import SpectrumPlotWidget, WaterfallPlotWidget
 from qspectrumanalyzer.utils import str_to_color, human_time
+from qspectrumanalyzer.mode import Mode
 
 from qspectrumanalyzer.settings import QSpectrumAnalyzerSettings
 from qspectrumanalyzer.smoothing import QSpectrumAnalyzerSmoothing
@@ -27,11 +28,15 @@ signal.signal(signal.SIGTERM, signal.SIG_DFL)
 
 class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMainWindow):
     """QSpectrumAnalyzer main window"""
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, mode=None, filename=None):
         # Initialize UI
         super().__init__(parent)
         self.setupUi(self)
 
+        # Save file parameters
+        self.mode = mode
+        self.filename = filename
+  
         # Set window icon
         icon_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "qspectrumanalyzer.svg")
         self.setWindowIcon(QtGui.QIcon(icon_path))
@@ -354,7 +359,9 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
                 device=settings.value("device", ""),
                 sample_rate=settings.value("sample_rate", 2560000, float),
                 bandwidth=settings.value("bandwidth", 0, float),
-                lnb_lo=settings.value("lnb_lo", 0, float)
+                lnb_lo=settings.value("lnb_lo", 0, float),
+                mode=self.mode,
+                filename=self.filename
             )
             self.power_thread.start()
 
@@ -493,8 +500,8 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
 
     @QtCore.Slot()
     def on_action_About_triggered(self):
-        QtWidgets.QMessageBox.information(self, self.tr("About - QSpectrumAnalyzer"),
-                                          self.tr("QSpectrumAnalyzer {}").format(__version__))
+        QtWidgets.QMessageBox.information(self, self.tr("About - GarfieldAnalyzer"),
+                                          self.tr("GarfieldAnalyzer {}").format(__version__))
 
     @QtCore.Slot()
     def on_action_Quit_triggered(self):
@@ -518,6 +525,11 @@ def main():
                         help="detailed debugging messages")
     parser.add_argument("--version", action="version",
                         version="%(prog)s {}".format(__version__))
+    
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('-w', '--write', action="store", help="Write binary data to file.")
+    group.add_argument('-r', '--read', action="store", help="Read binaryu data from file.")
+
     args, unparsed_args = parser.parse_known_args()
     debug = args.debug
 
@@ -529,10 +541,17 @@ def main():
 
         # Start PyQt application
         app = QtWidgets.QApplication(sys.argv[:1] + unparsed_args)
-        app.setOrganizationName("QSpectrumAnalyzer")
-        app.setOrganizationDomain("qspectrumanalyzer.eutopia.cz")
-        app.setApplicationName("QSpectrumAnalyzer")
-        window = QSpectrumAnalyzerMainWindow()
+        app.setOrganizationName("UMEX Inc.")
+        app.setOrganizationDomain("umex.us")
+        app.setApplicationName("garfieldanalyzer")
+
+        if args.write:
+            window = QSpectrumAnalyzerMainWindow(mode=Mode.WRITE, filename=args.write)
+        elif args.read:
+            window = QSpectrumAnalyzerMainWindow(mode=Mode.READ, filename=args.read)
+        else:
+            window = QSpectrumAnalyzerMainWindow()
+
         sys.exit(app.exec_())
     finally:
         # Unhide console window on Windows (we don't want to leave zombies behind)

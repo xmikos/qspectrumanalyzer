@@ -1,10 +1,11 @@
 import struct, shlex, sys, time
 
 import numpy as np
-from Qt import QtCore
+from Qt import QtCore, QtTest
 
 from qspectrumanalyzer import subprocess
 from qspectrumanalyzer.backends import BaseInfo, BasePowerThread
+from qspectrumanalyzer.mode import Mode
 
 
 class Info(BaseInfo):
@@ -37,7 +38,8 @@ class PowerThread(BasePowerThread):
     """Thread which runs hackrf_sweep process"""
     def setup(self, start_freq=0, stop_freq=6000, bin_size=1000,
               interval=0.0, gain=40, ppm=0, crop=0, single_shot=False,
-              device=0, sample_rate=20000000, bandwidth=0, lnb_lo=0):
+              device=0, sample_rate=20000000, bandwidth=0, lnb_lo=0, 
+              mode=None, filename=None):
         """Setup hackrf_sweep params"""
         # Small bin sizes (<40 kHz) are only suitable with an arbitrarily
         # reduced sweep interval. Bin sizes smaller than 3 kHz showed to be
@@ -81,6 +83,12 @@ class PowerThread(BasePowerThread):
         self.lastsweep = 0
         self.interval = interval
 
+        # safe the file information
+        self.mode = mode
+        self.filename = filename
+        if self.mode:
+            print(f"Set mode: {self.mode.name} with filename: {self.filename}")
+
     def process_start(self):
         """Start hackrf_sweep process"""
         if not self.process and self.params:
@@ -111,6 +119,7 @@ class PowerThread(BasePowerThread):
             print()
             self.process = subprocess.Popen(cmdline, stdout=subprocess.PIPE,
                                             universal_newlines=False, console=False)
+            
 
     def parse_output(self, buf):
         """Parse one buf of output from hackrf_sweep"""
@@ -140,13 +149,43 @@ class PowerThread(BasePowerThread):
 
     def run(self):
         """hackrf_sweep thread main loop"""
-        self.process_start()
+
+        # Open/Create data file (if necessary)
+        try:           
+            if self.mode == Mode.WRITE:
+                self.binary_file = open(self.filename, "wb")
+            elif self.mode == Mode.READ:
+                self.binary_file = open(self.filename, "rb")
+            else:
+                self.binary_file = None
+        
+        except FileNotFoundError as e:
+            print("ERROR: could not find file to read.")
+            self.binary_file = None
+        except Exception as e:
+            print("ERROR: file processing error .. skipping.")
+            self.binary_file = None
+
+        # Start the hackrf_sweep process if we are not reading from file
+        if self.mode != Mode.READ:
+            self.process_start()
+
         self.alive = True
         self.powerThreadStarted.emit()
 
         while self.alive:
             try:
-                buf = self.process.stdout.read(4)
+                # if reading, load data from file, otherwise from hackrf
+                if self.mode == Mode.READ and self.binary_file:
+                    buf = self.binary_file.read(4)
+                    QtTest.QTest.qWait(0.8)
+                else:
+                    buf = self.process.stdout.read(4)
+
+                # if writing, dump the data to the output file
+                if self.mode == Mode.WRITE and self.binary_file:
+                    self.binary_file.write(buf)
+
             except AttributeError as e:
                 print(e, file=sys.stderr)
                 continue
@@ -154,7 +193,17 @@ class PowerThread(BasePowerThread):
             if buf:
                 (record_length,) = struct.unpack('I', buf)
                 try:
-                    buf = self.process.stdout.read(record_length)
+                    # if reading, load data from file, otherwise from hackrf
+                    if self.mode == Mode.READ and self.binary_file:
+                        buf = self.binary_file.read(record_length)
+                        QtTest.QTest.qWait(0.8)
+                    else:
+                        buf = self.process.stdout.read(record_length)
+
+                    # if writing, dump the data to the output file
+                    if self.mode == Mode.WRITE and self.binary_file:
+                        self.binary_file.write(buf)
+
                 except AttributeError as e:
                     print(e, file=sys.stderr)
                     continue
@@ -165,6 +214,10 @@ class PowerThread(BasePowerThread):
                     break
             else:
                 break
+
+        if self.binary_file:
+            self.binary_file.close()
+            print(f"File {self.filename} closed.")
 
         self.process_stop()
         self.alive = False
