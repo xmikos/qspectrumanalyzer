@@ -311,7 +311,7 @@ class WaterfallPlotWidget:
         # Create waterfall image on first run
         if self.counter == 1:
             self.waterfallImg = pg.ImageItem()
-            self.waterfallImg.scale((data_storage.x[-1] - data_storage.x[0]) / len(data_storage.x), 1)
+            self.waterfallImg.scale()
             self.plot.clear()
             self.plot.addItem(self.waterfallImg)
 
