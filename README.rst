@@ -120,7 +120,7 @@ Ubuntu:
 *******
 ::
 
-    # Add SoapySDR PPA to your system
+    # Add SoapySDR PPA to your system (pre 22.04, now in repositories)
     sudo add-apt-repository -y ppa:myriadrf/drivers
 
     # Update list of packages
