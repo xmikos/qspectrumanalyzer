@@ -182,3 +182,19 @@ Todo:
 - display average noise level
 - frequency markers / bookmarks with notes (even importing and exporting .csv file with
   predefined channels, etc.)
+
+
+Debugg:
+-----
+python3    
+
+import qspectrumanalyzer.__main__    
+
+qspectrumanalyzer.__main__.main()    
+
+
+Changelog:
+-----
+- rtl_power compatibility
+- status bar back working
+- fix waterfall 

@@ -50,9 +50,11 @@ class PowerThread(BasePowerThread):
                 "-p", "{}".format(self.params["ppm"]),
                 "-c", "{}".format(self.params["crop"])
             ])
-
-            if self.params["sample_rate"] > 0:
-                cmdline.extend(["-r", "{}M".format(self.params["sample_rate"] / 1e6)])
+ 
+            #not supported any more
+            #if self.params["sample_rate"] > 0:
+            #    cmdline.extend(["-r", "{}M".format(self.params["sample_rate"] / 1e6)])
+            
             if self.params["gain"] >= 0:
                 cmdline.extend(["-g", "{}".format(self.params["gain"])])
             if self.params["single_shot"]:

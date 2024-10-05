@@ -275,9 +275,9 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
         elif value > value_max:
             value = value_max
         else:
-            self.progressbar.setRange(0, value_max)
+            self.progressbar.setRange(0, int(value_max))
 
-        self.progressbar.setValue(value)
+        self.progressbar.setValue(int(value))
 
     def on_power_thread_started(self):
         """Update buttons state when power thread is started"""
@@ -300,7 +300,7 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
         self.start_timestamp = self.prev_data_timestamp
 
         if self.intervalSpinBox.value() >= 1:
-            self.progressbar.setRange(0, self.intervalSpinBox.value() * 1000)
+            self.progressbar.setRange(0, int(self.intervalSpinBox.value()) * 1000)
         else:
             self.progressbar.setRange(0, 0)
         self.update_progress(0)
