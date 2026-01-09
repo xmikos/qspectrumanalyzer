@@ -59,14 +59,14 @@ setup(
     ],
     install_requires=[
         "soapy_power>=1.6.0",
-        "pyqtgraph>=0.10.0",
-        "Qt.py",
+        "PyQt6>=6.6.0",
+        "pyqtgraph>=0.13.3",
     ],
     options={
         'build_qt': {
             'packages': ['qspectrumanalyzer'],
             'languages': ['cs'],
-            'replacement_bindings': 'Qt',
+            'replacement_bindings': 'PyQt6',
         },
         'build_exe': {
             'datas': [

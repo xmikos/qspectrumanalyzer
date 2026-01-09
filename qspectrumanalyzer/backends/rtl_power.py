@@ -1,7 +1,7 @@
 import shlex
 
 import numpy as np
-from Qt import QtCore
+from PyQt6 import QtCore
 
 from qspectrumanalyzer import subprocess
 from qspectrumanalyzer.backends import BaseInfo, BasePowerThread
@@ -35,12 +35,13 @@ class PowerThread(BasePowerThread):
         self.lnb_lo = lnb_lo
         self.databuffer = {}
         self.last_timestamp = ""
+        self._warned_length_mismatch = False
 
     def process_start(self):
         """Start rtl_power process"""
         if not self.process and self.params:
             settings = QtCore.QSettings()
-            cmdline = shlex.split(settings.value("executable", "rtl_power"))
+            cmdline = shlex.split(settings.value("executable_rtl_power", "rtl_power"))
             cmdline.extend([
                 "-f", "{}M:{}M:{}k".format(self.params["start_freq"] - self.lnb_lo / 1e6,
                                            self.params["stop_freq"] - self.lnb_lo / 1e6,
@@ -51,14 +52,16 @@ class PowerThread(BasePowerThread):
                 "-c", "{}".format(self.params["crop"])
             ])
 
-            if self.params["sample_rate"] > 0:
-                cmdline.extend(["-r", "{}M".format(self.params["sample_rate"] / 1e6)])
+            # Sample rate parameter was supported in older rtl_power versions only
+            # if self.params["sample_rate"] > 0:
+            #     cmdline.extend(["-r", "{}M".format(self.params["sample_rate"] / 1e6)])
             if self.params["gain"] >= 0:
                 cmdline.extend(["-g", "{}".format(self.params["gain"])])
             if self.params["single_shot"]:
                 cmdline.append("-1")
 
-            additional_params = settings.value("params", Info.additional_params)
+            backend_name = __name__.rsplit(".", 1)[-1]
+            additional_params = settings.value(f"params_{backend_name}", Info.additional_params)
             if additional_params:
                 cmdline.extend(shlex.split(additional_params))
 
@@ -81,13 +84,12 @@ class PowerThread(BasePowerThread):
                                   round((stop_freq - start_freq) / step)))
         y_axis = [float(y) for y in line[6:]]
         if len(x_axis) != len(y_axis):
-            print("ERROR: len(x_axis) != len(y_axis), use newer version of rtl_power!")
-            if len(x_axis) > len(y_axis):
-                print("Trimming x_axis...")
-                x_axis = x_axis[:len(y_axis)]
-            else:
-                print("Trimming y_axis...")
-                y_axis = y_axis[:len(x_axis)]
+            if not self._warned_length_mismatch:
+                print("WARNING: len(x_axis) != len(y_axis); recomputing x-axis to match rtl_power output. "
+                      "Upgrade rtl_power for consistent output if possible.")
+                self._warned_length_mismatch = True
+            # Recompute x_axis to match rtl_power output length
+            x_axis = list(np.linspace(start_freq + self.lnb_lo, stop_freq + self.lnb_lo, len(y_axis)))
 
         if timestamp != self.last_timestamp:
             self.last_timestamp = timestamp

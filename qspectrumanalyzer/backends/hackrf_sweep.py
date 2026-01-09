@@ -1,7 +1,7 @@
 import struct, shlex, sys, time
 
 import numpy as np
-from Qt import QtCore
+from PyQt6 import QtCore
 
 from qspectrumanalyzer import subprocess
 from qspectrumanalyzer.backends import BaseInfo, BasePowerThread
@@ -85,7 +85,7 @@ class PowerThread(BasePowerThread):
         """Start hackrf_sweep process"""
         if not self.process and self.params:
             settings = QtCore.QSettings()
-            cmdline = shlex.split(settings.value("executable", "hackrf_sweep"))
+            cmdline = shlex.split(settings.value("executable_hackrf_sweep", "hackrf_sweep"))
             cmdline.extend([
                 "-f", "{}:{}".format(int(self.params["start_freq"] - self.lnb_lo / 1e6),
                                      int(self.params["stop_freq"] - self.lnb_lo / 1e6)),
@@ -102,7 +102,8 @@ class PowerThread(BasePowerThread):
             if self.params["single_shot"]:
                 cmdline.append("-1")
 
-            additional_params = settings.value("params", Info.additional_params)
+            backend_name = __name__.rsplit(".", 1)[-1]
+            additional_params = settings.value(f"params_{backend_name}", Info.additional_params)
             if additional_params:
                 cmdline.extend(shlex.split(additional_params))
 
@@ -115,7 +116,7 @@ class PowerThread(BasePowerThread):
     def parse_output(self, buf):
         """Parse one buf of output from hackrf_sweep"""
         (low_edge, high_edge) = struct.unpack('QQ', buf[:16])
-        data = np.fromstring(buf[16:], dtype='<f4')
+        data = np.frombuffer(buf[16:], dtype='<f4')
         step = (high_edge - low_edge) / len(data)
 
         if (low_edge // 1000000) <= (self.params["start_freq"] - self.lnb_lo / 1e6):

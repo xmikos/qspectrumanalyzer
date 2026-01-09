@@ -1,6 +1,6 @@
 import os, threading, shlex
 
-from Qt import QtCore
+from PyQt6 import QtCore
 
 from qspectrumanalyzer import subprocess
 
@@ -53,8 +53,8 @@ class BaseInfo:
 
 class BasePowerThread(QtCore.QThread):
     """Thread which runs Power Spectral Density acquisition and calculation process"""
-    powerThreadStarted = QtCore.Signal()
-    powerThreadStopped = QtCore.Signal()
+    powerThreadStarted = QtCore.pyqtSignal()
+    powerThreadStopped = QtCore.pyqtSignal()
 
     def __init__(self, data_storage, parent=None):
         super().__init__(parent)

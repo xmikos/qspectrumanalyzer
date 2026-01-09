@@ -1,6 +1,6 @@
 import math, shlex
 
-from Qt import QtCore
+from PyQt6 import QtCore
 
 from qspectrumanalyzer import subprocess
 from qspectrumanalyzer.backends import BaseInfo, BasePowerThread
@@ -64,7 +64,7 @@ class PowerThread(BasePowerThread):
         """Start rtl_power_fftw process"""
         if not self.process and self.params:
             settings = QtCore.QSettings()
-            cmdline = shlex.split(settings.value("executable", "rtl_power_fftw"))
+            cmdline = shlex.split(settings.value("executable_rtl_power_fftw", "rtl_power_fftw"))
             cmdline.extend([
                 "-f", "{}M:{}M".format(self.params["start_freq"] - self.lnb_lo / 1e6,
                                        self.params["stop_freq"] - self.lnb_lo / 1e6),
@@ -83,7 +83,8 @@ class PowerThread(BasePowerThread):
             if not self.params["single_shot"]:
                 cmdline.append("-c")
 
-            additional_params = settings.value("params", Info.additional_params)
+            backend_name = __name__.rsplit(".", 1)[-1]
+            additional_params = settings.value(f"params_{backend_name}", Info.additional_params)
             if additional_params:
                 cmdline.extend(shlex.split(additional_params))
 

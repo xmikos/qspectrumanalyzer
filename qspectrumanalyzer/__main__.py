@@ -2,7 +2,7 @@
 
 import sys, os, signal, time, argparse
 
-from Qt import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from qspectrumanalyzer import backends
 from qspectrumanalyzer.version import __version__
@@ -31,6 +31,7 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
         # Initialize UI
         super().__init__(parent)
         self.setupUi(self)
+        self.add_menu_actions()
 
         # Set window icon
         icon_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "qspectrumanalyzer.svg")
@@ -62,6 +63,12 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
 
         self.update_buttons()
         self.load_settings()
+
+    def add_menu_actions(self):
+        """Add extra File menu actions"""
+        self.action_ExportHistory = QtGui.QAction(self.tr("Export FFT history..."), self)
+        self.action_ExportHistory.triggered.connect(self.on_action_ExportHistory_triggered)
+        self.menu_File.insertAction(self.action_Quit, self.action_ExportHistory)
 
     def setup_power_thread(self):
         """Create power_thread and connect signals to slots"""
@@ -275,9 +282,9 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
         elif value > value_max:
             value = value_max
         else:
-            self.progressbar.setRange(0, value_max)
+            self.progressbar.setRange(0, int(value_max))
 
-        self.progressbar.setValue(value)
+        self.progressbar.setValue(int(value))
 
     def on_power_thread_started(self):
         """Update buttons state when power thread is started"""
@@ -300,7 +307,7 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
         self.start_timestamp = self.prev_data_timestamp
 
         if self.intervalSpinBox.value() >= 1:
-            self.progressbar.setRange(0, self.intervalSpinBox.value() * 1000)
+            self.progressbar.setRange(0, int(self.intervalSpinBox.value()) * 1000)
         else:
             self.progressbar.setRange(0, 0)
         self.update_progress(0)
@@ -363,47 +370,47 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
         if self.power_thread.alive:
             self.power_thread.stop()
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def on_startButton_clicked(self):
         self.start()
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def on_singleShotButton_clicked(self):
         self.start(single_shot=True)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def on_stopButton_clicked(self):
         self.stop()
 
-    @QtCore.Slot(bool)
+    @QtCore.pyqtSlot(bool)
     def on_mainCurveCheckBox_toggled(self, checked):
         self.spectrumPlotWidget.main_curve = checked
         if self.spectrumPlotWidget.curve.xData is None:
             self.spectrumPlotWidget.update_plot(self.data_storage)
         self.spectrumPlotWidget.curve.setVisible(checked)
 
-    @QtCore.Slot(bool)
+    @QtCore.pyqtSlot(bool)
     def on_peakHoldMaxCheckBox_toggled(self, checked):
         self.spectrumPlotWidget.peak_hold_max = checked
         if self.spectrumPlotWidget.curve_peak_hold_max.xData is None:
             self.spectrumPlotWidget.update_peak_hold_max(self.data_storage)
         self.spectrumPlotWidget.curve_peak_hold_max.setVisible(checked)
 
-    @QtCore.Slot(bool)
+    @QtCore.pyqtSlot(bool)
     def on_peakHoldMinCheckBox_toggled(self, checked):
         self.spectrumPlotWidget.peak_hold_min = checked
         if self.spectrumPlotWidget.curve_peak_hold_min.xData is None:
             self.spectrumPlotWidget.update_peak_hold_min(self.data_storage)
         self.spectrumPlotWidget.curve_peak_hold_min.setVisible(checked)
 
-    @QtCore.Slot(bool)
+    @QtCore.pyqtSlot(bool)
     def on_averageCheckBox_toggled(self, checked):
         self.spectrumPlotWidget.average = checked
         if self.spectrumPlotWidget.curve_average.xData is None:
             self.spectrumPlotWidget.update_average(self.data_storage)
         self.spectrumPlotWidget.curve_average.setVisible(checked)
 
-    @QtCore.Slot(bool)
+    @QtCore.pyqtSlot(bool)
     def on_persistenceCheckBox_toggled(self, checked):
         self.spectrumPlotWidget.persistence = checked
         if self.spectrumPlotWidget.persistence_curves[0].xData is None:
@@ -411,7 +418,7 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
         for curve in self.spectrumPlotWidget.persistence_curves:
             curve.setVisible(checked)
 
-    @QtCore.Slot(bool)
+    @QtCore.pyqtSlot(bool)
     def on_smoothCheckBox_toggled(self, checked):
         settings = QtCore.QSettings()
         self.data_storage.set_smooth(
@@ -420,14 +427,14 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
             settings.value("smooth_window", "hanning")
         )
 
-    @QtCore.Slot(bool)
+    @QtCore.pyqtSlot(bool)
     def on_baselineCheckBox_toggled(self, checked):
         self.spectrumPlotWidget.baseline = checked
         if self.spectrumPlotWidget.curve_baseline.xData is None:
             self.spectrumPlotWidget.update_baseline(self.data_storage)
         self.spectrumPlotWidget.curve_baseline.setVisible(checked)
 
-    @QtCore.Slot(bool)
+    @QtCore.pyqtSlot(bool)
     def on_subtractBaselineCheckBox_toggled(self, checked):
         settings = QtCore.QSettings()
         self.data_storage.set_subtract_baseline(
@@ -435,20 +442,20 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
             settings.value("baseline_file", None)
         )
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def on_baselineButton_clicked(self):
         dialog = QSpectrumAnalyzerBaseline(self)
-        if dialog.exec_():
+        if dialog.exec():
             settings = QtCore.QSettings()
             self.data_storage.set_subtract_baseline(
                 bool(self.subtractBaselineCheckBox.isChecked()),
                 settings.value("baseline_file", None)
             )
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def on_smoothButton_clicked(self):
         dialog = QSpectrumAnalyzerSmoothing(self)
-        if dialog.exec_():
+        if dialog.exec():
             settings = QtCore.QSettings()
             self.data_storage.set_smooth(
                 bool(self.smoothCheckBox.isChecked()),
@@ -456,11 +463,11 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
                 settings.value("smooth_window", "hanning")
             )
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def on_persistenceButton_clicked(self):
         prev_persistence_length = self.spectrumPlotWidget.persistence_length
         dialog = QSpectrumAnalyzerPersistence(self)
-        if dialog.exec_():
+        if dialog.exec():
             settings = QtCore.QSettings()
             persistence_length = settings.value("persistence_length", 5, int)
             self.spectrumPlotWidget.persistence_length = persistence_length
@@ -472,10 +479,10 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
             else:
                 self.spectrumPlotWidget.recalculate_persistence(self.data_storage)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def on_colorsButton_clicked(self):
         dialog = QSpectrumAnalyzerColors(self)
-        if dialog.exec_():
+        if dialog.exec():
             settings = QtCore.QSettings()
             self.spectrumPlotWidget.main_color = str_to_color(settings.value("main_color", "255, 255, 0, 255"))
             self.spectrumPlotWidget.peak_hold_max_color = str_to_color(settings.value("peak_hold_max_color", "255, 0, 0, 255"))
@@ -485,18 +492,36 @@ class QSpectrumAnalyzerMainWindow(QtWidgets.QMainWindow, Ui_QSpectrumAnalyzerMai
             self.spectrumPlotWidget.baseline_color = str_to_color(settings.value("baseline_color", "255, 0, 255, 255"))
             self.spectrumPlotWidget.set_colors()
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def on_action_Settings_triggered(self):
         dialog = QSpectrumAnalyzerSettings(self)
-        if dialog.exec_():
+        if dialog.exec():
+            # Force reinitialization so newly selected backend defaults are applied
+            self.backend = None
             self.setup_power_thread()
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def on_action_About_triggered(self):
         QtWidgets.QMessageBox.information(self, self.tr("About - QSpectrumAnalyzer"),
                                           self.tr("QSpectrumAnalyzer {}").format(__version__))
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
+    def on_action_ExportHistory_triggered(self):
+        path, _ = QtWidgets.QFileDialog.getSaveFileName(
+            self,
+            self.tr("Export FFT history"),
+            filter=self.tr("NumPy archive (*.npz);;CSV file (*.csv);;All files (*)")
+        )
+        if not path:
+            return
+
+        success = self.data_storage.export_history(path)
+        if success:
+            self.show_status(self.tr("History exported to {}").format(path), timeout=4000)
+        else:
+            self.show_status(self.tr("No data to export"), timeout=4000)
+
+    @QtCore.pyqtSlot()
     def on_action_Quit_triggered(self):
         self.close()
 
@@ -533,7 +558,7 @@ def main():
         app.setOrganizationDomain("qspectrumanalyzer.eutopia.cz")
         app.setApplicationName("QSpectrumAnalyzer")
         window = QSpectrumAnalyzerMainWindow()
-        sys.exit(app.exec_())
+        sys.exit(app.exec())
     finally:
         # Unhide console window on Windows (we don't want to leave zombies behind)
         if sys.platform == 'win32' and not debug:

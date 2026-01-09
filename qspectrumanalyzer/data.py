@@ -1,6 +1,6 @@
 import time, sys, os
 
-from Qt import QtCore
+from PyQt6 import QtCore
 import numpy as np
 
 from qspectrumanalyzer.utils import smooth
@@ -37,7 +37,7 @@ class HistoryBuffer:
 
 class TaskSignals(QtCore.QObject):
     """Task signals emitter"""
-    result = QtCore.Signal(object)
+    result = QtCore.pyqtSignal(object)
 
 
 class Task(QtCore.QRunnable):
@@ -58,14 +58,14 @@ class Task(QtCore.QRunnable):
 
 class DataStorage(QtCore.QObject):
     """Data storage for spectrum measurements"""
-    history_updated = QtCore.Signal(object)
-    data_updated = QtCore.Signal(object)
-    history_recalculated = QtCore.Signal(object)
-    data_recalculated = QtCore.Signal(object)
-    average_updated = QtCore.Signal(object)
-    baseline_updated = QtCore.Signal(object)
-    peak_hold_max_updated = QtCore.Signal(object)
-    peak_hold_min_updated = QtCore.Signal(object)
+    history_updated = QtCore.pyqtSignal(object)
+    data_updated = QtCore.pyqtSignal(object)
+    history_recalculated = QtCore.pyqtSignal(object)
+    data_recalculated = QtCore.pyqtSignal(object)
+    average_updated = QtCore.pyqtSignal(object)
+    baseline_updated = QtCore.pyqtSignal(object)
+    peak_hold_max_updated = QtCore.pyqtSignal(object)
+    peak_hold_min_updated = QtCore.pyqtSignal(object)
 
     def __init__(self, max_history_size=100, parent=None):
         super().__init__(parent)
@@ -265,6 +265,30 @@ class DataStorage(QtCore.QObject):
         #self.average_updated.emit({"x": self.x, "y": self.average})
         #self.peak_hold_max_updated.emit({"x": self.x, "y": self.peak_hold_max})
         #self.peak_hold_min_updated.emit({"x": self.x, "y": self.peak_hold_min})
+
+    def get_history_snapshot(self):
+        """Return current x axis and history buffer (copy)"""
+        if self.x is None or self.history is None or self.history.history_size == 0:
+            return None, None
+        return self.x.copy(), self.history.get_buffer().copy()
+
+    def export_history(self, path):
+        """Export current history buffer to file (npz or csv)"""
+        self.wait()
+        x, history = self.get_history_snapshot()
+        if x is None or history is None:
+            return False
+
+        path = os.path.expanduser(path)
+        if path.lower().endswith(".csv"):
+            header = ",".join(
+                ["freq_hz"] + ["sweep_{:04d}".format(i) for i in range(history.shape[0])]
+            )
+            data = np.column_stack([x, history.T])
+            np.savetxt(path, data, delimiter=",", header=header, comments="")
+        else:
+            np.savez_compressed(path, x=x, history=history)
+        return True
 
 
 class Test:

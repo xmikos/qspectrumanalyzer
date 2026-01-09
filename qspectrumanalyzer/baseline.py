@@ -1,4 +1,4 @@
-from Qt import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 
 from qspectrumanalyzer.ui_qspectrumanalyzer_baseline import Ui_QSpectrumAnalyzerBaseline
 
@@ -14,7 +14,7 @@ class QSpectrumAnalyzerBaseline(QtWidgets.QDialog, Ui_QSpectrumAnalyzerBaseline)
         settings = QtCore.QSettings()
         self.baselineFileEdit.setText(settings.value("baseline_file", ""))
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def on_baselineFileButton_clicked(self):
         """Open file dialog when button is clicked"""
         filename = QtWidgets.QFileDialog.getOpenFileName(self, self.tr("Select baseline file - QSpectrumAnalyzer"))[0]

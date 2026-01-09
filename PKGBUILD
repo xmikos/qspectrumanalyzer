@@ -6,7 +6,7 @@ pkgdesc="Spectrum analyzer for multiple SDR platforms (PyQtGraph based GUI for s
 arch=('any')
 url="https://github.com/xmikos/qspectrumanalyzer"
 license=('GPL3')
-depends=('python-qt.py' 'python-pyqt5' 'python-pyqtgraph' 'soapy_power>=1.6.0')
+depends=('python-pyqt6' 'python-pyqtgraph' 'soapy_power>=1.6.0')
 makedepends=('python-setuptools')
 optdepends=(
   'hackrf: hackrf_sweep backend (wideband spectrum monitoring with sweep rate of 8 GHz/s)'
