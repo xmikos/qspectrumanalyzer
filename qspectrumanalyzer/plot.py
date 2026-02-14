@@ -1,6 +1,6 @@
 import collections, math
 
-from Qt import QtCore
+from Qt import QtCore, QtGui
 import pyqtgraph as pg
 
 # Basic PyQtGraph settings
@@ -308,27 +308,38 @@ class WaterfallPlotWidget:
         """Update waterfall plot"""
         self.counter += 1
 
-        # Create waterfall image on first run
         if self.counter == 1:
             self.waterfallImg = pg.ImageItem()
-            self.waterfallImg.scale((data_storage.x[-1] - data_storage.x[0]) / len(data_storage.x), 1)
+
+            x0 = data_storage.x[0]
+            x1 = data_storage.x[-1]
+            n = len(data_storage.x)
+            dx = (x1 - x0) / (n - 1) if n > 1 else 1.0
+
+            self._wf_rect_x0 = x0
+            self._wf_rect_dx = dx
+            self._wf_rect_w = (x1 - x0) + dx
+
             self.plot.clear()
             self.plot.addItem(self.waterfallImg)
 
-        # Roll down one and replace leading edge with new data
-        self.waterfallImg.setImage(data_storage.history.buffer[-self.counter:].T,
-                                   autoLevels=False, autoRange=False)
-
-        # Move waterfall image to always start at 0
-        self.waterfallImg.setPos(
-            data_storage.x[0],
-            -self.counter if self.counter < self.history_size else -self.history_size
+        self.waterfallImg.setImage(
+            data_storage.history.buffer[-self.counter:].T,
+            autoLevels=False,
+            autoRange=False,
         )
 
-        # Link histogram widget to waterfall image on first run
-        # (must be done after first data is received or else levels would be wrong)
+        x0 = self._wf_rect_x0
+        dx = self._wf_rect_dx
+        w = self._wf_rect_w
+        h = float(self.history_size)
+
+        self.waterfallImg.setRect(QtCore.QRectF(x0 - dx / 2, -h, w, h))
+        self.waterfallImg.setPos(0.0, 0.0)
+
         if self.counter == 1 and self.histogram_layout:
             self.histogram.setImageItem(self.waterfallImg)
+
 
     def clear_plot(self):
         """Clear waterfall plot"""
@@ -339,10 +350,19 @@ class WaterfallPlotWidget:
         if data_storage.x is None:
             return
 
-        self.waterfallImg.setImage(data_storage.history.buffer[-self.counter:].T,
-                                   autoLevels=False, autoRange=False)
-        self.waterfallImg.setPos(
-            data_storage.x[0],
-            -self.counter if self.counter < self.history_size else -self.history_size
+        self.waterfallImg.setImage(
+            data_storage.history.buffer[-self.counter:].T,
+            autoLevels=False,
+            autoRange=False,
         )
-        self.histogram.setImageItem(self.waterfallImg)
+
+        x0 = self._wf_rect_x0
+        dx = self._wf_rect_dx
+        w = self._wf_rect_w
+        h = float(self.history_size)
+
+        self.waterfallImg.setRect(QtCore.QRectF(x0 - dx / 2, -h, w, h))
+        self.waterfallImg.setPos(0.0, 0.0)
+
+        if self.histogram_layout:
+            self.histogram.setImageItem(self.waterfallImg)
